@@ -2,21 +2,21 @@
 
 ``` mermaid
 classDiagram
-direction TB
+direction LR
 
 	ShopPermission --|> Permission
-	GlobalPermission --|> Permission
-	Review --"0,*" BarberShop
-	User "1,*"--"0,*" Permission
-	User "0,*"-- Reservation
 	User "0,*"-- Visualization
 	Reservation --"0,*" BarberShop
+	Review --"0,*" BarberShop
 	User "0,*"-- Vote
-	Vote --"0,*" Review
+	User "0,*"-- Reservation
+	User "1,*"--"0,*" Permission
+	GlobalPermission --|> Permission
 	Visualization --"0,*" BarberShop
-	BarberShop -- Calendar
 	ShopPermission --"0,*" BarberShop
+	BarberShop -- Calendar
 	Calendar "1,*"-- Slot
+	Vote --"0,*" Review
 	User "0,*"-- Review
 
 	Permission : string Name
