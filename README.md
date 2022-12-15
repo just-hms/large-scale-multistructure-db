@@ -1,4 +1,4 @@
-# large-scale-multistructure-db
+# large-scale-multi-structure-DB
 
 ## google docs
 
