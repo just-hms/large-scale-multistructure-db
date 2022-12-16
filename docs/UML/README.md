@@ -1,49 +1,71 @@
 # Class diagram
 
-``` mermaid
+```mermaid
 classDiagram
 direction LR
 
+	User "1,*"--"0,*" GlobalPermission
+	ShopView --"0,*" BarberShop
 	ShopPermission --|> Permission
-	User "0,*"-- Visualization
-	Reservation --"0,*" BarberShop
-	Review --"0,*" BarberShop
-	User "0,*"-- Vote
-	User "0,*"-- Reservation
-	User "1,*"--"0,*" Permission
-	GlobalPermission --|> Permission
-	Visualization --"0,*" BarberShop
-	ShopPermission --"0,*" BarberShop
-	BarberShop -- Calendar
+	User "1,*"--"0,*" ShopPermission
 	Calendar "1,*"-- Slot
-	Vote --"0,*" Review
+	User "0,*"-- ShopView
+	Appointment --"0,*" BarberShop
+	Review --"0,*" BarberShop
+	ShopPermission --"0,*" BarberShop
+	User "0,*"-- Appointment
+	BarberShop -- Calendar
+	GlobalPermission --|> Permission
+	User "0,*"--"0,*" Review : DownVotes
 	User "0,*"-- Review
+	User "0,*"--"0,*" Review : UpVotes
 
-	Permission : string Name
+	class Permission {
+		<<abstract>>
+		Name : String
+	}
 
-	User : string Email
-	User : string Password
+	class User {
+		Email : String
+		Password : String
+	}
 
-	BarberShop : string Name
-	BarberShop : float AverageRating 
-	BarberShop : float Latitude
-	BarberShop : float Longitude
-	BarberShop : int EmployeesNumber
+	class BarberShop {
+		Name : String
+		AverageRating : Float
+		Latitude : Float
+		Longitude : Float
+		EmployeesNumber : Int
+	}
 
-	Reservation : datetime CreatedAt
-	Reservation : datetime Start
-	Reservation : time Duration
+	class Appointment {
+		CreatedAt : DateTime
+		Start : DateTime
+		Duration : Time
+	}
 
-	Visualization : datetime CreatedAt
+	class ShopView {
+		CreatedAt : DateTime
+	}
+	
+	class Slot{
+		Start : DateTime
+		BookedAppoIntments : Int 
+		UnavailableEmployees : Int 
+	}
 
-	Slot : datetime Start
-	Slot : int BookedAppointments
-	Slot : int UnavailableEmployees
-
-	Review : string Content
-	Review : datetime CreatedAt
-	Review : int Rating
-
-	Vote : bool Up
+	class Review {
+ 		Content : String
+		CreatedAt : DateTime
+		Rating : Int
+		Reported : Bool
+	}
 ```
 
+# For later
+
+Holidays are done only by editing the `UnavailableEmployees` field in the slots.
+
+Only barbers can report reviews, so there is no need for a counter.
+
+Admin will have a view of the reported reviews

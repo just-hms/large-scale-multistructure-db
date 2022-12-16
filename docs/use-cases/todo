@@ -1,0 +1,12 @@
+style modify_shop fill:#fff;
+style add_holidays fill:#fff;
+style dis_comments fill:#fff;
+style barber_user fill:#fff;
+%%TODO: fill half green half hite
+style view_bookings fill:#fff;
+style view_bookings_analytics fill:#fff;
+
+style delete_reservation fill:#fff;
+style admin fill:#afb;
+style delete_shop fill:#afb;
+style delete_comment fill:#afb;
