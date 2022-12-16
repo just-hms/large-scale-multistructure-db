@@ -1,29 +1,37 @@
 <style>
-	.barber{
-		fill: red;
-		stroke: #ffff00;
+	.barber *, .user *, .admin *, .all *{
+		fill : none !important;
+		stroke : none !important;
+		background-size: 100% 100%;
+		background-repeat: no-repeat;
+		border-radius : 0.7rem;
 	}
 
-	.user{
-		
+	.barber * {
+		background-color : #bbf7d0;		
 	}
 
-	.admin{
-		
+	.user *{
+		background-color : #7dd3fc;		
 	}
 
-	.barber-user{
+	.admin *{
+		background-color : #fca5a5;		
+	}
 
+	.barberuser *{
+		background-image: linear-gradient(90deg, #bbf7d0 50%, #bbf7d0 50%, #7dd3fc 50%, #7dd3fc 50%); 
 	}
-	.admin-user{
+	.adminuser *{
+		background-image: linear-gradient(90deg, #bbf7d0 33.33%, #fca5a5 33.33%, #fca5a5 66.66%, #7dd3fc 66.66%); 
 		
 	}
-	.admin-barber{
-		
+	.adminbarber *{
+		background-image: linear-gradient(90deg, #bbf7d0 33.33%, #fca5a5 33.33%, #fca5a5 66.66%, #7dd3fc 66.66%); 
 	}
 	
-	.all{
-
+	.all *{
+		background-image: linear-gradient(90deg, #bbf7d0 33.33%, #fca5a5 33.33%, #fca5a5 66.66%, #7dd3fc 66.66%); 
 	}
 </style>
 
@@ -111,5 +119,16 @@ admin --specialize-->logged_user
 admin --- browse_shops
 
 
-class logged_user barber
+class modify_shop barber
+class add_holidays barber
+class dis_comments barber
+class barber_user barber
+class view_bookings barber
+class view_bookings_analytics barber
+class delete_reservation barber
+class admin admin
+class delete_shop admin
+class delete_comment admin
+class browse_shops all
+
 ```
