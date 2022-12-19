@@ -66,25 +66,8 @@ class logged_user user
 ```mermaid
 flowchart TB
 
+%% main user
 logged_user["<div class='nil' style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
-
-browse_shops(["browse barber shops"])
-find_shops([find shops])
-view_shop([view shop])
-comment([comment])
-view_comments([view comments])
-booking([book an appointment])
-view_profile_info([view profile info])
-pswd_rec([password recovery])
-del_acc([delete account])
-curr_appointment([view current appointment])
-del_appointment([delete appointment])
-modify_shop([modify shop info])
-add_holidays([add holidays])
-rep_comments([report comment])
-view_appointments([view appointments])
-delete_appointment([delete an appointment])
-view_shop_analytics([view shop analytics])
 
 %% admin subgraph
 
@@ -96,6 +79,7 @@ admin --- create_shop
 
 subgraph  
 
+	%% entities
 	browse_users([browse users])
 	find_user([find user])
 	view_user([view user])
@@ -103,6 +87,7 @@ subgraph
 	modify_perm([modify permissions])
 	user_analytics([view app analytics])
 
+	%% relations
 	browse_users -.include.-> find_user
 	find_user -.include.->view_user
 	delete_user-.extends.->view_user
@@ -111,16 +96,30 @@ subgraph
 	create_shop
 end
 
-%% generic browsing shops
+%% generic shop entities
 
 logged_user --- browse_shops
 logged_user ---- view_profile_info
 
 subgraph  
 
+	%% entities
+	browse_shops(["browse barber shops"])
+	find_shops([find shops])
+	view_shop([view shop])
+	comment([comment])
+	view_comments([view comments])
+	booking([book an appointment])
+	modify_shop([modify shop info])
+	add_holidays([add holidays])
+	rep_comments([report comment])
+	view_appointments([view appointments])
+	delete_appointment([delete an appointment])
+	view_shop_analytics([view shop analytics])
 	delete_shop([delete shop])
 	delete_comment([delete comments])
 
+	%% relations
 	browse_shops -.include.-> find_shops
 	view_shop -.extends.-> find_shops
 	view_shop -.include.-> view_appointments
@@ -140,6 +139,15 @@ end
 %% user profile
 
 subgraph  
+
+	%% entities
+	view_profile_info([view profile info])
+	pswd_rec([password recovery])
+	del_acc([delete account])
+	curr_appointment([view current appointment])
+	del_appointment([delete appointment])
+
+	%% relations
 	pswd_rec -.extends.->view_profile_info
 	curr_appointment -.extends.->view_profile_info
 	del_acc -.extends.->view_profile_info
