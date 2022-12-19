@@ -1,0 +1,90 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+
+	<div class="mermaid">
+		classDiagram
+		direction LR
+
+			User "1,*"--"0,*" GlobalPermission
+			ShopView --"0,*" BarberShop
+			ShopPermission --|> Permission
+			User "1,*"--"0,*" ShopPermission
+			Calendar "1,*"-- Slot
+			User "0,*"-- ShopView
+			Appointment --"0,*" BarberShop
+			Review --"0,*" BarberShop
+			ShopPermission --"0,*" BarberShop
+			User "0,*"-- Appointment
+			BarberShop -- Calendar
+			GlobalPermission --|> Permission
+			User "0,*"--"0,*" Review : DownVotes
+			User "0,*"-- Review
+			User "0,*"--"0,*" Review : UpVotes
+
+			class Permission {
+				<<abstract>>
+				Name : String
+			}
+
+			class User {
+				Email : String
+				Password : String
+			}
+
+			class BarberShop {
+				Name : String
+				AverageRating : Float
+				Latitude : Float
+				Longitude : Float
+				EmployeesNumber : Int
+			}
+
+			class Appointment {
+				CreatedAt : DateTime
+				Start : DateTime
+				Duration : Time
+			}
+
+			class ShopView {
+				CreatedAt : DateTime
+			}
+			
+			class Slot{
+				Start : DateTime
+				BookedAppoIntments : Int 
+				UnavailableEmployees : Int 
+			}
+
+			class Review {
+				Content : String
+				CreatedAt : DateTime
+				Rating : Int
+				Reported : Bool
+			}
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.3.0/mermaid.min.js" integrity="sha512-ku2nmBrzAXY5YwohzTqLYH1/lvyMrpTVxgQKrvTabd/b/uesqltLORdmpVapYv6QhZVCLUX6wkvFaKOAY4xpUA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+	<script>
+		mermaid.initialize({startOnLoad:false});
+	</script>
+
+	<script>
+		function renderMermaid(){
+			mermaid.init(undefined,document.querySelectorAll(".mermaid"));
+		}
+		$(function() {
+			$(document).on('previewUpdated', function() {        
+				renderMermaid();
+			});
+			renderMermaid();
+		});
+	</script>
+	
+</body>
+</html>

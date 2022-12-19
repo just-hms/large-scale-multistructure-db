@@ -1,10 +1,14 @@
 <style>
-	.barber *, .user *, .admin *, .all *{
+	.barber *, .user *, .admin *, .all *, .barberuser *, .adminuser *, .adminbarber *,  .nil *{
 		fill : none !important;
 		stroke : none !important;
 		background-size: 100% 100%;
 		background-repeat: no-repeat;
 		border-radius : 0.7rem;
+	}
+
+	.nil *{
+		background-color : white;	
 	}
 
 	.barber * {
@@ -27,108 +31,151 @@
 		
 	}
 	.adminbarber *{
-		background-image: linear-gradient(90deg, #bbf7d0 33.33%, #fca5a5 33.33%, #fca5a5 66.66%, #7dd3fc 66.66%); 
+		background-image: linear-gradient(90deg, #bbf7d0 50%, #bbf7d0 50%, #fca5a5 50%, #fca5a5 50%); 
 	}
 	
 	.all *{
 		background-image: linear-gradient(90deg, #bbf7d0 33.33%, #fca5a5 33.33%, #fca5a5 66.66%, #7dd3fc 66.66%); 
 	}
+
+	.nodeLabel, .edgeLabel{
+		font-size: 3rem !important;
+	}
+
+	.nodeLabel{
+		padding: 10px 10px;
+	}
+
+
 </style>
 
 # Use-case diagram
+<!-- 
+```mermaid
+flowchart TB
+
+admin[admin]
+logged_user[logged user]
+barber[barber]
+
+class admin admin
+class barber barber
+class logged_user user
+``` -->
 
 ```mermaid
 flowchart TB
-logged_user[logged user]
+
+logged_user["<div class='nil' style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
+
 browse_shops(["browse barber shops"])
 find_shops([find shops])
 view_shop([view shop])
 comment([comment])
 view_comments([view comments])
-booking([book a service])
-shop_hours([view shop hours])
-profile_info([view profile infos])
+booking([book an appointment])
+view_profile_info([view profile info])
 pswd_rec([password recovery])
-curr_reservation([view current reservation])
 del_acc([delete account])
-del_reservation([delete reservation])
-modify_shop([modify shop infos])
+curr_appointment([view current appointment])
+del_appointment([delete appointment])
+modify_shop([modify shop info])
 add_holidays([add holidays])
-dis_comments([disable comments])
-view_bookings([view bookings])
-delete_reservation([delete a reservation])
-view_bookings_analytics([view bookings analytics])
+rep_comments([report comment])
+view_appointments([view appointments])
+delete_appointment([delete an appointment])
+view_shop_analytics([view shop analytics])
 
-browse_users([browse users])
-find_user([find user])
-view_user([view user])
-delete_user([delete user])
-modify_perm([modify permissions])
-user_analytics([view user analytics])
+%% admin subgraph
 
-admin ----- browse_users
-subgraph  
-	browse_users --include-->find_user
-	find_user --include-->view_user
-	delete_user--extends-->view_user
-	modify_perm--extends-->view_user
-	user_analytics--extends-->view_user
-end
+admin["<div class='admin' style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
 
-barber_user[barber]
+admin --- browse_users
+admin --- user_analytics
+admin --- create_shop
 
 subgraph  
-	browse_shops -- include--> find_shops
-	view_shop -- extends --> find_shops
-	%%not sure if it's okay to use the same graph if there's an include only for a derived user(barber)
-	view_shop -- include --> view_bookings
-	delete_reservation -- extend --> view_bookings
-	view_bookings_analytics -- extend --> view_bookings
-	modify_shop --extends-->view_shop
-	add_holidays --extends-->modify_shop
-	dis_comments --extends-->modify_shop
-	view_comments-- extends --> view_shop
-	comment --extends--> view_shop
-	booking -- extends --> view_shop
-	shop_hours -- extends --> booking
-	delete_shop --extends-->view_shop
-	delete_comment --extends-->view_comments
+
+	browse_users([browse users])
+	find_user([find user])
+	view_user([view user])
+	delete_user([delete user])
+	modify_perm([modify permissions])
+	user_analytics([view app analytics])
+
+	browse_users -.include.-> find_user
+	find_user -.include.->view_user
+	delete_user-.extends.->view_user
+	modify_perm-.extends.->view_user
+	user_analytics
+	create_shop
 end
+
+%% generic browsing shops
 
 logged_user --- browse_shops
-barber_user --- browse_shops
-barber_user --- profile_info
-logged_user --- profile_info
-barber_user--specialize-->logged_user
+logged_user ---- view_profile_info
 
 subgraph  
-	pswd_rec --extends-->profile_info
-	curr_reservation --extends-->profile_info
-	del_acc --extends-->profile_info
-	del_reservation--extends-->curr_reservation
+
+	delete_shop([delete shop])
+	delete_comment([delete comments])
+
+	browse_shops -.include.-> find_shops
+	view_shop -.extends.-> find_shops
+	view_shop -.include.-> view_appointments
+	delete_appointment -.extends.-> view_appointments
+	delete_comment -.extends.->view_comments
+	view_shop_analytics -.extends.-> view_shop
+	comment -.extends.-> view_shop
+	rep_comments -.extends.->view_comments
+	modify_shop -.extends.->view_shop
+	add_holidays -.extends.->modify_shop
+	view_comments-.extends.-> view_shop
+	booking -.extends.-> view_shop
+	delete_shop -.extends.->view_shop
 end
 
 
+%% user profile
 
-
-admin[admin]
-delete_shop([delete shop])
-delete_comment([delete comments])
-
-admin --specialize-->logged_user
-admin --- browse_shops
-
+subgraph  
+	pswd_rec -.extends.->view_profile_info
+	curr_appointment -.extends.->view_profile_info
+	del_acc -.extends.->view_profile_info
+	del_appointment-.extends.->curr_appointment
+end
 
 class modify_shop barber
 class add_holidays barber
 class dis_comments barber
 class barber_user barber
-class view_bookings barber
-class view_bookings_analytics barber
-class delete_reservation barber
+class view_appointments barber
+class view_shop_analytics adminbarber
+class delete_appointment barber
 class admin admin
 class delete_shop admin
 class delete_comment admin
 class browse_shops all
+class browse_users admin
+class find_user admin
+class view_user admin
+class delete_user admin
+class modify_perm admin
+class create_shop admin
+class user_analytics admin
+class rep_comments barber
+class curr_appointment user
+class view_profile_info all
+class pswd_rec all
+class del_appointment user
+class del_acc barberuser
+class find_shops all
+class view_shop all
+class view_comments all
+class comment user
+class booking user
+class logged_user nil
 
 ```
+
