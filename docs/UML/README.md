@@ -5,11 +5,11 @@ classDiagram
 direction LR
 
 	User "1,*"--"0,*" GlobalPermission
-	ShopView --"0,*" BarberShop
+	ShopView "0,*"-- BarberShop
 	ShopPermission --|> Permission
 	User "1,*"--"0,*" ShopPermission
 	Calendar "1,*"-- Slot
-	User "0,*"-- ShopView
+	User --"0,*" ShopView
 	Appointment --"0,*" BarberShop
 	Review --"0,*" BarberShop
 	ShopPermission --"0,*" BarberShop
@@ -17,7 +17,7 @@ direction LR
 	BarberShop -- Calendar
 	GlobalPermission --|> Permission
 	User "0,*"--"0,*" Review : DownVotes
-	User "0,*"-- Review
+	User --"0,*" Review
 	User "0,*"--"0,*" Review : UpVotes
 
 	class Permission {
