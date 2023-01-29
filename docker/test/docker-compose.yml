@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  
+  cache:
+    image : redis
+    ports:
+      - "127.0.0.1:6379:6379"
+
+  db:
+    image: mongo
+    ports:
+      - "127.0.0.1:27017:27017"
+
+  backend:
+    build:
+      dockerfile: ./docker/test/Dockerfile
+      context: ../../
+    ports:
+      - "127.0.0.1:7000:8080"
+    depends_on:
+      - redis
+      - mongo
+    links: 
+        - mongo
+        - redis
