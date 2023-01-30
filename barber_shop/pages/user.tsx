@@ -48,7 +48,7 @@ export default function User({reservationData}) {
             </ul>
         </div>
 
-        <div className='w-4/5 h-full'>
+        <div className='w-4/5 h-full flex justify-center'>
             {displayed_element}
         </div>
     </div>
@@ -58,7 +58,7 @@ export default function User({reservationData}) {
 }
 
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
 
   const reservationData =  getReservation("user");
   // TODO: actually retrieve datas

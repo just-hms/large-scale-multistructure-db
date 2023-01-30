@@ -1,7 +1,7 @@
 import Link from 'next/link'
 export default function UserInfos() {
   return (
-    <div className='flex flex-col items-center justify-center text-left text-slate-300 text-lg w-full'>
+    <div className='flex flex-col items-center justify-center text-left text-slate-300 text-lg w-5/6 rounded-3xl bg-slate-700 py-3 shadow-md shadow-black/70'>
       <h1 className='text-2xl'>My account</h1>
       <p className='pt-2 pb-2 w-1/2'>Email</p>
       <div className='border border-slate-500 rounded-md p-2 w-1/2 overflow-hidden'>email@email.com</div>

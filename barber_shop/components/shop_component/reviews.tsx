@@ -13,7 +13,6 @@ export default function Reviews(reviews) {
                                     <p className="pr-2">{review.title}</p>
                                     {[...Array(review.vote)].map(_=><FontAwesomeIcon key={review.id+"arrowUpIcon"} icon={faStar} className="text-sm"/>)}
                                 </div>
-                                {/* TODO: add stars */}
                                 <div className="flex items-center">
                                     <button key={review.id+"arrowUp"} className="hover: text-white mr-3 text-sm">
                                         <FontAwesomeIcon key={review.id+"arrowUpIcon"} icon={faArrowUp}/>

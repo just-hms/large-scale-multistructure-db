@@ -3,15 +3,16 @@ import Navbar from '../components/navbar'
 import {useEffect, useState, useRef} from 'react';
 import Footer from '../components/footer';
 import ManageUsers from '../components/admin_components/manage_accounts';
+import ReportedReviews from '../components/admin_components/reported_reviews';
+import { getReviews } from '../lib/admin';
 
-export default function User() {
-
+export default function Admin({reviewsData}) {
   const [content, setContent] = useState("manage_accounts");
   let displayed_element;
   if (content == "manage_accounts") {
     displayed_element = <ManageUsers/>;
-  } else if (content == "signaled_reviews"){
-    displayed_element = <></>;
+  } else if (content == "reported_reviews"){
+    displayed_element = <ReportedReviews reported_reviews={reviewsData}/>
   } else if(content == "view_analytics"){
     displayed_element = <></>;
   } else if(content == "create_shop"){
@@ -34,7 +35,7 @@ export default function User() {
                     <button className={`hover:text-white focus:outline-none ${content == "manage_accounts" ? "font-bold" : ""}`} onClick={event => {setContent("manage_accounts")}}>Manage Accounts</button>
                 </li>
                 <li>
-                    <button className={`hover:text-white focus:outline-none ${content == "signaled_reviews" ? "font-bold" : ""}`} onClick={event => {setContent("signaled_reviews")}}>Signaled Reviews</button>
+                    <button className={`hover:text-white focus:outline-none ${content == "reported_reviews" ? "font-bold" : ""}`} onClick={event => {setContent("reported_reviews")}}>Reported Reviews</button>
                 </li>
                 <li>
                     <button className={`hover:text-white focus:outline-none ${content == "view_analytics" ? "font-bold" : ""}`} onClick={event => {setContent("view_analytics")}}>View Analytics</button>
@@ -52,4 +53,15 @@ export default function User() {
     <Footer/>
     </>
   )
+}
+
+export async function getServerSideProps() {
+  // TODO: actually retrieve datas
+  // const postData = getShopData(params.shop)
+  const reviewsData =  getReviews("shopname")
+  return {
+    props: {
+      reviewsData
+    },
+  }
 }
