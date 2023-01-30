@@ -16,10 +16,12 @@ RUN mkdir -p build && \
 FROM ubuntu:22.04
 WORKDIR /app
 
-
 RUN apt update && \
-	apt upgrade -y
+	apt upgrade -y && \
+	apt-get install -y netcat
 
-COPY --from=builder /app/build/main .
 
-CMD ["./main"]
+COPY --from=builder /app/build/cmd .
+COPY --from=builder /app/docker/deploy/entrypoint.sh .
+
+CMD ["./entrypoint.sh"]

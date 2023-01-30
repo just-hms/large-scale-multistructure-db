@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const URI = "mongodb://localhost:27017"
+const URI = "mongodb://db:27017"
 
 func SyncMongo() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
