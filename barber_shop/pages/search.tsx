@@ -2,22 +2,24 @@ import { useRouter} from "next/router"
 import Head from "next/head"
 import Navbar from "../components/navbar"
 import Image from "next/image"
+import {findShops} from "../lib/search"
+import ShopsFound from "../components/search_components/shops_found"
 
-export default function Search() {
+export default function Search({shopData}) {
     const router = useRouter()
     const { prop_name } = router.query
-    console.log({prop_name})
+    console.log(shopData)
     return (
     <>
     <Head>
-        <title>Home | Barber Shop</title>
+        <title>Search | Barber Shop</title>
         <link rel="icon" type="image/png" sizes="32x32" href="/barber-shop.png"></link>
     </Head>
     <Navbar/>
     <svg className='w-full bg-slate-800 h-full' viewBox='0 0 1442 100' preserveAspectRatio="xMidYMid">
         <path className='w-full fill-slate-900' d="M 0 90 C 480 0 600 0 720 10.7 C 840 21 960 43 1080 48 C 1200 53 1320 43 1380 37.3 L 1440 32 L 1440 0 L 1380 0 C 1320 0 1200 0 1080 0 C 960 0 840 0 720 0 C 600 0 480 0 360 0 C 240 0 120 0 60 0 L 0 0 Z"></path>
     </svg>
-    <div className="w-full flex flex-col text-slate-200 justify-start p-5 items-center bg-slate-800 h-screen">
+    <div className="w-full flex flex-col text-slate-200 justify-start p-5 items-center bg-slate-800 h-full">
         <div className="w-full flex mb-5">
             {/* LAST SEARCH PARAMS   */}
             <div className="w-1/3 flex items-center justify-center">
@@ -41,18 +43,28 @@ export default function Search() {
                 </div>
             </div>
         </div>
-        <div className="border w-full flex">
+        <div className="w-full flex">
+            {/* IDK */}
             <div className="border w-1/3 flex flex-col items-center justify-center">
                 left menu 
                 <p>stuff</p>
             </div>
-            <div className="border w-2/3 flex items-center justify-center">
-                <ul>
-                    barbers
-                </ul>
+            {/* SHOPS */}
+            <div className=" w-2/3 flex flex-col items-center justify-center">
+                <ShopsFound shops={shopData}/>
             </div>
         </div>
     </div>
     </>
     )
 }
+
+export async function getServerSideProps() {
+    // TODO: actually retrieve datas
+    const shopData = findShops()
+    return {
+      props: {
+        shopData
+      },
+    }
+  }

@@ -1,5 +1,5 @@
 
-export default function ReportedReviews(reported_reviews) {
+export default function ReportedReviews({reported_reviews}) {
     console.log(reported_reviews.reported_reviews)
     return (
     <div className='flex flex-col items-start justify-start text-left text-slate-300 text-lg w-full'>
@@ -12,7 +12,7 @@ export default function ReportedReviews(reported_reviews) {
                         </h1>
                     </div>
                     <div>
-                    {reported_reviews.reported_reviews.map((review)=>
+                    {reported_reviews.map((review)=>
                             <div key={review.id} className="w-full text-slate-200 p-3 pb-0">
                                 <div key={review.id+"container"} className="flex flex-col items-start justify-start w-full bg-slate-700 rounded-3xl p-3 shadow-md shadow-black/30 mb-3">
                                     <div key={review.id+"name"} className="text-md w-full text-left font-normal">{review.name}</div>

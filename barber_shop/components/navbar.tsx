@@ -26,7 +26,7 @@ export default function Navbar() {
                         Option Three
                         </Link>
                     </div>
-                    <Dropdown/>
+                    <Dropdown elements = {["Profile", "Log Out"]}/>
                 </div>
             </div>
         </div>

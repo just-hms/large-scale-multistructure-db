@@ -1,8 +1,8 @@
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment} from 'react'
 import Link from 'next/link'
 
-export default function Dropdown() {
+export default function Dropdown({elements}) {
   return (
     <div className="inline-block text-sm leading-none rounded-full text-white border-slate-700 hover:text-slate-500">
       <Menu as="div" className="relative inline-block">
@@ -24,31 +24,17 @@ export default function Dropdown() {
           leaveTo="transform opacity-0 scale-95"
         >
           <Menu.Items className="absolute right-0 mt-3 w-56 origin-top-right divide-y divide-slate-600 rounded-md bg-slate-800 shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none z-10 shadow-md shadow-black/70">
-            <div className="px-1 py-1">
-              <Menu.Item>
-               {({ active }) => (
-                  <p className={`text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
-                    Username
-                  </p>
-                )}
-                </Menu.Item>
-            </div>
-            <div className='px-1 py-1'>
-              <Menu.Item >
-               {({ active }) => (
-                  <Link href="/user" className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
-                    View Profile
+            {elements.map((element)=>
+              <div className="px-1 py-1">
+                <Menu.Item>
+                {({ active }) => (
+                  <Link href={`/${(element == "Profile")?"user":"logout"}`} className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                    {element}
                   </Link>
-                )}  
-              </Menu.Item>
-              <Menu.Item>
-               {({ active }) => (
-                  <button className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
-                    Log Out
-                  </button>
-                )}  
-              </Menu.Item>
-            </div>
+                  )}
+                  </Menu.Item>
+              </div>
+            )}
           </Menu.Items>
         </Transition>
       </Menu>
