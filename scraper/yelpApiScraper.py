@@ -2,14 +2,11 @@ from yelpapi import YelpAPI
 
 import json
 
-#API_KEY = "abcefghijklmnopqrstuvqwxy123456789"
 API_KEY = "IIQPcbU9wwdg83l3iRYVqXO-LSEw1yoAXD8680iv80cD4TQzbT0vKv9HwWh5p8qA_b3o8XqF_k6_Re0ytgFEV0VT8Wmobs8W0CjzVFEUvgfx2dlY9clMIpQBErzSY3Yx"
 
 scrapingResults = {}
 
-def main():
-
-    locationsList = ["Roma","Firenze","Milano"]
+def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"]):
 
     with open("yelpScrapingResults.json","r+") as file:
         with YelpAPI(API_KEY) as yelp_api:
@@ -52,7 +49,7 @@ def main():
                         shopData["calendar"] = []
 
                     #Get shop reviews
-                    shopReviews = yelp_api.reviews_query(id=barberShop["id"], locale="it_IT")
+                    shopReviews = yelp_api.reviews_query(id=barberShop["id"])
                     shopData["reviewData"] = {}
                     shopData["reviewData"]["reviews"] = []
                     for review in shopReviews["reviews"]:
