@@ -1,3 +1,6 @@
+# Scraped data format example
+
+```json
 {
     "Roma": [
         {
@@ -44,3 +47,4 @@
     "Firenze":[],
     ...
 }
+```
