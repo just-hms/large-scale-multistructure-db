@@ -42,6 +42,9 @@ def main():
                                 for review in barberShopYelp["reviewData"]["reviews"]:
                                     barberShopMaps["reviewData"]["reviews"].append(review)
                                 print(f">>>> Found Yelp reviews of {barberShopMaps['name']}")
+                                #While we are at it, add a photo if it is not present
+                                if barberShopMaps["imageLink"] == "":
+                                    barberShopMaps["imageLink"] = barberShopYelp["imageLink"]
                                 break
                             else:
                                 continue
