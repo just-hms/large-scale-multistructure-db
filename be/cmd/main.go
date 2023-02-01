@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import "large-scale-multistructure-db/be/internal/app"
 
 func main() {
-	fmt.Println("kek")
+
+	// TODO: get config files?
+
+	app.Run()
 }
