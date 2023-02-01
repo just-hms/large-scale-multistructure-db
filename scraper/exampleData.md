@@ -32,7 +32,7 @@
                     {
                         "username": "Rushal C", 
                         "rating": 5, 
-                        "body": "Amazing service and vintage barbershop with great barbers. The place is clean and the haircuts are cleaner.\n\nOnly shop that was open early @8:30am in the area during our stay in Rome. I was there at opening and they got me in the chair right way."}, 
+                        "body": "Amazing service and vintage barbershop with great barbers. The place is clean and the haircuts are cleaner.\n\nOnly shop that was open early @8:30am in the area during our stay in Rome. I was there at opening and they got me in the chair right way."
                     },
                     ...
                 ]
