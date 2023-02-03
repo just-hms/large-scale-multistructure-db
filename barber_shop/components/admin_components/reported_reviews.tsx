@@ -29,9 +29,14 @@ export default function ReportedReviews({reported_reviews}) {
                                     <div className="text-justify top-0 w-full text-sm p-1 font-normal">
                                         {review.review}
                                     </div>
-                                    <button className="px-6 py-2.5 m-1 bg-rose-900 bg-opacity-70 text-slate-300 text-xs rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out " type="button" id="search_button">
-                                        Delete Review
-                                    </button>
+                                    <div className="flex items-center justify-between w-full">
+                                        <button className="px-6 py-2.5 m-1 bg-green-900 bg-opacity-70 text-slate-300 text-xs rounded-full focus:bg-green-800 hover:bg-green-800 focus:outline-none transition duration-150 ease-in-out " type="button" id="search_button">
+                                            Remove from reported reviews
+                                        </button>
+                                        <button className="px-6 py-2.5 m-1 bg-rose-900 bg-opacity-70 text-slate-300 text-xs rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out " type="button" id="search_button">
+                                            Delete Review
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         )}

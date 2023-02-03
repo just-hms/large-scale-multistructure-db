@@ -1,4 +1,4 @@
-import Dropdown from './dropdown'
+import Dropdown from './user_dropdown'
 import Link from 'next/link'
 import barber_icon from '../public/barber-shop.png'
 import Image from 'next/image'

@@ -1,10 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp, faArrowDown, faStar} from "@fortawesome/free-solid-svg-icons";
+import {faStar, faMapLocationDot} from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import Link from "next/link";
 import barber_background from '../../public/barber_profile.jpg'
-import { faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
-import OrderByDropdown from "./orderby_dropdown";
+import GeneralDropdown from "./general_dropdown";
 
 export default function ShopsFound({shops}) {
     return (
@@ -12,7 +11,9 @@ export default function ShopsFound({shops}) {
             <div className="w-full flex-col text-xl justify-start items-center px-3">
                 <div className="w-full flex justify-between items-center pb-2 px-2">
                     <p>Found {shops.length} Barber Shops</p>
-                    <OrderByDropdown elements={[1,2,3]}/>
+                    <div className="flex items-center justify-end">
+                        <GeneralDropdown elements={[1,2,3]}><p>Ordered By</p></GeneralDropdown>
+                    </div>
                 </div>
                 <div className="w-full border-b border-slate-600 mb-3"/>
             {shops.map((shop)=>
@@ -26,7 +27,7 @@ export default function ShopsFound({shops}) {
                                     <div className="flex flex-col items-start justify-start w-full px-3">
                                         <h1 key={shop.id+"name"} className="text-xl text-left font-bold hover:underline">{shop.name}</h1>
                                         <div className="flex justify-center items-center">
-                                            <FontAwesomeIcon key={shop.id+"starIcon"} icon={faStar} className="text-sm "/>
+                                            <FontAwesomeIcon key={shop.id+"starIcon"} icon={faStar} className="text-sm text-rose-700"/>
                                             <p className=" pl-1">{shop.meanRating}/5 ({shop.reviewNumber})</p>
                                         </div>
                                         <div className="flex items-center justify-between w-2/3">

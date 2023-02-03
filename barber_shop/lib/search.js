@@ -3,7 +3,6 @@ export function findShops(position) {
     return [{
         name:"shop name",
         meanRating:3,
-        reviewNumber:15,
         description:"small description of the shop",
         distance:1,
         image:"path_to_image"
@@ -21,6 +20,13 @@ export function findShops(position) {
         description:"small description of the shop",
         distance:1,
         image:"path_to_image"
-    },];
+    },{
+        name:"shop name",
+        meanRating:3,
+        reviewNumber:15,
+        description:"small description of the shop",
+        distance:1,
+        image:"path_to_image"
+    }];
   }
   

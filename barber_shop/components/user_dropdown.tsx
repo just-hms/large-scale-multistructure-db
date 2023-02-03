@@ -2,7 +2,7 @@ import { Menu, Transition } from '@headlessui/react'
 import { Fragment} from 'react'
 import Link from 'next/link'
 
-export default function Dropdown({elements}) {
+export default function UserDropdown({elements}) {
   return (
     <div className="inline-block text-sm leading-none rounded-full text-white border-slate-700 hover:text-slate-500">
       <Menu as="div" className="relative inline-block">

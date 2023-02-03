@@ -1,20 +1,23 @@
 import Head from 'next/head'
 import Navbar from '../components/navbar'
 import Image from 'next/image'
-import { useFormik } from 'formik';
 import barber_background from '../public/barber_bg_1.png'
+import React from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/router'
+
 export default function Home() {
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-      repeatPassword: '',
-    },
-    onSubmit: values => {
-      // TODO: check values and yadda yadda
-      alert(JSON.stringify(values, null, 3));
-    },
-  });
+
+  const [query, setQuery] = useState('');
+  const router = useRouter()
+  const handleChange=(event)=>{
+    setQuery(event.target.value);
+  }
+  function handleClick() {
+    if(query.length > 0)
+      router.push("/search?area="+query);
+  }
+
   return (
     <>
       <Head>
@@ -38,9 +41,11 @@ export default function Home() {
                   <input
                     type="search"
                     className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none" 
-                    form-control id="barberSearch" placeholder="Search"
+                    form-control id="barberSearch" placeholder="Desired area"
+                    onChange={handleChange}
                   />
-                  <button className="btn inline-block px-6 py-2.5 m-1 bg-red-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg text-white font-medium text-xs leading-tight uppercase rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out flex items-center" type="button" id="search_button">
+                  <button className="btn inline-block px-6 py-2.5 m-1 bg-red-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg text-white font-medium text-xs leading-tight uppercase rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out flex items-center" type="button" id="search_button"
+                    onClick={handleClick}>
                     <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" className="w-4 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                       <path className='fill-slate-100/90 drop-shadow-lg backdrop-blur-lg'  d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
                     </svg>

@@ -1,14 +1,16 @@
 import { useRouter} from "next/router"
 import Head from "next/head"
 import Navbar from "../components/navbar"
-import Image from "next/image"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faLocationDot} from "@fortawesome/free-solid-svg-icons";
 import {findShops} from "../lib/search"
 import ShopsFound from "../components/search_components/shops_found"
+import Link from "next/link";
 
 export default function Search({shopData}) {
     const router = useRouter()
-    const { prop_name } = router.query
-    console.log(shopData)
+    // query parameter
+    const { area } = router.query
     return (
     <>
     <Head>
@@ -23,8 +25,12 @@ export default function Search({shopData}) {
         <div className="w-full flex mb-5">
             {/* LAST SEARCH PARAMS   */}
             <div className="w-1/3 flex items-center justify-center">
-                <div className='w-full p-5 flex items-center justify-center rounded-full bg-slate-700'>
-                    asdl,mjasolkd
+                <div className='w-full text-xl font-bold p-5 flex flex-col items-center justify-center rounded-full bg-slate-700'>
+                  <div className="flex w-full items-center justify-center">
+                    <FontAwesomeIcon icon={faLocationDot} className="text-xl pr-1 text-rose-600"/>
+                      {area}
+                  </div>
+                  <Link href="/home" className="underline text-sm">Change Location</Link>
                 </div>
             </div>
             {/* SEARCH BAR */}

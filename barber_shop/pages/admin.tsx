@@ -5,6 +5,7 @@ import Footer from '../components/footer';
 import ManageUsers from '../components/admin_components/manage_accounts';
 import ReportedReviews from '../components/admin_components/reported_reviews';
 import { getReviews } from '../lib/admin';
+import CreateShop from '../components/admin_components/create_shop';
 
 export default function Admin({reviewsData}) {
   const [content, setContent] = useState("manage_accounts");
@@ -16,7 +17,7 @@ export default function Admin({reviewsData}) {
   } else if(content == "view_analytics"){
     displayed_element = <></>;
   } else if(content == "create_shop"){
-    displayed_element = <></>;
+    displayed_element = <CreateShop/>;
   }
   return (
     <>
@@ -58,10 +59,10 @@ export default function Admin({reviewsData}) {
 export async function getServerSideProps() {
   // TODO: actually retrieve datas
   // const postData = getShopData(params.shop)
-  const reviewsData =  getReviews("shopname")
+  const reviewsData =  await getReviews("shopname")
   return {
     props: {
       reviewsData
     },
-  }
+  } 
 }

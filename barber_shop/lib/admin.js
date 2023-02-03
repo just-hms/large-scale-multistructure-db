@@ -1,4 +1,4 @@
-export function getReviews(shop) {
+export async function getReviews(shop) {
     // this function will retrieve all the shop reviews
     return [{
       id:1111,
@@ -25,5 +25,18 @@ export function getReviews(shop) {
       upvotes:10,
       vote:2,
     }];
-  }
+}
+export async function getAccount(type) {
+  // this function will retrieve all the shop reviews
+  return [{
+    id:1111,
+    name:"Pippo Baudo",
+  },{
+    id:1112,
+    name:"Pippo Baudo",
+  },{
+    id:1113,
+    name:"Pippo Baudo",
+  }];
+}
       
