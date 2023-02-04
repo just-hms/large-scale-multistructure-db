@@ -7,7 +7,7 @@
 
 # User
 
-## `POST` /user/register/
+## `POST` /user/
 
 request
 
@@ -203,7 +203,15 @@ response ❌ -> status : `401` | `400`
 
 # Password
 
-## 🔑 `GET` /user/password_recovery/
+## `POST` /user/password_recovery/
+
+request
+
+```json
+{
+	"email" : "kek@kek.com",
+}
+```
 
 response ✔️ -> status : `200`
 
@@ -213,7 +221,7 @@ response ✔️ -> status : `200`
 }
 ```
 
-response ❌ -> status : `401` | `400`
+response ❌ -> status : `400`
 
 ```json
 {

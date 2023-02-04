@@ -1,26 +1,26 @@
 package middleware
 
 import (
-	"context"
-	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/internal/usecase"
+	"large-scale-multistructure-db/be/pkg/jwt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 type MiddlewareRoutes struct {
-	uc usecase.User
+	userUseCase usecase.User
 }
 
 func NewMiddlewareRoutes(uc usecase.User) *MiddlewareRoutes {
 	return &MiddlewareRoutes{
-		uc: uc,
+		userUseCase: uc,
 	}
 }
 
-func extractTokenFromRequest(ctx *gin.Context) string {
+func ExtractTokenFromRequest(ctx *gin.Context) string {
 	authHeader := ctx.GetHeader("Authorization")
 	token := strings.TrimPrefix(authHeader, "Bearer ")
 
@@ -29,11 +29,14 @@ func extractTokenFromRequest(ctx *gin.Context) string {
 
 func (mr *MiddlewareRoutes) RequireAuth(ctx *gin.Context) {
 
-	token := extractTokenFromRequest(ctx)
+	token := ExtractTokenFromRequest(ctx)
+	tokenID, err := jwt.ExtractTokenID(token)
 
-	useruc := usecase.UserUseCase{}
-
-	if _, err := useruc.GetByToken(ctx, token); err != nil {
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	if _, err := mr.userUseCase.GetByID(ctx, tokenID); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -43,16 +46,16 @@ func (mr *MiddlewareRoutes) RequireAuth(ctx *gin.Context) {
 
 func (mr *MiddlewareRoutes) RequireAdmin(ctx *gin.Context) {
 
-	token := extractTokenFromRequest(ctx)
+	token := ExtractTokenFromRequest(ctx)
+	tokenID, err := jwt.ExtractTokenID(token)
 
-	useruc := usecase.UserUseCase{}
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
 
-	var (
-		user *entity.User
-		err  error
-	)
-
-	if user, err = useruc.GetByToken(context.TODO(), token); err != nil {
+	user, err := mr.userUseCase.GetByID(ctx, tokenID)
+	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -62,4 +65,16 @@ func (mr *MiddlewareRoutes) RequireAdmin(ctx *gin.Context) {
 	}
 
 	ctx.Next()
+}
+
+func (mr *MiddlewareRoutes) Self(ctx *gin.Context) {
+
+	token := ExtractTokenFromRequest(ctx)
+	tokenID, _ := jwt.ExtractTokenID(token)
+
+	ctx.Params = append(ctx.Params, gin.Param{
+		Key:   "id",
+		Value: strconv.FormatUint(uint64(tokenID), 10),
+	})
+
 }

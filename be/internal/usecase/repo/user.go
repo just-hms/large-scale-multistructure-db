@@ -21,8 +21,14 @@ func NewUserRepo(m *mongo.Mongo) *UserRepo {
 
 // Store inserts a new user into the repository.
 func (r *UserRepo) Store(ctx context.Context, user *entity.User) error {
-	// TODO: check conversion
-	_, err := r.DB.Collection("users").InsertOne(ctx, user)
+
+	err := r.DB.Collection("users").FindOne(ctx, bson.M{"email": user.Email}).Err()
+	if err == nil {
+		return fmt.Errorf("User already exists")
+	}
+
+	_, err = r.DB.Collection("users").InsertOne(ctx, user)
+
 	return err
 }
 
@@ -37,6 +43,51 @@ func (r *UserRepo) GetByID(ctx context.Context, ID uint) (*entity.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (r *UserRepo) DeleteByID(ctx context.Context, ID uint) error {
+	res, err := r.DB.Collection("users").DeleteOne(ctx, bson.M{"_id": ID})
+	if err != nil {
+		return err
+	}
+	if res.DeletedCount == 0 {
+		return fmt.Errorf("User not found")
+	}
+	return nil
+}
+
+func (r *UserRepo) ModifyByID(ctx context.Context, ID uint, user *entity.User) error {
+	_, err := r.DB.Collection("users").UpdateOne(ctx, bson.M{"_id": ID}, bson.M{"$set": user})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// TODO : improve this
+func (r *UserRepo) List(ctx context.Context, email string) ([]*entity.User, error) {
+	filter := bson.M{}
+	if email != "" {
+		filter["email"] = email
+	}
+
+	cur, err := r.DB.Collection("users").Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cur.Close(ctx)
+
+	var users []*entity.User
+
+	for cur.Next(ctx) {
+		var user entity.User
+		if err := cur.Decode(&user); err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	return users, nil
 }
 
 // GetByEmail retrieves a user by email.

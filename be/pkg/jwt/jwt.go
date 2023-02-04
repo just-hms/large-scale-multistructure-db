@@ -1,4 +1,4 @@
-package auth
+package jwt
 
 import (
 	"fmt"
@@ -6,19 +6,21 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	jwtdriver "github.com/golang-jwt/jwt"
 )
+
+// move this part into a separate area, and don't use token no more inside the usecases
 
 // given an userID
 // returns a token
 func CreateToken(userID uint) (string, error) {
-	claims := jwt.MapClaims{}
+	claims := jwtdriver.MapClaims{}
 
 	claims["authorized"] = true
 	claims["userID"] = userID
 	claims["exp"] = time.Now().Add(time.Hour * constants.TOKEN_HOUR_LIFE_SPAN).Unix()
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwtdriver.NewWithClaims(jwtdriver.SigningMethodHS256, claims)
 
 	return token.SignedString([]byte(constants.API_SECRET))
 }
@@ -27,9 +29,9 @@ func CreateToken(userID uint) (string, error) {
 // return an error if the token is not valid or expired
 func ExtractTokenID(tokenString string) (uint, error) {
 
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwtdriver.Parse(tokenString, func(token *jwtdriver.Token) (interface{}, error) {
 
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		if _, ok := token.Method.(*jwtdriver.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
@@ -40,7 +42,7 @@ func ExtractTokenID(tokenString string) (uint, error) {
 		return 0, err
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
+	claims, ok := token.Claims.(jwtdriver.MapClaims)
 
 	if ok && token.Valid {
 

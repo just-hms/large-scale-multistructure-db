@@ -4,8 +4,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type PasswordAuth struct{}
+
+func NewPasswordAuth() *PasswordAuth {
+	return &PasswordAuth{}
+}
+
 // given a password it hashes and salt it
-func HashAndSalt(password string) (string, error) {
+func (pa *PasswordAuth) HashAndSalt(password string) (string, error) {
 
 	bytePassword := []byte(password)
 	hash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
@@ -13,12 +19,13 @@ func HashAndSalt(password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(hash), err
 }
 
 // given an hash and a plain password
 // returns true if they match
-func Verify(hashedPassword string, plainPassword string) bool {
+func (pa *PasswordAuth) Verify(hashedPassword string, plainPassword string) bool {
 
 	bytePlain := []byte(plainPassword)
 	byteHash := []byte(hashedPassword)
