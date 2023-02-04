@@ -21,7 +21,7 @@ func NewUserRoutes(uc usecase.User) *UserRoutes {
 }
 
 type LoginInput struct {
-	Email    string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -46,7 +46,7 @@ func (ur *UserRoutes) Login(ctx *gin.Context) {
 	token, err := jwt.CreateToken(user.ID)
 
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -55,7 +55,7 @@ func (ur *UserRoutes) Login(ctx *gin.Context) {
 }
 
 type CreateUserInput struct {
-	Email    string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -73,7 +73,7 @@ func (ur *UserRoutes) CreateUser(ctx *gin.Context) {
 	})
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -93,6 +93,11 @@ func (ur *UserRoutes) Show(ctx *gin.Context) {
 	}
 
 	user, err := ur.userUseCase.GetByID(ctx, uint(ID))
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{"user": user})
 

@@ -49,10 +49,11 @@ func Router() *gin.Engine {
 	mr := middleware.NewMiddlewareRoutes(useruc)
 	ur := controller.NewUserRoutes(useruc)
 
+	// TODO : fix trailing /
 	users := router.Group("/user")
 	{
+		users.POST("/", ur.CreateUser)
 		users.GET("/login", ur.Login)
-		router.POST("/", mr.RequireAuth, ur.CreateUser)
 		users.GET("/self", mr.RequireAuth, mr.Self, ur.Show)
 		users.DELETE("/self", mr.RequireAuth, mr.Self, ur.Delete)
 	}

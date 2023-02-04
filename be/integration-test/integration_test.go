@@ -25,6 +25,9 @@ func TestIntegrationSuite(t *testing.T) {
 }
 
 func (s *IntegrationSuite) SetupSuite() {
+
+	// TODO : add a test DB
+
 	fmt.Println(">>> From SetupSuite")
 	s.srv = app.Router()
 }
@@ -40,7 +43,7 @@ func (s *IntegrationSuite) TestHealth() {
 	w := httptest.NewRecorder()
 	s.srv.ServeHTTP(w, req)
 
-	s.Require().Equal(w.Code, http.StatusOK)
+	s.Require().Equal(http.StatusOK, w.Code)
 }
 
 func (s *IntegrationSuite) TestLogin() {
@@ -57,5 +60,22 @@ func (s *IntegrationSuite) TestLogin() {
 	s.srv.ServeHTTP(w, req)
 
 	// assert that the response status code is 200 OK
-	s.Require().NotEqual(w.Code, http.StatusBadRequest)
+	s.Require().NotEqual(http.StatusBadRequest, w.Code)
+}
+
+func (s *IntegrationSuite) TestCreate() {
+
+	createUser := &entity.User{Email: "test@example.com", Password: "password"}
+	createUserJson, _ := json.Marshal(createUser)
+
+	// create a request for the login endpoint
+	req, _ := http.NewRequest("POST", "/user/", bytes.NewBuffer(createUserJson))
+	req.Header.Set("Content-Type", "application/json")
+
+	// serve the request to the test server
+	w := httptest.NewRecorder()
+	s.srv.ServeHTTP(w, req)
+
+	// assert that the response status code is 200 OK
+	s.Require().Equal(http.StatusCreated, w.Code)
 }
