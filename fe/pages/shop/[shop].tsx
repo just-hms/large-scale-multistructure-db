@@ -99,7 +99,7 @@ export default function Shop({ shopData, reviewsData }) {
   );
 }
 
-export async function getServerSidePaths() {
+export async function getStaticPaths() {
   const paths = await getAllShops();
   return {
     paths: [{
@@ -115,7 +115,7 @@ export async function getServerSidePaths() {
   };
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   // TODO: actually retrieve datas
   // const postData = getShopData(params.shop)
   const reviewsData =  getReviews("shopname")

@@ -58,7 +58,7 @@ export default function User({reservationData}) {
 }
 
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
 
   const reservationData =  getReservation("user");
   // TODO: actually retrieve datas

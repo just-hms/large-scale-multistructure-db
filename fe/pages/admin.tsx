@@ -30,7 +30,7 @@ export default function Admin({reviewsData}) {
         <path className='w-full fill-slate-900' d="M 0 90 C 480 0 600 0 720 10.7 C 840 21 960 43 1080 48 C 1200 53 1320 43 1380 37.3 L 1440 32 L 1440 0 L 1380 0 C 1320 0 1200 0 1080 0 C 960 0 840 0 720 0 C 600 0 480 0 360 0 C 240 0 120 0 60 0 L 0 0 Z"></path>
     </svg>
     <div className="flex flex-col lg:flex-row justify-center items-start w-full bg-slate-800 px-5 lg:pl-10 pb-10 h-full">
-        <div className='w-full flex-col lg:w-1/5 lg:h-screen lg:border-r border-b border-slate-500 text-slate-300 mb-2.5 pb-2.5'>
+        <div className='w-full flex-col lg:w-1/5 lg:h-screen lg:border-r lg:border-b-0 border-b border-slate-500 text-slate-300 mb-2.5 pb-2.5'>
             <ul className='flex flex-row lg:flex-col justify-between'>
                 <li>
                     <button className={`hover:text-white focus:outline-none ${content == "manage_accounts" ? "font-bold" : ""}`} onClick={event => {setContent("manage_accounts")}}>Manage Accounts</button>
@@ -56,7 +56,7 @@ export default function Admin({reviewsData}) {
   )
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   // TODO: actually retrieve datas
   // const postData = getShopData(params.shop)
   const reviewsData =  await getReviews("shopname")

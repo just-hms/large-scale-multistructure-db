@@ -47,5 +47,3 @@ export default function ReportedReviews({reported_reviews}) {
     </div>
     )
   }
-  
-  // TODO: For each account we gotta return the mail and the actions, i.e: delete account, change permissions, on click over button show results if any
