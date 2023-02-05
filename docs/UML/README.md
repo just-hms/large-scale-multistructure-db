@@ -1,34 +1,33 @@
-# Class diagram
+# UML Class diagram
 
 ```mermaid
 classDiagram
 direction LR
 
-	User "1,*"--"0,*" GlobalPermission
-	ShopView "0,*"--"1" BarberShop
-	ShopPermission --|> Permission
-	User "1,*"--"0,*" ShopPermission
+	Barber --|> User
+	Admin --|> User
+	Barber "1,*"--"1" BarberShop : Owns
+	User "1,*"--"0,*" BarberShop : HasPermissions
+	ShopView "1"--"0,*" BarberShop
 	Calendar "1,*"--"1" Slot
-	User "1"--"0,*" ShopView
+	User "0,*"--"1" ShopView
 	Appointment "1"--"0,*" BarberShop
 	Review "1"--"0,*" BarberShop
-	ShopPermission "1"--"0,*" BarberShop
 	User "0,*"--"1" Appointment
 	BarberShop "1"--"1" Calendar
-	GlobalPermission --|> Permission
-	User "0,*"--"0,*" Review : DownVotes
-	User "1"--"0,*" Review
-	User "0,*"--"0,*" Review : UpVotes
-
-	class Permission {
-		<<abstract>>
-		Name : String
-	}
+	User "0,*"--"0,*" Review : HasDownvoted
+	User "0,*"--"1" Review
+	User "0,*"--"0,*" Review : HasUpvoted
+	
 
 	class User {
 		Email : String
 		Password : String
 	}
+
+	class Barber
+
+	class Admin
 
 	class BarberShop {
 		Name : String
@@ -61,11 +60,3 @@ direction LR
 		Reported : Bool
 	}
 ```
-
-# For later
-
-Holidays are done only by editing the `UnavailableEmployees` field in the slots.
-
-Only barbers can report reviews, so there is no need for a counter.
-
-Admin will have a view of the reported reviews
