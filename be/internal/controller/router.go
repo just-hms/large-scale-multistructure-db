@@ -14,7 +14,7 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.Default())
 
-	router.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
+	router.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, `{"message" : "ok"}`) })
 
 	// create the routes based on the given usecases
 	var (
