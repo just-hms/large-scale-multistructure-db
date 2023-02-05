@@ -23,8 +23,8 @@ export default function Shop({ shopData, reviewsData }) {
           <Image className="w-full h-full object-cover " src={barber_background} alt="barber salon"/>
         </div>
         <div className='flex flex-col lg:flex-row w-full bg-slate-800 h-full'>
-          {/* left */}
-          <div className="w-full lg:w-1/2 h-full bg-slate-800 mt-0 p-3 order-last lg:order-none">
+          {/* REVIEWS */}
+          <div className="w-full lg:w-1/2 lg:h-full bg-slate-800 mt-0 px-3 pb-3 lg:py-3 order-last lg:order-none">
             <div className="w-full top-0 transform lg:-translate-y-20 flex justify-center items-center">
               <div className='relative max-h-128 overflow-auto rounded-3xl shadow-md shadow-black/70'>
                 <div className="bg-slate-800 text-white w-full flex flex-col items-center justify-center ">
@@ -50,7 +50,7 @@ export default function Shop({ shopData, reviewsData }) {
                             color2={'#ffffff'} />
                         </div>
                         <textarea className='bg-slate-700 focus:outline-none resize-none rounded-md p-1.5 text-sm break-words mt-1'  name="" id="" />
-                        <button type="submit" className="w-full text-sm bg-slate-700 hover:bg-slate-600 focus:outline-none rounded-lg border-slate-700 text-sm py-2 text-center mt-3">That's what I thought</button>
+                        <button type="submit" className="w-full text-sm bg-slate-700 hover:bg-slate-600 focus:outline-none rounded-lg border-slate-700 text-sm py-2 text-center mt-3 z-10">That's what I thought</button>
                       </div>
                     </div>
                   </div>
@@ -60,8 +60,8 @@ export default function Shop({ shopData, reviewsData }) {
             
           </div>
           <div className='flex flex-col items-center w-full lg:w-4/6 justify-start'>
-            {/* center */}
-            <div className='flex flex-col items-center order-first lg:order-none w-full p-3'>
+            {/* DESCRIPTION */}
+            <div className='flex flex-col items-center order-first lg:order-none w-full px-3 lg:py-3'>
                 <div className="w-full top-0 transform -translate-y-40 lg:-translate-y-20 inset-0 flex justify-center items-center">
                   <div className="w-full h-full flex flex-col items-center justify-start rounded-3xl bg-slate-700 bg-opacity-60 backdrop-blur-lg drop-shadow-lg">
                     <div className='w-full transform -translate-y-1/2 h-20 w-20 shadow shadow-black/70 rounded-full'>
@@ -77,8 +77,8 @@ export default function Shop({ shopData, reviewsData }) {
                   </div>
               </div>
             </div>
-            {/* right */}
-            <div className="w-full lg:w-5/6 h-1/3 mt-0 p-3 transform -translate-y-20">
+            {/* CALENDAR */}
+            <div className="w-full lg:w-5/6 h-1/3 mt-0 px-3 lg:py-3 transform -translate-y-20">
               <div className="flex justify-center items-center">
                 <div className="w-full rounded-lg bg-slate-700 shadow-md shadow-black/70 mt-3 ">
                   <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-slate-200 pt-5 ml-3 mr-3 break-words">

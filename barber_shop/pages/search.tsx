@@ -22,9 +22,9 @@ export default function Search({shopData}) {
         <path className='w-full fill-slate-900' d="M 0 90 C 480 0 600 0 720 10.7 C 840 21 960 43 1080 48 C 1200 53 1320 43 1380 37.3 L 1440 32 L 1440 0 L 1380 0 C 1320 0 1200 0 1080 0 C 960 0 840 0 720 0 C 600 0 480 0 360 0 C 240 0 120 0 60 0 L 0 0 Z"></path>
     </svg>
     <div className="w-full flex flex-col text-slate-200 justify-start p-5 items-center bg-slate-800 h-full">
-        <div className="w-full flex mb-5">
-            {/* LAST SEARCH PARAMS   */}
-            <div className="w-1/3 flex items-center justify-center">
+        <div className="w-full flex mb-5 flex-col lg:flex-row items-center">
+            {/* LAST SEARCH PARAMS */}
+            <div className="w-full lg:w-1/3 flex items-center justify-center">
                 <div className='w-full text-xl font-bold p-5 flex flex-col items-center justify-center rounded-full bg-slate-700'>
                   <div className="flex w-full items-center justify-center">
                     <FontAwesomeIcon icon={faLocationDot} className="text-xl pr-1 text-rose-600"/>
@@ -34,8 +34,8 @@ export default function Search({shopData}) {
                 </div>
             </div>
             {/* SEARCH BAR */}
-            <div className=" w-2/3 flex items-center justify-center">
-                <div className='w-full m-5 flex items-center justify-center rounded-full bg-red-900 bg-opacity-60 backdrop-blur-lg drop-shadow-lg'>
+            <div className="w-full lg:w-2/3 flex items-center justify-center">
+                <div className='w-full my-5 lg:m-5 flex items-center justify-center rounded-full bg-red-900 bg-opacity-60 backdrop-blur-lg drop-shadow-lg'>
                   <input
                     type="search"
                     className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none" 
@@ -49,14 +49,14 @@ export default function Search({shopData}) {
                 </div>
             </div>
         </div>
-        <div className="w-full flex">
+        <div className="w-full flex flex-col lg:flex-row items-center lg:items-start">
             {/* IDK */}
-            <div className="border w-1/3 flex flex-col items-center justify-center">
+            <div className="border w-full  lg:w-1/3 flex flex-col items-center justify-center">
                 left menu 
                 <p>stuff</p>
             </div>
             {/* SHOPS */}
-            <div className=" w-2/3 flex flex-col items-center justify-center">
+            <div className="w-full lg:w-2/3 flex flex-col items-center justify-center">
                 <ShopsFound shops={shopData}/>
             </div>
         </div>

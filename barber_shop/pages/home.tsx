@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Navbar from '../components/navbar'
 import Image from 'next/image'
 import barber_background from '../public/barber_bg_1.png'
+import barber_background_vertical from '../public/barber_bg_vertical.png'
 import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/router'
@@ -26,9 +27,12 @@ export default function Home() {
       </Head>
       <Navbar/>
       <div className="w-full flex-col justify-center items-center bg-slate-900 h-screen">
-        <div className="w-full h-1/2 lg:h-full">
-          <Image className="top-0 lg:w-full h-full object-cover z-0" src={barber_background} alt="barber salon"/>
-          <div className="absolute w-3/4 lg:w-auto top-full lg:top-2/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 inset-0 flex justify-center items-center">
+        <div className="w-full h-full">
+          {/* large screen image */}
+          <Image className="top-0 hidden lg:inline lg:w-full h-full object-cover z-0" src={barber_background} alt="barber salon"/>
+          {/* small screen image */}
+          <Image className="top-0 lg:hidden display w-full  h-full object-cover z-0" src={barber_background_vertical} alt="barber salon"/>
+          <div className="absolute w-full px-3 lg:p-0 lg:w-auto top-2/3 lg:top-2/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 inset-0 flex justify-center items-center">
             <div className=" rounded-3xl w-full bg-slate-700 bg-opacity-60 backdrop-blur-lg drop-shadow-lg">
               <h1 className="text-4xl text-center font-bold leading-tight tracking-tight text-slate-200 pt-5">
                 Cut it out

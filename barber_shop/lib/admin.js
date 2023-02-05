@@ -39,4 +39,4 @@ export async function getAccount(type) {
     name:"Pippo Baudo",
   }];
 }
-      
+  

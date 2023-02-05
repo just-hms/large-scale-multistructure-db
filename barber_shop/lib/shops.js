@@ -18,7 +18,6 @@ export function getAllShops() {
     paths: [{
       params: {
         shop: 'shop1',
-        title: 'shop1'
       }
     }],
   }
@@ -30,6 +29,7 @@ export function getShopData(shop) {
     shop,
     title:"shop_title",
     name:"shop",
+    description:""
   };
 }
 

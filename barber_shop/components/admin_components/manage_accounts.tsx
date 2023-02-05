@@ -1,5 +1,5 @@
 import { getAccount } from "../../lib/admin"
-import GeneralDropdown from "../search_components/general_dropdown"
+import GeneralDropdown from "../general_dropdown"
 import React from "react"
 // import { useDropdownContext, DropdownContext} from "../search_components/general_dropdown"
 
