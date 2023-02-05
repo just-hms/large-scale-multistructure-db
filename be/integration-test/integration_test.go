@@ -4,8 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"large-scale-multistructure-db/be/internal/app"
+	"large-scale-multistructure-db/be/internal/controller"
 	"large-scale-multistructure-db/be/internal/entity"
+	"large-scale-multistructure-db/be/internal/usecase"
+	"large-scale-multistructure-db/be/internal/usecase/auth"
+	"large-scale-multistructure-db/be/internal/usecase/repo"
+	"large-scale-multistructure-db/be/pkg/mongo"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,17 +23,29 @@ type IntegrationSuite struct {
 	srv *gin.Engine
 }
 
-// listen for 'go test' command --> run test methods
 func TestIntegrationSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationSuite))
 }
 
 func (s *IntegrationSuite) SetupSuite() {
 
-	// TODO : add a test DB
-
 	fmt.Println(">>> From SetupSuite")
-	s.srv = app.Router()
+
+	// TODO : add a test DB
+	mongo, err := mongo.New()
+	if err != nil {
+		fmt.Printf("mongo-error: %s", err.Error())
+		return
+	}
+
+	usecases := []usecase.Usecase{
+		usecase.NewUserUseCase(
+			repo.NewUserRepo(mongo),
+			auth.NewPasswordAuth(),
+		),
+	}
+
+	s.srv = controller.Router(usecases)
 }
 
 func (s *IntegrationSuite) TearDownSuite() {
@@ -48,19 +64,42 @@ func (s *IntegrationSuite) TestHealth() {
 
 func (s *IntegrationSuite) TestLogin() {
 
-	loginUser := &entity.User{Email: "test@example.com", Password: "password"}
-	loginUserJson, _ := json.Marshal(loginUser)
+	testCases := []struct {
+		name      string
+		loginUser *entity.User
+		status    int
+	}{
+		{
+			name:      "Correct Login",
+			loginUser: &entity.User{Email: "test@example.com", Password: "password"},
+			status:    http.StatusOK,
+		},
+		{
+			name:      "Invalid input",
+			loginUser: &entity.User{Email: "not_an_email", Password: "password"},
+			status:    http.StatusBadRequest,
+		},
+		{
+			name:      "Wrong password",
+			loginUser: &entity.User{Email: "test@example.com", Password: "invalid"},
+			status:    http.StatusUnauthorized,
+		},
+	}
 
-	// create a request for the login endpoint
-	req, _ := http.NewRequest("POST", "/user/login", bytes.NewBuffer(loginUserJson))
-	req.Header.Set("Content-Type", "application/json")
+	for _, tc := range testCases {
+		loginUserJson, _ := json.Marshal(tc.loginUser)
 
-	// serve the request to the test server
-	w := httptest.NewRecorder()
-	s.srv.ServeHTTP(w, req)
+		// create a request for the login endpoint
+		req, _ := http.NewRequest("POST", "/user/login", bytes.NewBuffer(loginUserJson))
+		req.Header.Set("Content-Type", "application/json")
 
-	// assert that the response status code is 200 OK
-	s.Require().NotEqual(http.StatusBadRequest, w.Code)
+		// serve the request to the test server
+		w := httptest.NewRecorder()
+		s.srv.ServeHTTP(w, req)
+
+		// assert that the response status code is as expected
+		s.Require().Equal(tc.status, w.Code)
+	}
 }
 
 func (s *IntegrationSuite) TestCreate() {
@@ -76,6 +115,6 @@ func (s *IntegrationSuite) TestCreate() {
 	w := httptest.NewRecorder()
 	s.srv.ServeHTTP(w, req)
 
-	// assert that the response status code is 200 OK
+	// assert that the response status code is 201 OK
 	s.Require().Equal(http.StatusCreated, w.Code)
 }

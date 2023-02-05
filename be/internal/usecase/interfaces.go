@@ -33,4 +33,6 @@ type (
 		Verify(string, string) bool
 		HashAndSalt(string) (string, error)
 	}
+
+	Usecase interface{}
 )
