@@ -13,15 +13,14 @@ export default function ManageUsers() {
                     <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-slate-200 sticky top-0 bg-slate-700 w-full border-b border-slate-600 pt-3 pb-3">
                       Accounts
                     </h1>
-                    <div className="flex items-center justify-between ">
-                      <div className="px-3 py-2 rounded-full bg-slate-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg">
-                        <GeneralDropdown elements={["Barber", "User"]} placeholder="Type"></GeneralDropdown>
-                      </div>
-                        
+                    <div className="flex flex-col py-2 lg:p-0 lg:flex-row items-center justify-between ">
+                      {/* <div className="px-3 py-2 rounded-full bg-slate-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg"> */}
+                        <GeneralDropdown elements={["Barber", "User"]} placeholder="Type" classname="px-1 py-2 hover:text-slate-500 rounded-full text-slate-200 bg-slate-700 shadow-sm shadow-slate-900/60"></GeneralDropdown>
+                      {/* </div> */}
                       {/* SEARCH BAR */}
-                      <div className="text-lg text-center font-bold leading-tight tracking-tight text-slate-300 break-words p-3">
+                      <div className=" text-lg text-center font-bold leading-tight tracking-tight text-slate-300 break-words p-3">
                         <div className='flex justify-center'>
-                          <div className='w-full m-5 flex items-center justify-center rounded-full bg-slate-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg'>
+                          <div className='w-full lg:m-5 flex items-center justify-center rounded-full bg-slate-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg'>
                             <input
                               type="search"
                               className="w-full font-bold text-slate-300 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none" 

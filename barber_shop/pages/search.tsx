@@ -50,13 +50,8 @@ export default function Search({shopData}) {
             </div>
         </div>
         <div className="w-full flex flex-col lg:flex-row items-center lg:items-start">
-            {/* IDK */}
-            <div className="border w-full  lg:w-1/3 flex flex-col items-center justify-center">
-                left menu 
-                <p>stuff</p>
-            </div>
             {/* SHOPS */}
-            <div className="w-full lg:w-2/3 flex flex-col items-center justify-center">
+            <div className="w-full flex flex-col items-center justify-center">
                 <ShopsFound shops={shopData}/>
             </div>
         </div>
@@ -65,7 +60,7 @@ export default function Search({shopData}) {
     )
 }
 
-export async function getServerSideProps() {
+export function getStaticProps() {
     // TODO: actually retrieve datas
     const shopData = findShops()
     return {
