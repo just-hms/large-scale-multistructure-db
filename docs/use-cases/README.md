@@ -97,7 +97,7 @@ subgraph
 	browse_shops(["browse barber shops"])
 	find_shops([find shops])
 	view_shop([view shop])
-	review([review])
+	review([review shop])
 	view_reviews([view reviews])
 	booking([book an appointment])
 	modify_shop([modify shop info])
