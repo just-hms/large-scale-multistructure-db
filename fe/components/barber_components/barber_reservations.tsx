@@ -1,11 +1,11 @@
 import Image from "next/image";
 import barber_background from '../../public/barber_profile.jpg'
 
-export default function BarberReservations({reservations}) {
+export default function BarberReservations({reservations}:any) {
     return (
         <>
         <div className="w-full flex flex-col text-xl justify-center items-center px-3">
-            {reservations.map((reservation)=>
+            {reservations.map((reservation:any)=>
             <div key={reservation.id} className="w-full lg:w-3/4 rounded-2xl bg-slate-700 shadow-sm shadow-black/70 text-slate-200 px-2 my-2 flex flex-col items-center justify-center">
                 <div key={reservation.id+"container"} className="flex flex-col items-start justify-start w-full rounded-lg py-2.5">
                     <p>{reservation.user}</p>

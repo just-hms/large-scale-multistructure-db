@@ -19,16 +19,16 @@ return (
           <form className="space-y-4 md:space-y-6 w-full flex flex-col justify-center items-center" onSubmit={formik.handleSubmit}>
               <h1 className='text-xl font-bold text-center w-full lg:w-3/4 border-b border-slate-500'>Create Shop</h1>
               <div className='w-full lg:w-3/4'>
-                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-slate-200">Shop's Name</label>
-                  <input type="text" name="name" id="name" onChange={formik.handleChange} value={formik.values.name} className="border border-slate-600 text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" placeholder="Name" required=""/>
-                  <label htmlFor="description" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Shop's Description</label>
-                  <input type="text" name="description" id="description" onChange={formik.handleChange} value={formik.values.description} placeholder="Description" className="border border-slate-600 text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" required=""/>
+                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-slate-200">Shop`&apos`s Name</label>
+                  <input type="text" name="name" id="name" onChange={formik.handleChange} value={formik.values.name} className="border border-slate-600 text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" placeholder="Name" required/>
+                  <label htmlFor="description" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Shop`&apos`s Description</label>
+                  <input type="text" name="description" id="description" onChange={formik.handleChange} value={formik.values.description} placeholder="Description" className="border border-slate-600 text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" required/>
               </div>
               <div className='flex w-full lg:w-3/4 items-center justify-end'>
                 <div className="text-lg text-slate-200">
 
                   <div className="px-3 py-2 rounded-full bg-slate-700 shadow-sm shadow-black/70">
-                    <GeneralDropdown elements={['pippo','pluto','topolino']} placeholder="Select Barber"><></></GeneralDropdown>
+                    <GeneralDropdown elements={['pippo','pluto','topolino']} placeholder="Select Barber" classname=""><></></GeneralDropdown>
                   </div>
                 </div>
               </div>

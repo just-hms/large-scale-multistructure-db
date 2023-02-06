@@ -2,7 +2,7 @@ import Image from 'next/image'
 import barber_background from '../../public/barber_profile.jpg'
 import Link from 'next/link'
 
-export default function AccountReservation({reservationData}) {
+export default function AccountReservation({reservationData}:any) {
     console.log(reservationData)
   return (
     <>    
