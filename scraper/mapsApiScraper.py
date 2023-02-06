@@ -8,14 +8,14 @@ API_KEY = "[API_KEY_HERE]"
 
 scrapingResults = {}
 
-def getPlacePhoto(photoReference):
+def getPlacePhotoUrl(photoReference):
 
     url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photo_reference={photoReference}&key={API_KEY}"
     response = requests.request("GET", url)
 
     return response.url
 
-def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"]):
+def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"],needsPhotoUrlPatch=False):
 
     with open("mapsApiKey.txt","r") as file:
         API_KEY = file.readline()
@@ -48,10 +48,24 @@ def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"]):
                     nextPageToken = ""
 
                 for barberShop in barberListRaw["results"]:
+
                     #Skip barber if its data has already been fetched and saved
                     if barberShop["name"] in scrapingResults[location]["scrapedShopsNames"]:
-                        print(f'{barberShop["name"]} in {location} was already scraped. Skipping...')
+                        #Check if we need to add previously skipped image data to the entry. This can be slow.
+                        if needsPhotoUrlPatch and "photos" in barberShop:
+                            for scrapedShop in scrapingResults[location]["scrapedShopsData"]:
+                                if scrapedShop["name"] != barberShop["name"]:
+                                    continue
+                                if scrapedShop["imageLink"] == "":
+                                    scrapedShop["imageLink"] = getPlacePhotoUrl(barberShop["photos"][0]["photo_reference"])
+                                    print(f'Adding photo to {barberShop["name"]} in {location}...')
+                                else:
+                                    print(f'{barberShop["name"]} in {location} was already scraped. Skipping...')
+                                break
+                        else:
+                            print(f'{barberShop["name"]} in {location} was already scraped. Skipping...')
                         continue
+
                     #Format info on a barberShop
                     print(f'Fetching data on {barberShop["name"]} in {location}')
                     shopData = {}
