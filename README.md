@@ -7,4 +7,3 @@
 ## presentations
 
 - https://docs.google.com/presentation/d/1h7jxOkOvwBJSB7aGfDJR2bifR1MJf_eIA3p5B8Vb1QY/edit?usp=sharing
-
