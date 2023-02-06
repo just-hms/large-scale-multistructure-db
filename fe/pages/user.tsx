@@ -9,7 +9,7 @@ import {getReservation}  from '../lib/user';
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function User({reservationData}) {
+export default function User({reservationData}:any) {
 
   const [content, setContent] = useState("account_info");
   let displayed_element;

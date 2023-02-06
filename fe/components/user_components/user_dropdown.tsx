@@ -2,7 +2,7 @@ import { Menu, Transition } from '@headlessui/react'
 import { Fragment} from 'react'
 import Link from 'next/link'
 
-export default function UserDropdown({elements}) {
+export default function UserDropdown({elements}:any){
   return (
     <div className="inline-block text-sm leading-none rounded-full text-white border-slate-700 hover:text-slate-500">
       <Menu as="div" className="relative inline-block">
@@ -24,11 +24,11 @@ export default function UserDropdown({elements}) {
           leaveTo="transform opacity-0 scale-95"
         >
           <Menu.Items className="absolute right-0 mt-3 w-56 origin-top-right divide-y divide-slate-600 rounded-md bg-slate-800 shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none z-10 shadow-md shadow-black/70">
-            {elements.map((element)=>
-              <div className="px-1 py-1">
-                <Menu.Item>
+            {elements.map((element:any)=>
+              <div key={`container-`+element} className="px-1 py-1">
+                <Menu.Item key={`item-`+element}>
                 {({ active }) => (
-                  <Link href={`/${(element == "Profile")?"user":"logout"}`} className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                  <Link key={`link-`+element} href={`/${(element == "Profile")?"user":"logout"}`} className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
                     {element}
                   </Link>
                   )}
