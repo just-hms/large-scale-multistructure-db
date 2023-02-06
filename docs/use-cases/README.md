@@ -175,4 +175,3 @@ class barber_user barber
 class admin_user admin
 
 ```
-
