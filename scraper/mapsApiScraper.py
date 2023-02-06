@@ -1,11 +1,19 @@
 import googlemaps
 
 import json
+import requests
 import time
 
 API_KEY = "[API_KEY_HERE]"
 
 scrapingResults = {}
+
+def getPlacePhoto(photoReference):
+
+    url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photo_reference={photoReference}&key={API_KEY}"
+    response = requests.request("GET", url)
+
+    return response.url
 
 def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"]):
 
