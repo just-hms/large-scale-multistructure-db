@@ -73,9 +73,7 @@ def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"],need
                     shopData["rating"] = barberShop["rating"]
                     shopData["location"] = barberShop["formatted_address"]
                     shopData["coordinates"] = f'{barberShop["geometry"]["location"]["lat"]} {barberShop["geometry"]["location"]["lng"]}'
-                    #TODO: Places Photo request necessary?
-                    #shopData["imageLink"] = barberShop["photos"][0]["html_attributions"][0]
-                    shopData["imageLink"] = ""
+                    shopData["imageLink"] = getPlacePhotoUrl(barberShop["photos"][0]["photo_reference"])
 
                     #Get shop details 
                     shopDetails = gmaps.place(place_id=barberShop["place_id"])["result"]
