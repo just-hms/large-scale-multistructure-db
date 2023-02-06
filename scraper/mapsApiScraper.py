@@ -9,6 +9,9 @@ scrapingResults = {}
 
 def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"]):
 
+    with open("mapsApiKey.txt","r") as file:
+        API_KEY = file.readline()
+
     gmaps = googlemaps.Client(key=API_KEY)
 
     with open("mapsScrapingResults.json","r+") as file:
