@@ -1,5 +1,5 @@
 <style>
-	.barber *, .user *, .admin *, .all *, .barberuser *, .adminuser *, .adminbarber *,  .nil *{
+	.barber *, .user *, .admin *,  .barberuser *, .adminuser *, .adminbarber *,  .nil *{
 		fill : none !important;
 		stroke : none !important;
 		background-size: 100% 100%;
@@ -26,16 +26,13 @@
 	.barberuser *{
 		background-image: linear-gradient(90deg, #bbf7d0 50%, #bbf7d0 50%, #7dd3fc 50%, #7dd3fc 50%); 
 	}
+
 	.adminuser *{
 		background-image: linear-gradient(90deg, #bbf7d0 33.33%, #fca5a5 33.33%, #fca5a5 66.66%, #7dd3fc 66.66%); 
-		
 	}
+
 	.adminbarber *{
 		background-image: linear-gradient(90deg, #bbf7d0 50%, #bbf7d0 50%, #fca5a5 50%, #fca5a5 50%); 
-	}
-	
-	.all *{
-		background-image: linear-gradient(90deg, #bbf7d0 33.33%, #fca5a5 33.33%, #fca5a5 66.66%, #7dd3fc 66.66%); 
 	}
 
 	.nodeLabel, .edgeLabel{
@@ -50,32 +47,22 @@
 </style>
 
 # Use-case diagram
-<!-- 
 ```mermaid
-flowchart TB
-
-admin[admin]
-logged_user[logged user]
-barber[barber]
-
-class admin admin
-class barber barber
-class logged_user user
-``` -->
-
-```mermaid
-flowchart TB
+flowchart LR
 
 %% main user
-logged_user["<div class='nil' style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
+generic_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
+logged_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
+barber_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
+admin_user["<div class='admin' style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
 
-%% admin subgraph
+logged_user --> generic_user
+barber_user --> generic_user
+admin_user --> generic_user
 
-admin["<div class='admin' style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
-
-admin --- browse_users
-admin --- user_analytics
-admin --- create_shop
+admin_user --- browse_users
+admin_user --- user_analytics
+admin_user --- create_shop
 
 subgraph  
 
@@ -98,8 +85,8 @@ end
 
 %% generic shop entities
 
-logged_user --- browse_shops
-logged_user ---- view_profile_info
+generic_user --- browse_shops
+generic_user ---- view_profile_info
 
 subgraph  
 
@@ -161,10 +148,8 @@ class barber_user barber
 class view_appointments barber
 class view_shop_analytics adminbarber
 class delete_appointment barber
-class admin admin
 class delete_shop admin
 class delete_comment admin
-class browse_shops all
 class browse_users admin
 class find_user admin
 class view_user admin
@@ -174,16 +159,20 @@ class create_shop admin
 class user_analytics admin
 class rep_comments barber
 class curr_appointment user
-class view_profile_info all
-class pswd_rec all
+class view_profile_info nil
+class pswd_rec nil
 class del_appointment user
 class del_acc barberuser
-class find_shops all
-class view_shop all
-class view_comments all
+class browse_shops nil
+class find_shops nil
+class view_shop nil
+class view_comments nil
 class comment user
 class booking user
-class logged_user nil
+class generic_user nil
+class logged_user user
+class barber_user barber
+class admin_user admin
 
 ```
 
