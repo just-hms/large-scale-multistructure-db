@@ -60,6 +60,8 @@ logged_user --> generic_user
 barber_user --> generic_user
 admin_user --> generic_user
 
+%% admin subgraph
+
 admin_user --- browse_users
 admin_user --- user_analytics
 admin_user --- create_shop
@@ -73,6 +75,7 @@ subgraph
 	delete_user([delete user])
 	modify_perm([modify permissions])
 	user_analytics([view app analytics])
+	create_shop([create shop])
 
 	%% relations
 	browse_users -.include.-> find_user
@@ -94,30 +97,30 @@ subgraph
 	browse_shops(["browse barber shops"])
 	find_shops([find shops])
 	view_shop([view shop])
-	comment([comment])
-	view_comments([view comments])
+	review([review])
+	view_reviews([view reviews])
 	booking([book an appointment])
 	modify_shop([modify shop info])
 	add_holidays([add holidays])
-	rep_comments([report comment])
+	rep_reviews([report review])
 	view_appointments([view appointments])
 	delete_appointment([delete an appointment])
 	view_shop_analytics([view shop analytics])
 	delete_shop([delete shop])
-	delete_comment([delete comments])
+	delete_review([delete review])
 
 	%% relations
 	browse_shops -.include.-> find_shops
 	view_shop -.extends.-> find_shops
 	view_shop -.include.-> view_appointments
 	delete_appointment -.extends.-> view_appointments
-	delete_comment -.extends.->view_comments
+	delete_review -.extends.->view_reviews
 	view_shop_analytics -.extends.-> view_shop
-	comment -.extends.-> view_shop
-	rep_comments -.extends.->view_comments
+	review -.extends.-> view_shop
+	rep_reviews -.extends.->view_reviews
 	modify_shop -.extends.->view_shop
 	add_holidays -.extends.->modify_shop
-	view_comments-.extends.-> view_shop
+	view_reviews-.extends.-> view_shop
 	booking -.extends.-> view_shop
 	delete_shop -.extends.->view_shop
 end
@@ -143,13 +146,13 @@ end
 
 class modify_shop barber
 class add_holidays barber
-class dis_comments barber
+class dis_reviews barber
 class barber_user barber
 class view_appointments barber
 class view_shop_analytics adminbarber
 class delete_appointment barber
 class delete_shop admin
-class delete_comment admin
+class delete_review admin
 class browse_users admin
 class find_user admin
 class view_user admin
@@ -157,7 +160,7 @@ class delete_user admin
 class modify_perm admin
 class create_shop admin
 class user_analytics admin
-class rep_comments barber
+class rep_reviews barber
 class curr_appointment user
 class view_profile_info nil
 class pswd_rec nil
@@ -166,8 +169,8 @@ class del_acc barberuser
 class browse_shops nil
 class find_shops nil
 class view_shop nil
-class view_comments nil
-class comment user
+class view_reviews nil
+class review user
 class booking user
 class generic_user nil
 class logged_user user
