@@ -14,5 +14,4 @@ COPY . .
 RUN mkdir -p build && \
 	go build -o build ./...
 
-
 CMD ["./docker/test/entrypoint.sh"]
