@@ -17,6 +17,6 @@ done
 
 echo "cache started"
 
-./cmd
+go run ./...
 
 
