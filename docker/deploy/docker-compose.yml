@@ -20,3 +20,12 @@ services:
     depends_on:
       - db
       - cache
+
+  frontend:
+    build:
+      dockerfile: ./docker/deploy/Dockerfile-nginx
+      context: ../../
+    ports:
+      - "80:3000"
+    depends_on:
+      - backend
