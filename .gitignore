@@ -1,1 +1,4 @@
 build/
+scraper/__pycache__/
+scraper/*.json
+scraper/mapsApiKey.txt
