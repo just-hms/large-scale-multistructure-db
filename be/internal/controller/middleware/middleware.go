@@ -4,7 +4,6 @@ import (
 	"large-scale-multistructure-db/be/internal/usecase"
 	"large-scale-multistructure-db/be/pkg/jwt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -37,6 +36,7 @@ func (mr *MiddlewareRoutes) RequireAuth(ctx *gin.Context) {
 		return
 	}
 	if _, err := mr.userUseCase.GetByID(ctx, tokenID); err != nil {
+		// HERE
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -67,14 +67,19 @@ func (mr *MiddlewareRoutes) RequireAdmin(ctx *gin.Context) {
 	ctx.Next()
 }
 
-func (mr *MiddlewareRoutes) Self(ctx *gin.Context) {
+func (mr *MiddlewareRoutes) MarkWithAuthID(ctx *gin.Context) {
 
 	token := ExtractTokenFromRequest(ctx)
-	tokenID, _ := jwt.ExtractTokenID(token)
+	tokenID, err := jwt.ExtractTokenID(token)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
 
 	ctx.Params = append(ctx.Params, gin.Param{
 		Key:   "id",
-		Value: strconv.FormatUint(uint64(tokenID), 10),
+		Value: tokenID,
 	})
 
 }

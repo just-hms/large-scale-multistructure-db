@@ -14,7 +14,10 @@ import (
 func Run() {
 	// Repository
 
-	mongo, err := mongo.New()
+	mongo, err := mongo.New(&mongo.Options{
+		DB_NAME: "barber-deploy",
+	})
+
 	if err != nil {
 		fmt.Printf("mongo-error: %s", err.Error())
 		return

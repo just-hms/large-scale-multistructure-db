@@ -144,7 +144,7 @@ func TestStore(t *testing.T) {
 						Email:    "new_email",
 						Password: "hashed_password",
 					},
-				).Return(nil)
+				).Return("", nil)
 			},
 			err: nil,
 		},
@@ -158,7 +158,7 @@ func TestStore(t *testing.T) {
 
 			tc.mock()
 
-			err := user.Store(context.Background(), tc.input)
+			_, err := user.Store(context.Background(), tc.input)
 
 			require.ErrorIs(t, tc.err, err)
 		})
@@ -172,14 +172,14 @@ func TestModifyByID(t *testing.T) {
 
 	var tests = []struct {
 		name   string
-		input  uint
+		input  string
 		user   *entity.User
 		mock   func()
 		expect error
 	}{
 		{
 			name:  "new email already exists",
-			input: uint(1),
+			input: "1",
 			user: &entity.User{
 				Email:    "existing_email",
 				Password: "password",
@@ -191,14 +191,14 @@ func TestModifyByID(t *testing.T) {
 		},
 		{
 			name:  "modify success",
-			input: uint(2),
+			input: "2",
 			user: &entity.User{
 				Email:    "new_email",
 				Password: "password",
 			},
 			mock: func() {
 				repo.EXPECT().GetByEmail(context.Background(), "new_email").Return(nil, errInternalServErr)
-				repo.EXPECT().ModifyByID(context.Background(), uint(2), &entity.User{
+				repo.EXPECT().ModifyByID(context.Background(), "2", &entity.User{
 					Email:    "new_email",
 					Password: "password",
 				}).Return(nil)

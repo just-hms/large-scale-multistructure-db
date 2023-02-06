@@ -8,7 +8,7 @@ import (
 
 func TestMongoSetup(t *testing.T) {
 
-	mongo, err := mongo.New()
+	mongo, err := mongo.New(&mongo.Options{})
 
 	if err != nil {
 		t.Errorf("Failed to connect to Mongo: %v", err)

@@ -11,23 +11,32 @@ import (
 // check this
 var ErrNoDocuments = mongodriver.ErrNoDocuments
 
-const (
-	DB_URI  = "mongodb://db:27017"
-	DB_NAME = "db"
-)
+type Options struct {
+	DB_URI  string
+	DB_NAME string
+}
 
 type Mongo struct {
-	DB *mongodriver.Database
+	DB  *mongodriver.Database
+	sex mongodriver.Session
 }
 
 // get url and options as param
 // add const
 
-func New() (*Mongo, error) {
+func New(opt *Options) (*Mongo, error) {
 
 	m := &Mongo{}
 
-	client, err := mongodriver.NewClient(options.Client().ApplyURI(DB_URI))
+	if opt.DB_URI == "" {
+		opt.DB_URI = "mongodb://db:27017"
+	}
+
+	if opt.DB_NAME == "" {
+		opt.DB_NAME = "test"
+	}
+
+	client, err := mongodriver.NewClient(options.Client().ApplyURI(opt.DB_URI))
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +49,19 @@ func New() (*Mongo, error) {
 		return nil, err
 	}
 
-	m.DB = client.Database(DB_NAME)
+	m.DB = client.Database(opt.DB_NAME)
 
 	return m, nil
+}
+
+func (m *Mongo) Record() {
+	m.sex, _ = m.DB.Client().StartSession(&options.SessionOptions{
+		CausalConsistency: &options.DefaultCausalConsistency,
+	})
+	m.sex.StartTransaction()
+}
+
+func (m *Mongo) RollBack(ctx context.Context) {
+	m.sex.AbortTransaction(ctx)
+	m.sex.EndSession(ctx)
 }

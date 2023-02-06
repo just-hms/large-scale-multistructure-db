@@ -5,7 +5,6 @@ import (
 	"large-scale-multistructure-db/be/internal/usecase"
 	"large-scale-multistructure-db/be/pkg/jwt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +20,7 @@ func NewUserRoutes(uc usecase.User) *UserRoutes {
 }
 
 type LoginInput struct {
-	Email    string `json:"email" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -54,20 +53,20 @@ func (ur *UserRoutes) Login(ctx *gin.Context) {
 
 }
 
-type CreateUserInput struct {
-	Email    string `json:"email" binding:"required"`
+type RegisterInput struct {
+	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
-func (ur *UserRoutes) CreateUser(ctx *gin.Context) {
+func (ur *UserRoutes) Register(ctx *gin.Context) {
 
-	input := CreateUserInput{}
+	input := RegisterInput{}
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := ur.userUseCase.Store(ctx, &entity.User{
+	_, err := ur.userUseCase.Store(ctx, &entity.User{
 		Password: input.Password,
 		Email:    input.Email,
 	})
@@ -82,20 +81,12 @@ func (ur *UserRoutes) CreateUser(ctx *gin.Context) {
 
 func (ur *UserRoutes) Show(ctx *gin.Context) {
 
-	ID, err := strconv.ParseUint(
-		ctx.Param("id"),
-		10, 64,
-	)
+	ID := ctx.Param("id")
+
+	user, err := ur.userUseCase.GetByID(ctx, ID)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	user, err := ur.userUseCase.GetByID(ctx, uint(ID))
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -114,25 +105,14 @@ func (ur *UserRoutes) ShowAll(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusAccepted, gin.H{"users": users})
+	ctx.JSON(http.StatusOK, gin.H{"users": users})
 }
 
 func (ur *UserRoutes) Delete(ctx *gin.Context) {
-	// GET PARAMS
-	ID, err := strconv.ParseUint(
-		ctx.Param("id"),
-		10, 64,
-	)
+	ID := ctx.Param("id")
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = ur.userUseCase.DeleteByID(ctx, uint(ID))
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := ur.userUseCase.DeleteByID(ctx, ID); err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -155,19 +135,9 @@ func (ur *UserRoutes) Modify(ctx *gin.Context) {
 		Email: input.Email,
 	}
 
-	ID, err := strconv.ParseUint(
-		ctx.Param("id"),
-		10, 64,
-	)
+	ID := ctx.Param("id")
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = ur.userUseCase.ModifyByID(ctx, uint(ID), user)
-
-	if err != nil {
+	if err := ur.userUseCase.ModifyByID(ctx, ID, user); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

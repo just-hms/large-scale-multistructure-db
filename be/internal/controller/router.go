@@ -32,15 +32,18 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 		}
 	}
 
-	// TODO : fix trailing /
-	// link the path to the routes
+	// TODO :
+	// - fix trailing /
+	// - don't return hash password
+	// - return the ID
 
+	// link the path to the routes
 	users := router.Group("/user")
 	{
-		users.POST("/", ur.CreateUser)
-		users.GET("/login", ur.Login)
-		users.GET("/self", mr.RequireAuth, mr.Self, ur.Show)
-		users.DELETE("/self", mr.RequireAuth, mr.Self, ur.Delete)
+		users.POST("/", ur.Register)
+		users.POST("/login", ur.Login)
+		users.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)
+		users.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete)
 	}
 
 	admin := router.Group("/admin")
@@ -49,7 +52,7 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 		admin.GET("/user", ur.ShowAll)
 		admin.GET("/user/:id", ur.Show)
 		admin.DELETE("/user/:id", ur.Delete)
-		admin.PUT("/user/:id", ur.Modify)
+		admin.PUT("/user/:id", ur.Modify) // NOT TESTED
 	}
 
 	return router

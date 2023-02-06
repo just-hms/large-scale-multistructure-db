@@ -23,14 +23,14 @@ func NewUserUseCase(r UserRepo, p PasswordAuth) *UserUseCase {
 	}
 }
 
-func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) error {
+func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (string, error) {
 
 	// TODO: if there is any other error it creates the user
 
 	// TODO : standard the error codes
 
 	if _, err := uc.repo.GetByEmail(ctx, user.Email); err == nil {
-		return UserAlreadyExists
+		return "", UserAlreadyExists
 	}
 
 	// TODO : add check in pwd len
@@ -38,7 +38,7 @@ func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) error {
 	hashedPassword, err := uc.password.HashAndSalt(user.Password)
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	user.Password = hashedPassword
@@ -61,15 +61,15 @@ func (uc *UserUseCase) Login(ctx context.Context, loginUser *entity.User) (*enti
 	return user, nil
 }
 
-func (uc *UserUseCase) DeleteByID(ctx context.Context, ID uint) error {
+func (uc *UserUseCase) DeleteByID(ctx context.Context, ID string) error {
 	return uc.repo.DeleteByID(ctx, ID)
 }
 
-func (uc *UserUseCase) GetByID(ctx context.Context, ID uint) (*entity.User, error) {
+func (uc *UserUseCase) GetByID(ctx context.Context, ID string) (*entity.User, error) {
 	return uc.repo.GetByID(ctx, ID)
 }
 
-func (uc *UserUseCase) ModifyByID(ctx context.Context, ID uint, user *entity.User) error {
+func (uc *UserUseCase) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
 
 	// TODO: don't edit the password here
 

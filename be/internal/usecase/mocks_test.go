@@ -36,7 +36,7 @@ func (m *MockUser) EXPECT() *MockUserMockRecorder {
 }
 
 // DeleteByID mocks base method.
-func (m *MockUser) DeleteByID(ctx context.Context, ID uint) error {
+func (m *MockUser) DeleteByID(ctx context.Context, ID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteByID", ctx, ID)
 	ret0, _ := ret[0].(error)
@@ -50,7 +50,7 @@ func (mr *MockUserMockRecorder) DeleteByID(ctx, ID interface{}) *gomock.Call {
 }
 
 // GetByID mocks base method.
-func (m *MockUser) GetByID(ctx context.Context, ID uint) (*entity.User, error) {
+func (m *MockUser) GetByID(ctx context.Context, ID string) (*entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", ctx, ID)
 	ret0, _ := ret[0].(*entity.User)
@@ -95,7 +95,7 @@ func (mr *MockUserMockRecorder) Login(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // ModifyByID mocks base method.
-func (m *MockUser) ModifyByID(ctx context.Context, ID uint, user *entity.User) error {
+func (m *MockUser) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ModifyByID", ctx, ID, user)
 	ret0, _ := ret[0].(error)
@@ -109,11 +109,12 @@ func (mr *MockUserMockRecorder) ModifyByID(ctx, ID, user interface{}) *gomock.Ca
 }
 
 // Store mocks base method.
-func (m *MockUser) Store(arg0 context.Context, arg1 *entity.User) error {
+func (m *MockUser) Store(arg0 context.Context, arg1 *entity.User) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Store indicates an expected call of Store.
@@ -146,7 +147,7 @@ func (m *MockUserRepo) EXPECT() *MockUserRepoMockRecorder {
 }
 
 // DeleteByID mocks base method.
-func (m *MockUserRepo) DeleteByID(arg0 context.Context, arg1 uint) error {
+func (m *MockUserRepo) DeleteByID(arg0 context.Context, arg1 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteByID", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -175,7 +176,7 @@ func (mr *MockUserRepoMockRecorder) GetByEmail(arg0, arg1 interface{}) *gomock.C
 }
 
 // GetByID mocks base method.
-func (m *MockUserRepo) GetByID(arg0 context.Context, arg1 uint) (*entity.User, error) {
+func (m *MockUserRepo) GetByID(arg0 context.Context, arg1 string) (*entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", arg0, arg1)
 	ret0, _ := ret[0].(*entity.User)
@@ -205,7 +206,7 @@ func (mr *MockUserRepoMockRecorder) List(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // ModifyByID mocks base method.
-func (m *MockUserRepo) ModifyByID(arg0 context.Context, arg1 uint, arg2 *entity.User) error {
+func (m *MockUserRepo) ModifyByID(arg0 context.Context, arg1 string, arg2 *entity.User) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ModifyByID", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -219,11 +220,12 @@ func (mr *MockUserRepoMockRecorder) ModifyByID(arg0, arg1, arg2 interface{}) *go
 }
 
 // Store mocks base method.
-func (m *MockUserRepo) Store(arg0 context.Context, arg1 *entity.User) error {
+func (m *MockUserRepo) Store(arg0 context.Context, arg1 *entity.User) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Store indicates an expected call of Store.
@@ -282,4 +284,27 @@ func (m *MockPasswordAuth) Verify(arg0, arg1 string) bool {
 func (mr *MockPasswordAuthMockRecorder) Verify(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Verify", reflect.TypeOf((*MockPasswordAuth)(nil).Verify), arg0, arg1)
+}
+
+// MockUsecase is a mock of Usecase interface.
+type MockUsecase struct {
+	ctrl     *gomock.Controller
+	recorder *MockUsecaseMockRecorder
+}
+
+// MockUsecaseMockRecorder is the mock recorder for MockUsecase.
+type MockUsecaseMockRecorder struct {
+	mock *MockUsecase
+}
+
+// NewMockUsecase creates a new mock instance.
+func NewMockUsecase(ctrl *gomock.Controller) *MockUsecase {
+	mock := &MockUsecase{ctrl: ctrl}
+	mock.recorder = &MockUsecaseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUsecase) EXPECT() *MockUsecaseMockRecorder {
+	return m.recorder
 }

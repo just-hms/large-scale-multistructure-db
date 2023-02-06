@@ -3,7 +3,6 @@ package jwt
 import (
 	"fmt"
 	"large-scale-multistructure-db/be/config/constants"
-	"strconv"
 	"time"
 
 	jwtdriver "github.com/golang-jwt/jwt"
@@ -13,7 +12,7 @@ import (
 
 // given an userID
 // returns a token
-func CreateToken(userID uint) (string, error) {
+func CreateToken(userID string) (string, error) {
 	claims := jwtdriver.MapClaims{}
 
 	claims["authorized"] = true
@@ -27,7 +26,7 @@ func CreateToken(userID uint) (string, error) {
 
 // extract the userID from which the token was generated
 // return an error if the token is not valid or expired
-func ExtractTokenID(tokenString string) (uint, error) {
+func ExtractTokenID(tokenString string) (string, error) {
 
 	token, err := jwtdriver.Parse(tokenString, func(token *jwtdriver.Token) (interface{}, error) {
 
@@ -39,19 +38,21 @@ func ExtractTokenID(tokenString string) (uint, error) {
 	})
 
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	claims, ok := token.Claims.(jwtdriver.MapClaims)
 
-	if ok && token.Valid {
-
-		uid, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["userID"]), 10, 32)
-		if err != nil {
-			return 0, err
-		}
-		return uint(uid), nil
+	if !ok || !token.Valid {
+		return "", fmt.Errorf("Invalid token")
 	}
 
-	return 0, nil
+	userID, ok := claims["userID"].(string)
+
+	if ok {
+		return userID, nil
+	}
+
+	return "", fmt.Errorf("Invalid token")
+
 }
