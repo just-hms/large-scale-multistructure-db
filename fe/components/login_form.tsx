@@ -17,7 +17,6 @@ export default function LoginForm() {
                 fetch('http://127.0.0.1:7000/user/login/', {
                     method: 'POST',
                     headers: {
-                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
