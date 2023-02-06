@@ -9,7 +9,7 @@ RUN go mod download && \
 	go mod verify && \
 	go mod tidy
 
-COPY . .
+COPY . .	
 RUN mkdir -p build && \
 	go build -o build ./...
 
