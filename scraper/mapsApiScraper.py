@@ -8,9 +8,9 @@ API_KEY = "[API_KEY_HERE]"
 
 scrapingResults = {}
 
-def getPlacePhotoUrl(photoReference):
+def getPlacePhotoUrl(key,photoReference):
 
-    url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photo_reference={photoReference}&key={API_KEY}"
+    url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photo_reference={photoReference}&key={key}"
     response = requests.request("GET", url)
 
     return response.url
@@ -57,7 +57,7 @@ def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"],need
                                 if scrapedShop["name"] != barberShop["name"]:
                                     continue
                                 if scrapedShop["imageLink"] == "":
-                                    scrapedShop["imageLink"] = getPlacePhotoUrl(barberShop["photos"][0]["photo_reference"])
+                                    scrapedShop["imageLink"] = getPlacePhotoUrl(key=API_KEY,photoReference=barberShop["photos"][0]["photo_reference"])
                                     print(f'Adding photo to {barberShop["name"]} in {location}...')
                                 else:
                                     print(f'{barberShop["name"]} in {location} was already scraped. Skipping...')
@@ -73,7 +73,10 @@ def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"],need
                     shopData["rating"] = barberShop["rating"]
                     shopData["location"] = barberShop["formatted_address"]
                     shopData["coordinates"] = f'{barberShop["geometry"]["location"]["lat"]} {barberShop["geometry"]["location"]["lng"]}'
-                    shopData["imageLink"] = getPlacePhotoUrl(barberShop["photos"][0]["photo_reference"])
+                    if "photos" in barberShop:
+                        shopData["imageLink"] = getPlacePhotoUrl(key=API_KEY,photoReference=barberShop["photos"][0]["photo_reference"])
+                    else:
+                        shopData["imageLink"] = ""
 
                     #Get shop details 
                     shopDetails = gmaps.place(place_id=barberShop["place_id"])["result"]
