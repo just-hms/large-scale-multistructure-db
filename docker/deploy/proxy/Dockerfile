@@ -1,6 +1,7 @@
 
 # stage1 as builder
-FROM node:10-alpine as builder
+FROM node:latest as frontend_builder
+
 # copy the package.json to install dependencies
 COPY ./fe/package.json ./fe/package-lock.json ./
 
@@ -9,15 +10,13 @@ RUN npm install && mkdir /nextjs-ui && mv ./node_modules ./nextjs-ui
 
 WORKDIR /nextjs-ui
 
-COPY . .
+COPY ./fe .
 
 # Build the project and copy the files
-RUN npm run build
+RUN npm run deploy
 
 
 FROM nginx:alpine
-
-#!/bin/sh
 
 COPY ./.nginx/nginx.conf /etc/nginx/nginx.conf
 
@@ -25,8 +24,8 @@ COPY ./.nginx/nginx.conf /etc/nginx/nginx.conf
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy from the stahg 1
-COPY --from=builder /nextjs-ui/out /usr/share/nginx/html
+COPY --from=frontend_builder /nextjs-ui/out /usr/share/nginx/html
 
 EXPOSE 3000 80
 
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["nginx"]

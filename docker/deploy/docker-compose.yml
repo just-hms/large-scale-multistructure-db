@@ -21,11 +21,9 @@ services:
       - db
       - cache
 
-  frontend:
+  proxy:
     build:
-      dockerfile: ./docker/deploy/serve/Dockerfile
+      dockerfile: ./docker/deploy/proxy/Dockerfile
       context: ../../
     ports:
       - "80:3000"
-    depends_on:
-      - backend
