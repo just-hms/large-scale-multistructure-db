@@ -44,6 +44,10 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 		users.POST("/login", ur.Login)
 		users.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)
 		users.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete)
+
+		// TODO : test
+		users.POST("/lost_password", ur.LostPassword)
+		users.POST("/reset_password", ur.ResetPassword)
 	}
 
 	admin := router.Group("/admin")
@@ -52,7 +56,9 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 		admin.GET("/user", ur.ShowAll)
 		admin.GET("/user/:id", ur.Show)
 		admin.DELETE("/user/:id", ur.Delete)
-		admin.PUT("/user/:id", ur.Modify) // NOT TESTED
+
+		// TODO : test
+		admin.PUT("/user/:id", ur.Modify)
 	}
 
 	return router

@@ -36,47 +36,47 @@ func (m *MockUser) EXPECT() *MockUserMockRecorder {
 }
 
 // DeleteByID mocks base method.
-func (m *MockUser) DeleteByID(ctx context.Context, ID string) error {
+func (m *MockUser) DeleteByID(arg0 context.Context, arg1 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteByID", ctx, ID)
+	ret := m.ctrl.Call(m, "DeleteByID", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteByID indicates an expected call of DeleteByID.
-func (mr *MockUserMockRecorder) DeleteByID(ctx, ID interface{}) *gomock.Call {
+func (mr *MockUserMockRecorder) DeleteByID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByID", reflect.TypeOf((*MockUser)(nil).DeleteByID), ctx, ID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByID", reflect.TypeOf((*MockUser)(nil).DeleteByID), arg0, arg1)
 }
 
 // GetByID mocks base method.
-func (m *MockUser) GetByID(ctx context.Context, ID string) (*entity.User, error) {
+func (m *MockUser) GetByID(arg0 context.Context, arg1 string) (*entity.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", ctx, ID)
+	ret := m.ctrl.Call(m, "GetByID", arg0, arg1)
 	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetByID indicates an expected call of GetByID.
-func (mr *MockUserMockRecorder) GetByID(ctx, ID interface{}) *gomock.Call {
+func (mr *MockUserMockRecorder) GetByID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockUser)(nil).GetByID), ctx, ID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockUser)(nil).GetByID), arg0, arg1)
 }
 
 // List mocks base method.
-func (m *MockUser) List(ctx context.Context, email string) ([]*entity.User, error) {
+func (m *MockUser) List(arg0 context.Context, arg1 string) ([]*entity.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", ctx, email)
+	ret := m.ctrl.Call(m, "List", arg0, arg1)
 	ret0, _ := ret[0].([]*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // List indicates an expected call of List.
-func (mr *MockUserMockRecorder) List(ctx, email interface{}) *gomock.Call {
+func (mr *MockUserMockRecorder) List(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockUser)(nil).List), ctx, email)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockUser)(nil).List), arg0, arg1)
 }
 
 // Login mocks base method.
@@ -94,18 +94,47 @@ func (mr *MockUserMockRecorder) Login(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Login", reflect.TypeOf((*MockUser)(nil).Login), arg0, arg1)
 }
 
-// ModifyByID mocks base method.
-func (m *MockUser) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
+// LostPassword mocks base method.
+func (m *MockUser) LostPassword(arg0 context.Context, arg1 string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ModifyByID", ctx, ID, user)
+	ret := m.ctrl.Call(m, "LostPassword", arg0, arg1)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// LostPassword indicates an expected call of LostPassword.
+func (mr *MockUserMockRecorder) LostPassword(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LostPassword", reflect.TypeOf((*MockUser)(nil).LostPassword), arg0, arg1)
+}
+
+// ModifyByID mocks base method.
+func (m *MockUser) ModifyByID(arg0 context.Context, arg1 string, arg2 *entity.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ModifyByID", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // ModifyByID indicates an expected call of ModifyByID.
-func (mr *MockUserMockRecorder) ModifyByID(ctx, ID, user interface{}) *gomock.Call {
+func (mr *MockUserMockRecorder) ModifyByID(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ModifyByID", reflect.TypeOf((*MockUser)(nil).ModifyByID), ctx, ID, user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ModifyByID", reflect.TypeOf((*MockUser)(nil).ModifyByID), arg0, arg1, arg2)
+}
+
+// ResetPassword mocks base method.
+func (m *MockUser) ResetPassword(arg0 context.Context, arg1, arg2 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ResetPassword", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ResetPassword indicates an expected call of ResetPassword.
+func (mr *MockUserMockRecorder) ResetPassword(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetPassword", reflect.TypeOf((*MockUser)(nil).ResetPassword), arg0, arg1, arg2)
 }
 
 // Store mocks base method.

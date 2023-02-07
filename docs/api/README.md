@@ -203,7 +203,7 @@ response ❌ -> status : `401` | `400`
 
 # Password
 
-## `POST` /user/password_recovery/
+## `POST` /user/lost_password/
 
 request
 
@@ -217,7 +217,7 @@ response ✔️ -> status : `200`
 
 ```json
 {
-	"memssage" : "errorMessage",
+	"recoveryToken" : "token",
 }
 ```
 
@@ -229,13 +229,13 @@ response ❌ -> status : `400`
 }
 ```
 
-## 🔑 `POST` /user/confirm_recovery?token=""
+## 🔑 `POST` /user/reset_password?reset_token=""
 
 request
 
 ```json
 {
-	"password" : "super_secret",
+	"newpassword" : "super_secret",
 }
 ```
 

@@ -22,7 +22,7 @@ RUN apt update && \
 
 
 COPY --from=builder /app/build/cmd .
-COPY --from=builder /app/docker/deploy/entrypoint.sh .
+COPY --from=builder /app/docker/deploy/be/entrypoint.sh .
 
 ENV GIN_MODE=release
 

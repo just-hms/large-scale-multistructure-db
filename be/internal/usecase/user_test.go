@@ -181,8 +181,7 @@ func TestModifyByID(t *testing.T) {
 			name:  "new email already exists",
 			input: "1",
 			user: &entity.User{
-				Email:    "existing_email",
-				Password: "password",
+				Email: "existing_email",
 			},
 			mock: func() {
 				repo.EXPECT().GetByEmail(context.Background(), "existing_email").Return(&entity.User{}, nil)
@@ -193,14 +192,12 @@ func TestModifyByID(t *testing.T) {
 			name:  "modify success",
 			input: "2",
 			user: &entity.User{
-				Email:    "new_email",
-				Password: "password",
+				Email: "new_email",
 			},
 			mock: func() {
 				repo.EXPECT().GetByEmail(context.Background(), "new_email").Return(nil, errInternalServErr)
 				repo.EXPECT().ModifyByID(context.Background(), "2", &entity.User{
-					Email:    "new_email",
-					Password: "password",
+					Email: "new_email",
 				}).Return(nil)
 			},
 			expect: nil,
@@ -214,6 +211,99 @@ func TestModifyByID(t *testing.T) {
 			tc.mock()
 
 			err := user.ModifyByID(context.Background(), tc.input, tc.user)
+
+			require.ErrorIs(t, tc.expect, err)
+		})
+	}
+}
+
+func TestLostPassword(t *testing.T) {
+	t.Parallel()
+
+	user, repo, _ := userHelper(t)
+
+	var tests = []struct {
+		name   string
+		input  string
+		mock   func()
+		expect error
+	}{
+		{
+			name:  "Correct with existsing mail",
+			input: "existing_email",
+			mock: func() {
+				repo.EXPECT().GetByEmail(context.Background(), "existing_email").Return(&entity.User{}, nil)
+			},
+			expect: nil,
+		},
+		{
+			name:  "Correct with wrong e-mail",
+			input: "not_existing_email",
+			mock: func() {
+				repo.EXPECT().GetByEmail(context.Background(), "not_existing_email").Return(nil, errInternalServErr)
+			},
+			expect: errInternalServErr,
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			tc.mock()
+
+			_, err := user.LostPassword(context.Background(), tc.input)
+
+			require.ErrorIs(t, tc.expect, err)
+		})
+	}
+}
+
+func TestResetPassword(t *testing.T) {
+	t.Parallel()
+
+	user, repo, password := userHelper(t)
+
+	var tests = []struct {
+		name         string
+		ID           string
+		new_password string
+		mock         func()
+		expect       error
+	}{
+		{
+			name:         "Existing user",
+			ID:           "1",
+			new_password: "password",
+			mock: func() {
+				password.EXPECT().HashAndSalt("password").Return("hashed_password", nil)
+				repo.EXPECT().ModifyByID(context.Background(), "1", &entity.User{
+					Password: "hashed_password",
+				}).Return(nil)
+			},
+			expect: nil,
+		},
+		{
+			name:         "Correct with wrong e-mail",
+			ID:           "12",
+			new_password: "password",
+			mock: func() {
+				password.EXPECT().HashAndSalt("password").Return("hashed_password", nil)
+				repo.EXPECT().ModifyByID(context.Background(), "12", &entity.User{
+					Password: "hashed_password",
+				}).Return(errInternalServErr)
+			},
+			expect: errInternalServErr,
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			tc.mock()
+
+			err := user.ResetPassword(context.Background(), tc.ID, tc.new_password)
 
 			require.ErrorIs(t, tc.expect, err)
 		})

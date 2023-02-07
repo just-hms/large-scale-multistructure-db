@@ -87,7 +87,19 @@ func (r *UserRepo) ModifyByID(ctx context.Context, ID string, user *entity.User)
 		return fmt.Errorf("Error converting the ID")
 	}
 
-	_, err = r.DB.Collection("users").UpdateOne(ctx, bson.M{"_id": oid}, bson.M{"$set": user})
+	// partial update
+
+	update := bson.M{}
+
+	if user.Email != "" {
+		update["email"] = user.Email
+	}
+
+	if user.Password != "" {
+		update["password"] = user.Password
+	}
+
+	_, err = r.DB.Collection("users").UpdateOne(ctx, bson.M{"_id": oid}, bson.M{"$set": update})
 	if err != nil {
 		return err
 	}

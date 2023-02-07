@@ -12,11 +12,14 @@ type (
 	User interface {
 		Login(context.Context, *entity.User) (*entity.User, error)
 		Store(context.Context, *entity.User) (string, error)
+		GetByID(context.Context, string) (*entity.User, error)
+		ModifyByID(context.Context, string, *entity.User) error
+		DeleteByID(context.Context, string) error
+		List(context.Context, string) ([]*entity.User, error)
 
-		GetByID(ctx context.Context, ID string) (*entity.User, error)
-		ModifyByID(ctx context.Context, ID string, user *entity.User) error
-		DeleteByID(ctx context.Context, ID string) error
-		List(ctx context.Context, email string) ([]*entity.User, error)
+		// TODO : test
+		LostPassword(context.Context, string) (string, error)
+		ResetPassword(context.Context, string, string) error
 	}
 
 	// UserRepo -.
