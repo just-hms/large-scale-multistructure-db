@@ -46,7 +46,6 @@ def addAppointmentToUser(usersCollection,userId,shopId:str,shopName:str,startDat
     appointment["shopId"] = shopId
     appointment["shopName"] = shopName
     appointment["startDate"] = startDate
-    appointment["duration"] = duration
 
     #Update the specified user's appointment
     usersCollection.update_one({
