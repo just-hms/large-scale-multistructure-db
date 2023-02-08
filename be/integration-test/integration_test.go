@@ -52,6 +52,7 @@ func (s *IntegrationSuite) SetupSuite() {
 	}
 
 	// create repos and usecases
+	// TODO add barbershop ones
 	userRepo := repo.NewUserRepo(mongo)
 	password := auth.NewPasswordAuth()
 	usecases := []usecase.Usecase{

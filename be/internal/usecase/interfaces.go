@@ -29,7 +29,7 @@ type (
 	}
 
 	BarberShop interface {
-		Find(lat string, lon string, name string, radius string) ([]*entity.BarberShop, error)
+		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error)
 
 		// TODO: remeber to add a shopView each time a user sees a barbershop
 		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)
@@ -75,8 +75,8 @@ type (
 
 	BarberShopRepo interface {
 		Store(ctx context.Context, shop *entity.BarberShop) (string, error)
-		Find(lat string, lon string, name string, radius string) ([]*entity.BarberShop, error)
-		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)
+		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error)
+		GetByID(ctx context.Context, ID string) (*entity.BarberShop, error)
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error
 	}
@@ -90,7 +90,7 @@ type (
 	}
 
 	ShopViewRepo interface {
-		Store(ctx context.Context, view entity.ShopView) error
+		Store(ctx context.Context, view entity.ShopView) (string, error)
 	}
 
 	AppointmentRepo interface {

@@ -1,17 +1,47 @@
 package usecase
 
-import "large-scale-multistructure-db/be/internal/entity"
+import (
+	"context"
+	"large-scale-multistructure-db/be/internal/entity"
+	"time"
+)
 
 type BarberShopUseCase struct {
-	repo BarberShopRepo
+	shopRepo BarberShopRepo
+	viewRepo ShopViewRepo
 }
 
-func NewBarberShopUseCase(r UserRepo) *UserUseCase {
-	return &UserUseCase{
-		repo: r,
+func NewBarberShopUseCase(shopRepo BarberShopRepo, viewRepo ShopViewRepo) *BarberShopUseCase {
+	return &BarberShopUseCase{
+		shopRepo: shopRepo,
+		viewRepo: viewRepo,
 	}
 }
 
-func (uc *BarberShopUseCase) Find(lat string, lon string, name string, radius string) ([]*entity.BarberShop, error) {
-	return uc.repo.Find(lat, lon, name, radius)
+func (uc *BarberShopUseCase) Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error) {
+	return uc.shopRepo.Find(ctx, lat, lon, name, radius)
+}
+
+func (uc *BarberShopUseCase) GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error) {
+
+	_, err := uc.viewRepo.Store(ctx, entity.ShopView{
+		CreatedAt:    time.Now(),
+		ViewerID:     viewerID,
+		BarberShopID: ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return uc.shopRepo.GetByID(ctx, ID)
+}
+
+func (uc *BarberShopUseCase) Store(ctx context.Context, shop *entity.BarberShop) (string, error) {
+	return uc.shopRepo.Store(ctx, shop)
+}
+func (uc *BarberShopUseCase) ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error {
+	return uc.shopRepo.ModifyByID(ctx, ID, shop)
+}
+func (uc *BarberShopUseCase) DeleteByID(ctx context.Context, ID string) error {
+	return uc.shopRepo.DeleteByID(ctx, ID)
 }

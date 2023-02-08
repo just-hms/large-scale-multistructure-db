@@ -27,10 +27,12 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 
 		switch u := uc.(type) {
 
+		// TODO : check this in the https://github.com/evrone/go-clean-template
+
 		case *usecase.UserUseCase:
 			mr = middleware.NewMiddlewareRoutes(u)
 			ur = NewUserRoutes(u)
-		case *usecase.BarberShop:
+		case *usecase.BarberShopUseCase:
 			br = NewBarberShopRoutes(u)
 		}
 	}

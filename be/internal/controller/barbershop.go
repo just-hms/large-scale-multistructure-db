@@ -23,6 +23,7 @@ func NewBarberShopRoutes(uc usecase.BarberShop) *BarberShopRoutes {
 func (br *BarberShopRoutes) Find(ctx *gin.Context) {
 
 	barbers, err := br.barberShopUseCase.Find(
+		ctx,
 		ctx.Param("lat"),
 		ctx.Param("lon"),
 		ctx.Param("name"),

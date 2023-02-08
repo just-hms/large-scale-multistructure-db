@@ -87,7 +87,8 @@ func (r *UserRepo) ModifyByID(ctx context.Context, ID string, user *entity.User)
 		return fmt.Errorf("Error converting the ID")
 	}
 
-	// partial update
+	// TODO : partial update
+	// TODO : barbershop list
 
 	update := bson.M{}
 

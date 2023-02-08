@@ -32,6 +32,10 @@ func Run() {
 			repo.NewUserRepo(mongo),
 			auth.NewPasswordAuth(),
 		),
+		usecase.NewBarberShopUseCase(
+			repo.NewBarberShopRepo(mongo),
+			repo.NewShopViewRepo(mongo),
+		),
 	}
 
 	router := controller.Router(usecases)
