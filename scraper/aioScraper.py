@@ -4,6 +4,8 @@ import yelpApiScraper
 import mapsApiScraper
 
 def main():
+    yelpError = False
+    mapsError = False
     print("> Starting All-In-One Scraper")
     #Set desired scraping targets
     locations = ["Roma","Firenze","Milano","Palermo","Aquila","Potenza","Catanzaro","Napoli","Bologna","Trieste","Genova","Ancona",
@@ -42,10 +44,18 @@ def main():
     print("> Scraping the following target locations: "+str(locations))
     #Launch the various independent scrapers
     print(">> Starting YELP scraper")
-    yelpApiScraper.main(locations)
+    try:
+        yelpApiScraper.main(locations)
+    except:
+        print(">> WARNING: Yelp has errored. It is highly likely that the data rate was exceeded.")
+        yelpError = True
     print(">> YELP scraper done")
     print(">> Starting GMaps scraper")
-    mapsApiScraper.main(locations)
+    try:
+        mapsApiScraper.main(locations)
+    except:
+        print(">> WARNING: Maps has errored. It is highly likely that the data rate was exceeded.")
+        mapsError = True
     print(">> GMaps scraper done")
 
     #Fetch the results from the various files
