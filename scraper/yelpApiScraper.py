@@ -24,7 +24,21 @@ def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"]):
                     scrapingResults[location]["scrapedShopsData"] = []
 
                 #Fetch info from Yelp for a given city
-                barberListRaw = yelp_api.search_query(categories='barbers', location=location, locale="it_IT",  limit=50, radius=20000)
+                try:
+                    barberListRaw = yelp_api.search_query(categories='barbers', location=location, radius=20000)
+                except yelp_api.YelpAPIError as exception:
+                    #This is probably a location not found error
+                    print(f">>> Yelp encountered an exception: {str(exception)}")
+                    if "LOCATION_NOT_FOUND" in str(exception):
+                        print(f">>> Was looking for location: {location}")
+                        #Do an "emergency save", just to be safe
+                        file.seek(0)
+                        json.dump(scrapingResults,file)
+                        #Yelp is dumb and sometimes doesn't recognize cities. Go to the next.
+                        continue
+                    else:
+                        #Ouch, something went wrong!
+                        raise 
 
                 for barberShop in barberListRaw["businesses"]:
                     #Skip barber if its data has already been fetched and saved
