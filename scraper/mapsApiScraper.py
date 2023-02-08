@@ -92,7 +92,10 @@ def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"],need
                             calendarSlot = {}
                             calendarSlot["is_overnight"] = False
                             calendarSlot["start"] = slot["open"]["time"]
-                            calendarSlot["end"] = slot["close"]["time"]
+                            if "close" in slot:
+                                calendarSlot["end"] = slot["close"]["time"]
+                            else:
+                                calendarSlot["end"] = ""
                             calendarSlot["day"] = slot["open"]["day"]
                             shopData["calendar"].append(calendarSlot)
 
