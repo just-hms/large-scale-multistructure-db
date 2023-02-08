@@ -6,10 +6,11 @@ import UserInfos from '../components/user_components/account_infos';
 import AccountReservation from '../components/user_components/account_reservations';
 import Footer from '../components/footer';
 import {getReservation}  from '../lib/user';
+import { withSessionSsr } from '../lib/config/withSession';
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function User({reservationData}:any) {
+export default function User({user, reservationData}:any) {
 
   const [content, setContent] = useState("account_info");
   let displayed_element;
@@ -58,13 +59,17 @@ export default function User({reservationData}:any) {
 }
 
 
-export async function getStaticProps() {
-
-  const reservationData =  getReservation("user");
-  // TODO: actually retrieve datas
-  return {
-    props: {
-      reservationData,
-    }
+export const getServerSideProps = withSessionSsr(
+  async ({req, res}:{req:any,res:any}) => {
+      const user = req.session.user;
+      const reservationData =  getReservation("user");
+      if(!user) {
+          return {
+              notFound: true,
+          }
+      }
+      return {
+          props: { user, reservationData }
+      }
   }
-}
+);

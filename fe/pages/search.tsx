@@ -7,6 +7,7 @@ import {faLocationDot} from "@fortawesome/free-solid-svg-icons";
 import {findShops} from "../lib/search"
 import ShopsFound from "../components/search_components/shops_found"
 import Link from "next/link";
+import { withSessionSsr } from '../lib/config/withSession';
 
 export default function Search({shopData}:any) {
     const router = useRouter()
@@ -78,12 +79,17 @@ export default function Search({shopData}:any) {
     )
 }
 
-export function getStaticProps() {
-    // TODO: actually retrieve datas
-    const shopData = findShops()
-    return {
-      props: {
-        shopData
-      },
-    }
+export const getServerSideProps = withSessionSsr(
+  async ({req, res}:{req:any,res:any}) => {
+      const user = req.session.user;
+      const shopData = findShops()
+      if(!user) {
+          return {
+              notFound: true,
+          }
+      }
+      return {
+          props: { user, shopData }
+      }
   }
+);

@@ -13,23 +13,19 @@ export default function LoginForm() {
             email: '',
             password: ''
         },
-            onSubmit: values => {
-                fetch('http://127.0.0.1:7000/user/login/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                            "email": "email",
-                            "password":"password"
-                    })
-                })
-                .then(response => response.json())
-                .then(response => console.log(JSON.stringify(response)))
-                .catch((e) => {
-                console.error(`An error occurred: ${e}`)
-                });
-                // router.push("/home")
+        onSubmit: async (values) => {
+            let email = values.email
+            let password = values.password
+            const response = await fetch("/api/session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+            if (response.ok) {
+                return router.push("/home");
+            }else if(response.status === 403){
+                console.log("username/pswd wrong")
+            }
         },
     });
     return (

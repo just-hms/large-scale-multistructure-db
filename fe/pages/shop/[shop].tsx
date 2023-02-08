@@ -2,14 +2,12 @@ import { getAllShops, getReviews, getShopData } from '../../lib/shops';
 import Image from 'next/image';
 import Navbar from '../../components/navbar';
 import Head from 'next/head';
-
+import { withSessionSsr } from '../../lib/config/withSession';
 import barber_background from '../../public/barber_profile.jpg'
 import barber_propic from '../../public/barber_bg.png'
 import Footer from '../../components/footer';
 import Reviews from '../../components/shop_component/reviews';
 import ReactStars from 'react-stars'
-import { useRouter } from 'next/router';
-
 export default function Shop({ shopData, reviewsData }:{ shopData:any, reviewsData:any }) {
   return (
     <>
@@ -99,7 +97,7 @@ export default function Shop({ shopData, reviewsData }:{ shopData:any, reviewsDa
   );  
 }
 
-export async function getStaticPaths() {
+export async function getServerSidePaths() {
   const paths = await getAllShops();
   return {
     paths: [{
@@ -115,20 +113,22 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps() {
-  // TODO: actually retrieve datas
-  // const postData = getShopData(params.shop)
-  const reviewsData =  getReviews("shopname")
-  const shopData = {
-    name:"Barbiere di Siviglia",
-    title:"Barbiere di Siviglia",
-    description:"occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+export const getServerSideProps = withSessionSsr(
+  async ({req, res}:{req:any,res:any}) => {
+      const user = req.session.user;
+      const reviewsData =  getReviews("shopname")
+      const shopData = {
+        name:"Barbiere di Siviglia",
+        title:"Barbiere di Siviglia",
+        description:"occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      }
+      if(!user) {
+          return {
+              notFound: true,
+          }
+      }
+      return {
+          props: { user, shopData,reviewsData }
+      }
   }
-  return {
-    props: {
-      shopData,
-      reviewsData
-    },
-  }
-}
-
+);

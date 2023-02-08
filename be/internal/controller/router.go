@@ -10,7 +10,7 @@ import (
 )
 
 func Router(usecases []usecase.Usecase) *gin.Engine {
-
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.Use(cors.Default())
 

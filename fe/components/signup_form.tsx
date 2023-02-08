@@ -4,19 +4,28 @@ import { useState } from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
 import barber_icon from '../public/barber-shop.png'
+import { signup } from '../lib/user';
 
 export default function SignupForm() {
     const router = useRouter()
     const [route] = useState()
+    const [response_state,setResponseState] = useState("")
     const formik = useFormik({
         initialValues: {
             email: '',
             password: '',
             repeatPassword: '',
         },
-        onSubmit: values => {
-            // TODO: check values and yadda yadda
-            alert(JSON.stringify(values, null, 3));
+        onSubmit: async (values) => {
+            if(values.password != values.repeatPassword){
+                alert("asd")
+                setResponseState("error")
+            }else{
+                const response = await signup(values)
+                if(response.ok){
+                    return router.push("/");
+                }
+            }
         },
     });
     return (

@@ -6,9 +6,9 @@ import barber_background_vertical from '../public/barber_bg_vertical.png'
 import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/router'
+import { withSessionSsr } from '../lib/config/withSession';
 
-export default function Home() {
-
+export default function Home({user}:any){
   const [query, setQuery] = useState('');
   const router = useRouter()
   const handleChange=(event:any)=>{
@@ -64,3 +64,16 @@ export default function Home() {
     </>
   )/*  */
 }
+export const getServerSideProps = withSessionSsr(
+  async ({req, res}:{req:any,res:any}) => {
+      const user = req.session.user;
+      if(!user) {
+          return {
+              notFound: true,
+          }
+      }
+      return {
+          props: { user }
+      }
+  }
+);
