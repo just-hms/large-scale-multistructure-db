@@ -1,9 +1,11 @@
 import json
+import time
 
 import yelpApiScraper
 import mapsApiScraper
 
 def main():
+    start_time = time.perf_counter()
     yelpError = False
     mapsError = False
     print("> Starting All-In-One Scraper")
@@ -114,6 +116,9 @@ def main():
         print(">> WARNING: Yelp has errored. It is highly likely that the data rate was exceeded.")
     if mapsError:
         print(">> WARNING: Maps has errored. It is highly likely that the data rate was exceeded.")
+    end_time = time.perf_counter()
+    print(f"\n## Scraping done in {end_time - start_time} seconds")
+
 
 
 
