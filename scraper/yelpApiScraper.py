@@ -43,10 +43,10 @@ def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"]):
                 for barberShop in barberListRaw["businesses"]:
                     #Skip barber if its data has already been fetched and saved
                     if barberShop["name"] in scrapingResults[location]["scrapedShopsNames"]:
-                        print(f'{barberShop["name"]} in {location} was already scraped. Skipping...')
+                        print(f'{barberShop["name"]} in {location} from Yelp was already scraped. Skipping...')
                         continue
                     #Format info on a barberShop
-                    print(f'Fetching data on {barberShop["name"]} in {location}')
+                    print(f'Fetching data on {barberShop["name"]} in {location} from Yelp')
                     shopData = {}
                     shopData["name"] = barberShop["name"]
                     shopData["rating"] = barberShop["rating"]

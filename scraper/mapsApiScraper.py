@@ -60,14 +60,14 @@ def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"],need
                                     scrapedShop["imageLink"] = getPlacePhotoUrl(key=API_KEY,photoReference=barberShop["photos"][0]["photo_reference"])
                                     print(f'Adding photo to {barberShop["name"]} in {location}...')
                                 else:
-                                    print(f'{barberShop["name"]} in {location} was already scraped. Skipping...')
+                                    print(f'{barberShop["name"]} in {location} from Maps was already scraped. Skipping...')
                                 break
                         else:
-                            print(f'{barberShop["name"]} in {location} was already scraped. Skipping...')
+                            print(f'{barberShop["name"]} in {location} from Maps was already scraped. Skipping...')
                         continue
 
                     #Format info on a barberShop
-                    print(f'Fetching data on {barberShop["name"]} in {location}')
+                    print(f'Fetching data on {barberShop["name"]} in {location} from Maps')
                     shopData = {}
                     shopData["name"] = barberShop["name"]
                     shopData["rating"] = barberShop["rating"]
