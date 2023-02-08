@@ -70,15 +70,21 @@ def main():
             print("> Putting results together")
             for location in locations:
                 scrapingResults[location] = []
-                cityBarberListYelp = yelpResults[location]["scrapedShopsData"]
-                cityBarberListMaps = mapsResults[location]["scrapedShopsData"]
+                if location in yelpResults:
+                    cityBarberListYelp = yelpResults[location]["scrapedShopsData"]
+                else:
+                    cityBarberListYelp = []
+                if location in mapsResults:
+                    cityBarberListMaps = mapsResults[location]["scrapedShopsData"]
+                else:
+                    cityBarberListMaps = []
 
                 print(f">> Fixing {location}")
                 #Fetch everything we can from Maps first
                 for barberShopMaps in cityBarberListMaps:
                     print(f">>> Found from Maps: {barberShopMaps['name']} in {location}")
                     #If the place also exists in the Yelp list, add their reviews together
-                    if barberShopMaps["name"] in yelpResults[location]["scrapedShopsNames"]:
+                    if location in yelpResults and barberShopMaps["name"] in yelpResults[location]["scrapedShopsNames"]:
                         for barberShopYelp in cityBarberListYelp:
                             if barberShopYelp["name"] == barberShopMaps["name"]:
                                 for review in barberShopYelp["reviewData"]["reviews"]:
@@ -95,7 +101,7 @@ def main():
 
                 #Now check if Yelp has some places that Maps does not have
                 for barberShopYelp in cityBarberListYelp:
-                    if not barberShopYelp["name"] in mapsResults[location]["scrapedShopsNames"]:
+                    if location in mapsResults and not barberShopYelp["name"] in mapsResults[location]["scrapedShopsNames"]:
                         print(f">>> Found from Yelp: {barberShopYelp['name']} in {location}")
                         scrapingResults[location].append(barberShopYelp)
 
