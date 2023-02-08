@@ -82,7 +82,7 @@ def makeShop(shopsCollection,shopData:dict)->int:
     #Add shop to the db and return its new id
     return shopsCollection.insert_one(shop).inserted_id
 
-def addReviewToShop(shopsCollection,shopId,userId,shopReview):
+def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downvotesIdList):
     """Adds a review to the specified shop. Uses the data format from the scraper."""
 
     #Create the review dict structure
@@ -92,6 +92,8 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview):
     review["rating"] = shopReview["rating"]
     review["reported"] = False
     review["content"] = shopReview["body"]
+    review["upvotes"] = upvotesIdList
+    review["downvotes"] = downvotesIdList
     #We generate a review date as we do not have it
     review["createdAt"] = fake.date_time_between(start_date='-10y', end_date='now').strftime("%d/%m/%Y %H:%M")
 
