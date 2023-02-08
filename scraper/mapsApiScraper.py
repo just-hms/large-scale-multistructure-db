@@ -103,12 +103,13 @@ def main(locationsList = ["Roma","Firenze","Milano", "Palermo", "New York"],need
                     #Get shop reviews
                     shopData["reviewData"] = {}
                     shopData["reviewData"]["reviews"] = []
-                    for review in shopDetails["reviews"]:
-                        reviewData = {}
-                        reviewData["username"] = review["author_name"]
-                        reviewData["rating"] = review["rating"]
-                        reviewData["body"] = review["text"]
-                        shopData["reviewData"]["reviews"].append(reviewData)
+                    if "review" in shopDetails:
+                        for review in shopDetails["reviews"]:
+                            reviewData = {}
+                            reviewData["username"] = review["author_name"]
+                            reviewData["rating"] = review["rating"]
+                            reviewData["body"] = review["text"]
+                            shopData["reviewData"]["reviews"].append(reviewData)
 
                     #Save data to file
                     scrapingResults[location]["scrapedShopsNames"].append(shopData['name'])
