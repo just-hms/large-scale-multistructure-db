@@ -5,4 +5,7 @@ type User struct {
 	Email    string
 	Password string
 	IsAdmin  bool
+
+	CurrentAppointment *Appointment
+	BarberShopIDs      []string
 }

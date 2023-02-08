@@ -83,3 +83,5 @@ func (mr *MiddlewareRoutes) MarkWithAuthID(ctx *gin.Context) {
 	})
 
 }
+
+// TODO: implement a requireBarber using the id in the request

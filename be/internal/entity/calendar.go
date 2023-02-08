@@ -1,3 +1,5 @@
 package entity
 
-type Calendar struct{}
+type Calendar struct {
+	Slots []*Slot
+}

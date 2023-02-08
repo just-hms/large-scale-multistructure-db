@@ -20,6 +20,7 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 	var (
 		mr *middleware.MiddlewareRoutes
 		ur *UserRoutes
+		br *BarberShopRoutes
 	)
 
 	for _, uc := range usecases {
@@ -29,6 +30,8 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 		case *usecase.UserUseCase:
 			mr = middleware.NewMiddlewareRoutes(u)
 			ur = NewUserRoutes(u)
+		case *usecase.BarberShop:
+			br = NewBarberShopRoutes(u)
 		}
 	}
 
@@ -38,27 +41,35 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 	// - return the ID
 
 	// link the path to the routes
-	users := router.Group("/user")
+	user := router.Group("/user")
 	{
-		users.POST("/", ur.Register)
-		users.POST("/login", ur.Login)
-		users.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)
-		users.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete)
-
-		// TODO : test
-		users.POST("/lost_password", ur.LostPassword)
-		users.POST("/reset_password", ur.ResetPassword)
+		user.POST("/", ur.Register)                                        // TESTED
+		user.POST("/login", ur.Login)                                      // TESTED
+		user.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)      // TESTED
+		user.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete) // TESTED
+		user.POST("/lost_password", ur.LostPassword)
+		user.POST("/reset_password", ur.ResetPassword)
 	}
 
 	admin := router.Group("/admin")
 	admin.Use(mr.RequireAdmin)
 	{
-		admin.GET("/user", ur.ShowAll)
-		admin.GET("/user/:id", ur.Show)
-		admin.DELETE("/user/:id", ur.Delete)
-
-		// TODO : test
+		admin.GET("/user", ur.ShowAll)       // TESTED
+		admin.GET("/user/:id", ur.Show)      // TESTED
+		admin.DELETE("/user/:id", ur.Delete) // TESTED
 		admin.PUT("/user/:id", ur.Modify)
+	}
+
+	barberShop := router.Group("/barber_shop")
+	barberShop.Use(mr.RequireAuth)
+	{
+		barberShop.GET("/", br.Find)
+		barberShop.GET("/:id", br.Show)
+		barberShop.POST("/", br.Create)
+		barberShop.PUT("/", br.Modify)
+
+		// TODO: require barber
+		barberShop.DELETE("/", br.Delete)
 	}
 
 	return router
