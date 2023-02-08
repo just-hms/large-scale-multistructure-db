@@ -9,6 +9,8 @@ import json
 from datetime import datetime
 from typing import Literal
 
+fake = Faker()
+
 
 #######
 #UTILS#
@@ -91,7 +93,7 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview):
     review["reported"] = False
     review["content"] = shopReview["body"]
     #We generate a review date as we do not have it
-    review["createdAt"] = Faker().date_time_between(start_date='-10y', end_date='now').strftime("%d/%m/%Y, %H:%M")
+    review["createdAt"] = fake.date_time_between(start_date='-10y', end_date='now').strftime("%d/%m/%Y %H:%M")
 
     #Update the specified barber shop's review list
     shopsCollection.update_one({
