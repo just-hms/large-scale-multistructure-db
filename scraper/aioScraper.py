@@ -104,6 +104,10 @@ def main():
     with open("aioScrapingResults.json","w") as aioResultsFile:
         json.dump(scrapingResults,aioResultsFile)
 
+    if yelpError:
+        print(">> WARNING: Yelp has errored. It is highly likely that the data rate was exceeded.")
+    if mapsError:
+        print(">> WARNING: Maps has errored. It is highly likely that the data rate was exceeded.")
 
 
 
