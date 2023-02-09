@@ -29,13 +29,11 @@ type (
 	}
 
 	BarberShop interface {
-		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error)
-
-		// TODO: remeber to add a shopView each time a user sees a barbershop
-		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)
-		Store(ctx context.Context, shop *entity.BarberShop) (string, error)
-		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
-		DeleteByID(ctx context.Context, ID string) error
+		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error) // IMPLEMENTED
+		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)                        // IMPLEMENTED
+		Store(ctx context.Context, shop *entity.BarberShop) (string, error)                                         // IMPLEMENTED
+		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error                                   // IMPLEMENTED
+		DeleteByID(ctx context.Context, ID string) error                                                            // IMPLEMENTED
 	}
 
 	Calendar interface {

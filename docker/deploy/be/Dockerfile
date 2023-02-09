@@ -26,4 +26,4 @@ COPY --from=builder /app/docker/deploy/be/entrypoint.sh .
 
 ENV GIN_MODE=release
 
-CMD ["./entrypoint.sh"]
+CMD ["sh", "./entrypoint.sh"]

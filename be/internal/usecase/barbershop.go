@@ -24,16 +24,26 @@ func (uc *BarberShopUseCase) Find(ctx context.Context, lat string, lon string, n
 
 func (uc *BarberShopUseCase) GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error) {
 
-	_, err := uc.viewRepo.Store(ctx, entity.ShopView{
-		CreatedAt:    time.Now(),
-		ViewerID:     viewerID,
-		BarberShopID: ID,
-	})
+	// return the shop
+	shop, err := uc.shopRepo.GetByID(ctx, ID)
+
 	if err != nil {
 		return nil, err
 	}
 
-	return uc.shopRepo.GetByID(ctx, ID)
+	// save the view
+	_, err = uc.viewRepo.Store(ctx, entity.ShopView{
+		CreatedAt:    time.Now(),
+		ViewerID:     viewerID,
+		BarberShopID: ID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return shop, nil
+
 }
 
 func (uc *BarberShopUseCase) Store(ctx context.Context, shop *entity.BarberShop) (string, error) {

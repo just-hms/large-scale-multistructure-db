@@ -15,6 +15,7 @@ import (
 	"large-scale-multistructure-db/be/pkg/mongo"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -54,23 +55,33 @@ func (s *IntegrationSuite) SetupSuite() {
 	// create repos and usecases
 	// TODO add barbershop ones
 	userRepo := repo.NewUserRepo(mongo)
+	barberShopRepo := repo.NewBarberShopRepo(mongo)
+	viewShopRepo := repo.NewShopViewRepo(mongo)
+
 	password := auth.NewPasswordAuth()
+
 	usecases := []usecase.Usecase{
 		usecase.NewUserUseCase(
 			userRepo,
 			password,
+		),
+		usecase.NewBarberShopUseCase(
+			barberShopRepo,
+			viewShopRepo,
 		),
 	}
 
 	// Fill the test DB
 
 	s.resetDB = func() {
+
 		mongo.DB.Drop(context.TODO())
 
 		p, _ := password.HashAndSalt("password")
 
 		var ID string
 
+		// create users
 		ID, _ = userRepo.Store(context.TODO(), &entity.User{
 			Email:    "correct@example.com",
 			Password: p,
@@ -95,6 +106,45 @@ func (s *IntegrationSuite) SetupSuite() {
 			IsAdmin:  true,
 		})
 
+		// create barberShops
+		barberShop1ID, _ := barberShopRepo.Store(context.TODO(), &entity.BarberShop{
+			Name:            "barberShop1",
+			Latitude:        "1",
+			Longitude:       "1",
+			EmployeesNumber: 2,
+		})
+
+		ID, _ = userRepo.Store(context.TODO(), &entity.User{
+			Email:    "barber1@example.com",
+			Password: p,
+			IsAdmin:  false,
+			BarberShopIDs: []string{
+				barberShop1ID,
+			},
+		})
+
+		s.params["bnonarberShop1ID"] = barberShop1ID
+		s.params["barber1Auth"], _ = jwt.CreateToken(ID)
+
+		barberShop2ID, _ := barberShopRepo.Store(context.TODO(), &entity.BarberShop{
+			Name:            "barberShop1",
+			Latitude:        "1",
+			Longitude:       "1",
+			EmployeesNumber: 2,
+		})
+
+		ID, _ = userRepo.Store(context.TODO(), &entity.User{
+			Email:    "barber2@example.com",
+			Password: p,
+			IsAdmin:  false,
+			BarberShopIDs: []string{
+				barberShop2ID,
+			},
+		})
+
+		s.params["barberShop2ID"] = barberShop1ID
+		s.params["barber2Auth"], _ = jwt.CreateToken(ID)
+
 	}
 
 	// serv the mock server and db
@@ -109,13 +159,15 @@ func (s *IntegrationSuite) TearDownSuite() {
 
 func (s *IntegrationSuite) TestHealth() {
 
-	req, _ := http.NewRequest("GET", "/health", nil)
+	req, _ := http.NewRequest("GET", "/api/health", nil)
 
 	w := httptest.NewRecorder()
 	s.srv.ServeHTTP(w, req)
 
 	s.Require().Equal(http.StatusOK, w.Code)
 }
+
+// USERS
 
 func (s *IntegrationSuite) TestLogin() {
 
@@ -145,12 +197,29 @@ func (s *IntegrationSuite) TestLogin() {
 		loginUserJson, _ := json.Marshal(tc.loginUser)
 
 		// create a request for the login endpoint
-		req, _ := http.NewRequest("POST", "/user/login", bytes.NewBuffer(loginUserJson))
+		req, _ := http.NewRequest("POST", "/api/user/login", bytes.NewBuffer(loginUserJson))
 		req.Header.Set("Content-Type", "application/json")
 
 		// serve the request to the test server
 		w := httptest.NewRecorder()
 		s.srv.ServeHTTP(w, req)
+
+		if w.Code == http.StatusOK {
+
+			body, err := io.ReadAll(w.Body)
+
+			// require no error in reading the response
+			s.Require().Nil(err)
+
+			type response struct {
+				Token string `json:"token"`
+			}
+
+			var res response
+
+			err = json.Unmarshal(body, &res)
+			s.Require().Nil(err)
+		}
 
 		// assert that the response status code is as expected
 		s.Require().Equal(tc.status, w.Code)
@@ -185,7 +254,7 @@ func (s *IntegrationSuite) TestRegister() {
 		loginUserJson, _ := json.Marshal(tc.creationUser)
 
 		// create a request for the register endpoint
-		req, _ := http.NewRequest("POST", "/user/", bytes.NewBuffer(loginUserJson))
+		req, _ := http.NewRequest("POST", "/api/user/", bytes.NewBuffer(loginUserJson))
 		req.Header.Set("Content-Type", "application/json")
 
 		// serve the request to the test server
@@ -219,7 +288,7 @@ func (s *IntegrationSuite) TestShowSelf() {
 	for _, tc := range testCases {
 
 		// create a request for the self endpoint
-		req, _ := http.NewRequest("GET", "/user/self", nil)
+		req, _ := http.NewRequest("GET", "/api/user/self", nil)
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -270,9 +339,8 @@ func (s *IntegrationSuite) TestDeleteSelf() {
 
 	for _, tc := range testCases {
 
-		fmt.Println("lol", s.params["authToken"])
 		// create a request for the self endpoint
-		req, _ := http.NewRequest("DELETE", "/user/self", nil)
+		req, _ := http.NewRequest("DELETE", "/api/user/self", nil)
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -285,7 +353,7 @@ func (s *IntegrationSuite) TestDeleteSelf() {
 	}
 }
 
-func (s *IntegrationSuite) TestShowAll() {
+func (s *IntegrationSuite) TestUserShowAll() {
 
 	testCases := []struct {
 		name        string
@@ -324,11 +392,11 @@ func (s *IntegrationSuite) TestShowAll() {
 		// create a request for the self endpoint
 		var req *http.Request
 
-		if tc.filter != "" {
-			req, _ = http.NewRequest("GET", "/admin/user?email="+tc.filter, nil)
-		} else {
-			req, _ = http.NewRequest("GET", "/admin/user?email=", nil)
+		query := url.Values{
+			"email": {tc.filter},
 		}
+
+		req, _ = http.NewRequest("GET", "/api/admin/user?email="+query.Encode(), nil)
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -363,7 +431,7 @@ func (s *IntegrationSuite) TestShowAll() {
 	}
 }
 
-func (s *IntegrationSuite) TestShow() {
+func (s *IntegrationSuite) TestUserShow() {
 
 	testCases := []struct {
 		name   string
@@ -374,13 +442,13 @@ func (s *IntegrationSuite) TestShow() {
 		{
 			name:   "Wrongly formatted token",
 			token:  "wrong_token",
-			ID:     "generic_ID",
+			ID:     "genericID",
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:   "Not an admin",
 			token:  s.params["authToken"],
-			ID:     "generic_ID",
+			ID:     "genericID",
 			status: http.StatusUnauthorized,
 		},
 		{
@@ -402,7 +470,7 @@ func (s *IntegrationSuite) TestShow() {
 		// create a request for the self endpoint
 		var req *http.Request
 
-		req, _ = http.NewRequest("GET", "/admin/user/"+tc.ID, nil)
+		req, _ = http.NewRequest("GET", "/api/admin/user/"+tc.ID, nil)
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -434,7 +502,7 @@ func (s *IntegrationSuite) TestShow() {
 	}
 }
 
-func (s *IntegrationSuite) TestDelete() {
+func (s *IntegrationSuite) TestUserDelete() {
 
 	testCases := []struct {
 		name   string
@@ -445,13 +513,13 @@ func (s *IntegrationSuite) TestDelete() {
 		{
 			name:   "Wrongly formatted token",
 			token:  "wrong_token",
-			ID:     "generic_ID",
+			ID:     "genericID",
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:   "Not an admin",
 			token:  s.params["authToken"],
-			ID:     "generic_ID",
+			ID:     "genericID",
 			status: http.StatusUnauthorized,
 		},
 		{
@@ -473,7 +541,7 @@ func (s *IntegrationSuite) TestDelete() {
 		// create a request for the self endpoint
 		var req *http.Request
 
-		req, _ = http.NewRequest("DELETE", "/admin/user/"+tc.ID, nil)
+		req, _ = http.NewRequest("DELETE", "/api/admin/user/"+tc.ID, nil)
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -484,5 +552,318 @@ func (s *IntegrationSuite) TestDelete() {
 		// assert that the response status code is as expected
 		s.Require().Equal(tc.status, w.Code)
 
+	}
+}
+
+// BARBER SHOPS
+
+func (s *IntegrationSuite) TestBarberShopFind() {
+
+	testCases := []struct {
+		name           string
+		lat            string
+		lon            string
+		radius         string
+		token          string
+		status         int
+		barberShopName string
+		resultCount    int
+		res            interface{}
+	}{
+		{
+			name:   "Unauthorized",
+			status: http.StatusUnauthorized,
+		},
+		{
+			name:        "All barbershops",
+			status:      http.StatusOK,
+			token:       s.params["authToken"],
+			resultCount: 3,
+		},
+		{
+			name:        "No barbershop near where you are",
+			lat:         "1.1",
+			lon:         "1.1",
+			radius:      "1",
+			token:       s.params["authToken"],
+			status:      http.StatusOK,
+			resultCount: 0,
+		},
+		{
+			name:           "No barbershop for this name",
+			barberShopName: "not_existing_shop",
+			token:          s.params["authToken"],
+			status:         http.StatusOK,
+			resultCount:    0,
+		},
+		{
+			name:           "Two barbershop found for this name",
+			barberShopName: "not_existing_shop",
+			token:          s.params["authToken"],
+			status:         http.StatusOK,
+			resultCount:    2,
+		},
+		{
+			name:        "Found 1 barbershop near you",
+			lat:         "1.1",
+			lon:         "1.1",
+			radius:      "100",
+			token:       s.params["authToken"],
+			status:      http.StatusOK,
+			resultCount: 1,
+		},
+	}
+
+	for _, tc := range testCases {
+
+		// create a request for the self endpoint
+		var req *http.Request
+
+		query := url.Values{
+			"name":   {tc.name},
+			"lat":    {tc.lat},
+			"lon":    {tc.lon},
+			"radius": {tc.radius},
+		}
+
+		req, _ = http.NewRequest("GET", "/api/admin/user"+query.Encode(), nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Add("Authorization", "Bearer "+tc.token)
+
+		// serve the request to the test server
+		w := httptest.NewRecorder()
+		s.srv.ServeHTTP(w, req)
+
+		if w.Code == http.StatusAccepted {
+
+			body, err := io.ReadAll(w.Body)
+
+			// require no error in reading the response
+			s.Require().Nil(err)
+
+			type response struct {
+				BarberShops []entity.User `json:"barberShops"`
+			}
+
+			var res response
+
+			err = json.Unmarshal(body, &res)
+			s.Require().Nil(err)
+
+			// assert that the number of returned user is as expected
+			s.Require().Equal(tc.resultCount, len(res.BarberShops))
+		}
+
+		// assert that the response status code is as expected
+		s.Require().Equal(tc.status, w.Code)
+
+	}
+}
+
+// TODO : check if the viewShop is stored
+func (s *IntegrationSuite) TestBarberShopShow() {
+	testCases := []struct {
+		name   string
+		token  string
+		ID     string
+		status int
+	}{
+		{
+			name:   "Wrongly formatted token",
+			token:  "wrong_token",
+			status: http.StatusUnauthorized,
+		},
+		{
+			name:   "Correctly shown user",
+			token:  s.params["authToken"],
+			ID:     s.params["authID"], // TODO fix this with a barberShopID
+			status: http.StatusOK,
+		},
+		{
+			name:   "User not exists",
+			token:  s.params["authToken"],
+			ID:     "wrong_ID",
+			status: http.StatusNotFound,
+		},
+	}
+
+	for _, tc := range testCases {
+
+		// create a request for the self endpoint
+		var req *http.Request
+
+		req, _ = http.NewRequest("GET", "/api/barber_shop/"+tc.ID, nil)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Add("Authorization", "Bearer "+tc.token)
+
+		// serve the request to the test server
+		w := httptest.NewRecorder()
+		s.srv.ServeHTTP(w, req)
+
+		// assert that the response status code is as expected
+		s.Require().Equal(tc.status, w.Code)
+
+		// check for user len if the request was accepted
+		if w.Code == http.StatusAccepted {
+
+			body, err := io.ReadAll(w.Body)
+
+			// require no error in reading the response
+			s.Require().Nil(err)
+
+			type response struct {
+				Barber entity.BarberShop `json:"barber"`
+			}
+
+			var res response
+			err = json.Unmarshal(body, &res)
+			s.Require().Nil(err)
+		}
+
+	}
+}
+func (s *IntegrationSuite) TestBarberShopStore() {
+
+	testCases := []struct {
+		name          string
+		token         string
+		newBarberShop *entity.BarberShop
+		status        int
+	}{
+		{
+			name:          "Require login",
+			newBarberShop: &entity.BarberShop{Name: "barberShop7"},
+			status:        http.StatusUnauthorized,
+		},
+		{
+			name:          "Require admin",
+			token:         s.params["authToken"],
+			newBarberShop: &entity.BarberShop{Name: "barberShop7"},
+			status:        http.StatusUnauthorized,
+		},
+		{
+			name:          "Already exists",
+			token:         s.params["adminToken"],
+			newBarberShop: &entity.BarberShop{Name: "barberShop1"},
+			status:        http.StatusUnauthorized,
+		},
+		{
+			name:   "Invalid input",
+			token:  s.params["adminToken"],
+			status: http.StatusBadRequest,
+		},
+		{
+			name:          "Correctly Created",
+			token:         s.params["adminToken"],
+			newBarberShop: &entity.BarberShop{Name: "barberShop7"},
+			status:        http.StatusCreated,
+		},
+	}
+
+	for _, tc := range testCases {
+		newBarberShopJson, _ := json.Marshal(tc.newBarberShop)
+
+		// create a request for the register endpoint
+		req, _ := http.NewRequest("POST", "/api/admin/barber_shop/", bytes.NewBuffer(newBarberShopJson))
+		req.Header.Set("Content-Type", "application/json")
+
+		// serve the request to the test server
+		w := httptest.NewRecorder()
+		s.srv.ServeHTTP(w, req)
+
+		// assert that the response status code is as expected
+		s.Require().Equal(tc.status, w.Code)
+	}
+}
+func (s *IntegrationSuite) TestBarberShopModifyByID() {
+	testCases := []struct {
+		name           string
+		token          string
+		ID             string
+		editBarberShop *entity.BarberShop
+		status         int
+	}{
+		{
+			name:           "Require login",
+			editBarberShop: &entity.BarberShop{EmployeesNumber: 2},
+			ID:             "genericID",
+			status:         http.StatusUnauthorized,
+		},
+		{
+			name:           "Require barber",
+			token:          s.params["authToken"],
+			editBarberShop: &entity.BarberShop{EmployeesNumber: 3},
+			status:         http.StatusUnauthorized,
+			ID:             "genericID",
+		},
+		{
+			name:           "Require to be a barber in that shop",
+			token:          s.params["barber1Auth"],
+			editBarberShop: &entity.BarberShop{Name: "barberShop1"},
+			status:         http.StatusUnauthorized,
+			ID:             s.params["barberShop2ID"],
+		},
+		{
+			name:           "Correctly Modified",
+			token:          s.params["barber1Auth"],
+			editBarberShop: &entity.BarberShop{Name: "barberShop1"},
+			status:         http.StatusAccepted,
+			ID:             s.params["barberShop1ID"],
+		},
+	}
+
+	for _, tc := range testCases {
+
+		editBarberShopJson, _ := json.Marshal(tc.editBarberShop)
+
+		// create a request for the register endpoint
+		req, _ := http.NewRequest("PUT", "/api/barber_shop/"+tc.ID, bytes.NewBuffer(editBarberShopJson))
+		req.Header.Set("Content-Type", "application/json")
+
+		// serve the request to the test server
+		w := httptest.NewRecorder()
+		s.srv.ServeHTTP(w, req)
+
+		// assert that the response status code is as expected
+		s.Require().Equal(tc.status, w.Code)
+	}
+}
+func (s *IntegrationSuite) TestBarberShopDeleteByID() {
+
+	testCases := []struct {
+		name   string
+		token  string
+		ID     string
+		status int
+	}{
+		{
+			name:   "Require Login",
+			status: http.StatusUnauthorized,
+			ID:     s.params["barberShop2ID"],
+		},
+		{
+			name:   "Require admin",
+			token:  s.params["authToken"],
+			ID:     s.params["barberShop2ID"],
+			status: http.StatusUnauthorized,
+		},
+		{
+			name:   "Correctly Eliminated",
+			token:  s.params["adminToken"],
+			ID:     s.params["barberShop2ID"],
+			status: http.StatusAccepted,
+		},
+	}
+
+	for _, tc := range testCases {
+		// create a request for the register endpoint
+		req, _ := http.NewRequest("DELETE", "/api/admin/barber_shop/", nil)
+
+		// serve the request to the test server
+		w := httptest.NewRecorder()
+		s.srv.ServeHTTP(w, req)
+
+		// assert that the response status code is as expected
+		s.Require().Equal(tc.status, w.Code)
 	}
 }

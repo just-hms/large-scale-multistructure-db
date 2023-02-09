@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"large-scale-multistructure-db/be/internal/controller/middleware"
 	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/internal/usecase"
@@ -56,8 +57,8 @@ func (br *BarberShopRoutes) Create(ctx *gin.Context) {
 
 	_, err := br.barberShopUseCase.Store(ctx, &entity.BarberShop{
 		Name:            input.Name,
-		Latitude:        input.Latitude,
-		Longitude:       input.Longitude,
+		Latitude:        fmt.Sprintf("%f", input.Latitude),
+		Longitude:       fmt.Sprintf("%f", input.Longitude),
 		EmployeesNumber: input.EmployeesNumber,
 		AverageRating:   input.AverageRating,
 	})
@@ -114,8 +115,8 @@ func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
 
 	err := br.barberShopUseCase.ModifyByID(ctx, ID, &entity.BarberShop{
 		Name:            input.Name,
-		Latitude:        input.Latitude,
-		Longitude:       input.Longitude,
+		Latitude:        fmt.Sprintf("%f", input.Latitude),
+		Longitude:       fmt.Sprintf("%f", input.Longitude),
 		EmployeesNumber: input.EmployeesNumber,
 		AverageRating:   input.AverageRating,
 	})

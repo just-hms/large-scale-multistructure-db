@@ -62,6 +62,7 @@ func (uc *UserUseCase) DeleteByID(ctx context.Context, ID string) error {
 	return uc.repo.DeleteByID(ctx, ID)
 }
 
+// TODO: retrieve also the ID and barberShopsIDs
 func (uc *UserUseCase) GetByID(ctx context.Context, ID string) (*entity.User, error) {
 	return uc.repo.GetByID(ctx, ID)
 }
@@ -79,6 +80,7 @@ func (uc *UserUseCase) ModifyByID(ctx context.Context, ID string, user *entity.U
 	return uc.repo.ModifyByID(ctx, ID, user)
 }
 
+// TODO: retrieve also the ID and barberShopsIDs
 func (uc *UserUseCase) List(ctx context.Context, email string) ([]*entity.User, error) {
 	return uc.repo.List(ctx, email)
 }

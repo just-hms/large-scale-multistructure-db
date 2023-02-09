@@ -103,7 +103,7 @@ func TestLogin(t *testing.T) {
 		})
 	}
 }
-func TestStore(t *testing.T) {
+func TestUserStore(t *testing.T) {
 	t.Parallel()
 
 	user, repo, password := userHelper(t)
@@ -165,7 +165,7 @@ func TestStore(t *testing.T) {
 	}
 }
 
-func TestModifyByID(t *testing.T) {
+func TestUserModifyByID(t *testing.T) {
 	t.Parallel()
 
 	user, repo, _ := userHelper(t)
@@ -217,7 +217,7 @@ func TestModifyByID(t *testing.T) {
 	}
 }
 
-func TestLostPassword(t *testing.T) {
+func TestUserLostPassword(t *testing.T) {
 	t.Parallel()
 
 	user, repo, _ := userHelper(t)
@@ -259,7 +259,7 @@ func TestLostPassword(t *testing.T) {
 	}
 }
 
-func TestResetPassword(t *testing.T) {
+func TestUserResetPassword(t *testing.T) {
 	t.Parallel()
 
 	user, repo, password := userHelper(t)

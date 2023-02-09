@@ -18,14 +18,10 @@ RUN npm run deploy
 
 FROM nginx:alpine
 
-COPY ./.nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./.nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 ## Remove default nginx index page
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy from the stahg 1
 COPY --from=frontend_builder /nextjs-ui/out /usr/share/nginx/html
-
-EXPOSE 3000 80
-
-ENTRYPOINT ["nginx", "-d"]
