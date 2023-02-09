@@ -135,6 +135,60 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downv
         "$push": {"reviews":review}
     })
 
+def addViewToShop(shopsCollection,shopId,userId,createdAt:str):
+    """Adds a view info to the specified shop"""
+
+    #Create the view dict structure
+    view = {}
+    view["userId"] = userId
+    view["createdAt"] = createdAt
+
+    #Update the specified user's appointment
+    shopsCollection.update_one({
+        "_id": shopId
+    },{
+        "$push": {"views":view}
+    })
+
+def addAppointmentToShop(shopsCollection,shopId,userId,createdAt:str,startDate:str):
+    """Adds current appointment info to the specified user"""
+
+    #Create the appointment dict structure
+    appointment = {}
+    appointment["userId"] = userId
+    appointment["createdAt"] = createdAt
+    appointment["startDate"] = startDate
+
+    #Update the specified user's appointment
+    shopsCollection.update_one({
+        "_id": shopId
+    },{
+        "$push": {"appointments":appointment}
+    })
+
+def fakeView(shopsCollection,shopId,userId):
+    """Generate a fake view between a chosen user and a shop."""
+
+    #Fake view date
+    viewDate = fake.date_time_between(start_date='-10y', end_date='now').strftime("%d/%m/%Y %H:%M")
+
+    #Add data to the DB
+    addViewToShop(shopsCollection,shopId,userId,viewDate)
+
+def fakeAppointment(usersCollection,shopsCollection,shopId,userId):
+    """Generate a fake appointment between a chosen user and a shop."""
+
+    #Fake dates
+    creationDateTime = fake.date_time_between(start_date='-10y', end_date='-1m')
+    startDateTime = fake.date_time_between(start_date='-5d', end_date=creationDateTime).strftime("%d/%m/%Y %H:%M")
+
+    #Get shop name
+    shopName = shopsCollection.find_one({"_id":shopId})["name"]
+
+    #Add data to the DB
+    addAppointmentToUser(usersCollection,userId,shopId,shopName,creationDateTime,startDateTime)
+    addAppointmentToShop(shopsCollection,shopId,userId,creationDateTime,startDateTime)
+
 
 def main():
 
