@@ -4,9 +4,10 @@ from pymongo.errors import DuplicateKeyError
 from faker import Faker
 
 import json
+import random
+import time
 
 #Type hinting imports
-from datetime import datetime
 from typing import Literal
 
 fake = Faker()
