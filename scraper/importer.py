@@ -26,6 +26,8 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     If a user with the same username already existed, return -1.
     """
 
+    #Clean the username first as it might contain spaces
+    userName = userName.replace(" ", "")
     #Create the user dict structure
     user = {}
     user["username"] = userName
