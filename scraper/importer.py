@@ -74,6 +74,8 @@ def makeShop(shopsCollection,shopData:dict)->int:
     shop["coordinates"] = {}
     shop["coordinates"]["lat"] = float(lat)
     shop["coordinates"]["lon"] = float(lon)
+    ##Fake number of employees
+    shop["employees"] = random.randint(1,3)
     ##Prepare fields
     shop["appointments"] = []
     shop["views"] = []
