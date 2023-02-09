@@ -44,15 +44,8 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     except DuplicateKeyError:
         return -1
 
-def addAppointmentToUser(usersCollection,userId,shopId:str,shopName:str,createdAt:str,startDate:str):
+def addAppointmentToUser(usersCollection,userId,appointment):
     """Adds current appointment info to the specified user"""
-
-    #Create the appointment dict structure
-    appointment = {}
-    appointment["shopId"] = shopId
-    appointment["shopName"] = shopName
-    appointment["createdAt"] = createdAt
-    appointment["startDate"] = startDate
 
     #Update the specified user's appointment
     usersCollection.update_one({
@@ -135,59 +128,71 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downv
         "$push": {"reviews":review}
     })
 
-def addViewToShop(shopsCollection,shopId,userId,createdAt:str):
-    """Adds a view info to the specified shop"""
+def addViewsToShop(shopsCollection,shopId,viewsList):
+    """Adds a list of view info to the specified shop"""
 
-    #Create the view dict structure
-    view = {}
-    view["userId"] = userId
-    view["createdAt"] = createdAt
-
-    #Update the specified user's appointment
+    #Update the specified shop's views
     shopsCollection.update_one({
         "_id": shopId
     },{
-        "$push": {"views":view}
+        "$set": {"views":viewsList}
     })
 
-def addAppointmentToShop(shopsCollection,shopId,userId,createdAt:str,startDate:str):
+def addAppointmentsToShop(shopsCollection,shopId,shopAppointmentsList):
     """Adds current appointment info to the specified user"""
 
-    #Create the appointment dict structure
-    appointment = {}
-    appointment["userId"] = userId
-    appointment["createdAt"] = createdAt
-    appointment["startDate"] = startDate
-
     #Update the specified user's appointment
     shopsCollection.update_one({
         "_id": shopId
     },{
-        "$push": {"appointments":appointment}
+        "$set": {"appointments":shopAppointmentsList}
     })
 
-def fakeView(shopsCollection,shopId,userId):
-    """Generate a fake view between a chosen user and a shop."""
+def fakeViews(shopsCollection,shopId,userList,maxViewsAmount=1500):
+    """Generate fake views up to maxAmount. Needs an array of userIds to choose from. 
+        Returns array of generated userId-creationDate pairs."""
 
-    #Fake view date
-    viewDate = fake.date_time_between(start_date='-10y', end_date='now').strftime("%d/%m/%Y %H:%M")
+    #Get a random amount 
+    viewsAmount = random.randint(1,maxViewsAmount)
 
-    #Add data to the DB
-    addViewToShop(shopsCollection,shopId,userId,viewDate)
-
-def fakeAppointment(usersCollection,shopsCollection,shopId,userId):
-    """Generate a fake appointment between a chosen user and a shop."""
-
-    #Fake dates
-    creationDateTime = fake.date_time_between(start_date='-10y', end_date='-1m')
-    startDateTime = fake.date_time_between(start_date='-5d', end_date=creationDateTime).strftime("%d/%m/%Y %H:%M")
-
-    #Get shop name
-    shopName = shopsCollection.find_one({"_id":shopId})["name"]
+    viewsUserList = []
+    for _ in range(viewsAmount):
+        randomUserId = random.choice(userList)
+        #Fake view date
+        viewDate = fake.date_time_between(start_date='-10y', end_date='now')
+        viewsUserList.append({"userId":randomUserId,"viewCreation":viewDate})
 
     #Add data to the DB
-    addAppointmentToUser(usersCollection,userId,shopId,shopName,creationDateTime,startDateTime)
-    addAppointmentToShop(shopsCollection,shopId,userId,creationDateTime,startDateTime)
+    addViewsToShop(shopsCollection,shopId,viewsUserList)
+
+    #Return view date
+    return viewsUserList
+
+def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,maxAppointmentsAmount=200):
+    """Generate fake appointments up to maxAmount. Needs an array of {userId,viewDate} to choose from."""
+
+    #Get a random amount 
+    appointmentsAmount = random.randint(1,maxAppointmentsAmount)
+
+    #Prepare list of data to be inserted in the DB
+    shopAppointmentsList = []
+    for _ in range(appointmentsAmount):
+        randomView = random.choice(viewsList)
+        appointment = {}
+        #Fake appointment date
+        appointment["createdAt"] = fake.date_time_between(start_date=randomView["viewCreation"], end_date=randomView["viewCreation"]+timedelta(minutes=5))
+        appointment["startDate"] = fake.date_time_between(start_date=appointment["createdAt"], end_date=appointment["createdAt"]+timedelta(days=5))
+        #Make a copy to be used for users
+        userAppointment = appointment.copy()
+        userAppointment["shopId"] = shopId
+        userAppointment["shopName"] = shopName
+        addAppointmentToUser(usersCollection,randomView["userId"],userAppointment)
+        #Fill appointment info for the shop
+        appointment["userId"] = randomView["userId"]
+        shopAppointmentsList.append(appointment)
+
+    #Add data to the DB
+    addAppointmentsToShop(shopsCollection,shopId,shopAppointmentsList)
 
 def fakeUserList(userList,maxAmount=50):
     """Pull a random list of at max maxAmount users. Used to create upvotes and downvotes lists."""
@@ -257,14 +262,11 @@ def main():
                     addReviewToShop(barberShopsCollectionMongo,shopId,userId,review,fakeUserList(generatedUsersIds),fakeUserList(generatedUsersIds,5))
             ##Fake interaction stuff we do not have: Views, Appointments
 
-            #Fake a random amount of views from random users. Max 1000.
-            viewsAmount = random.randint(1,10000)
-            for _ in range(1,viewsAmount):
-                fakeView(usersCollectionMongo,shopId,random.choice(generatedUsersIds))
+            #Fake a random amount of views from random users. Max 1500.
+            viewsUserList = fakeViews(barberShopsCollectionMongo,shopId,generatedUsersIds,1500)
             #Fake a random number of appointments
-            appointmentsAmount = random.randint(50,1000)
-            for _ in range(1,appointmentsAmount):
-                fakeAppointment(usersCollectionMongo,barberShopsCollectionMongo,shopId,random.choice(generatedUsersIds))
+            fakeAppointments(usersCollectionMongo,barberShopsCollectionMongo,shopId,shop["name"],viewsUserList,200)
+
 
     #Print results
     end_time = time.perf_counter()
