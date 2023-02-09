@@ -224,16 +224,46 @@ def main():
     with open("aioScrapingResults.json","r") as scrapedDataFile:
         scrapedData = json.load(scrapedDataFile)
 
-    #TODO:Test, remove later
-    shop = scrapedData["Roma"][0]
-    shopId = makeShop(barberShopsCollectionMongo,shop)
-    for review in shop["reviewData"]["reviews"]:
-        userId = makeUser(usersCollectionMongo,review["username"],"user")
-        if userId != -1:
-            addReviewToShop(barberShopsCollectionMongo,shopId,userId,review)
-    cursor = barberShopsCollectionMongo.find({})
-    for doc in cursor:
-        print(doc)
+    #Prepare useful data structures
+    generatedShopsIds = []
+    generatedUsersIds = []
+    importedShops = 0
+
+    #Go through the scraped data, location by location
+    for _, shopsList in scrapedData.items():
+        for shop in shopsList:
+            print(f">> Importing {shop['name']}")
+            importedShops += 1
+            #Generate a shop entry in the database
+            shopId = makeShop(barberShopsCollectionMongo,shop)
+            generatedShopsIds.append(shopId)
+            #Generate a fake barber user for the shop and save its id.
+            #We might accidentally generate a barber with the same username. Repeat until we succeed.
+            barberId = -1
+            while True:
+                barberId = fakeBarber(usersCollectionMongo)
+                if barberId != -1:
+                    break
+            #Add shop to list of shops owned by the barber
+            addOwnedShopToBarber(barberShopsCollectionMongo,usersCollectionMongo,barberId,shopId)
+            #Go through the reviews and generate users based on the found usernames. Skip if username already exists.
+            for review in shop["reviewData"]["reviews"]:
+                userId = makeUser(usersCollectionMongo,review["username"],"user")
+                if userId != -1:
+                    generatedUsersIds.append(userId)
+                    #Add review to shop while faking amount of upvotes and downvotes
+                    addReviewToShop(barberShopsCollectionMongo,shopId,userId,review,fakeUserList(generatedUsersIds),fakeUserList(generatedUsersIds,5))
+            ##Fake interaction stuff we do not have: Views, Appointments
+
+            #Fake a random amount of views from random users. Max 1000.
+            viewsAmount = random.randint(1,10000)
+            for _ in range(1,viewsAmount):
+                fakeView(usersCollectionMongo,shopId,random.choice(generatedUsersIds))
+            #Fake a random number of appointments
+            appointmentsAmount = random.randint(50,1000)
+            for _ in range(1,appointmentsAmount):
+                fakeAppointment(usersCollectionMongo,barberShopsCollectionMongo,shopId,random.choice(generatedUsersIds))
+
 
     #Go through the scraped data, location by location
     #for location, shopsList in scrapedData.items():
