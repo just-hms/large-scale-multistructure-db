@@ -189,6 +189,18 @@ def fakeAppointment(usersCollection,shopsCollection,shopId,userId):
     addAppointmentToUser(usersCollection,userId,shopId,shopName,creationDateTime,startDateTime)
     addAppointmentToShop(shopsCollection,shopId,userId,creationDateTime,startDateTime)
 
+def fakeUserList(userList,maxAmount=50):
+    """Pull a random list of at max maxAmount users. Used to create upvotes and downvotes lists."""
+
+    #Get minimum bewteen amount of users and maxAmount
+    maxAmount = len(userList) if len(userList)<maxAmount else maxAmount
+    #Get a random amount 
+    amount = random.randint(1,maxAmount)
+
+    #Extract the user ids
+    return random.choices(userList,k=amount) 
+
+
 
 def main():
 
