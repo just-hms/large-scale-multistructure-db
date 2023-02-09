@@ -56,6 +56,30 @@ def addAppointmentToUser(usersCollection,userId,shopId:str,shopName:str,startDat
         "$set": {"currentAppointment":appointment}
     })
 
+def fakeBarber(usersCollection):
+    """Makes a barber user with a faked name. Returns the newly inserted document id."""
+    fakeUserName = fake.simple_profile()["username"]
+    return makeUser(usersCollection,fakeUserName,"barber")
+
+def addOwnedShopToBarber(shopsCollection,usersCollection,userId,shopId):
+    """Adds the specified shop to the list of shops owned by a barber."""
+
+    #Check that the user is a barber first
+    user = usersCollection.find_one({"_id":userId})
+    if user["type"] != "barber":
+        print("Only barbers can own shops!")
+        return
+
+    shop = {}
+    shop["shopId"] = shopId
+    shop["name"] = shopsCollection.find_one({"_id":shopId})["name"]
+
+    usersCollection.update_one({
+        "_id": userId
+    },{
+        "$push": {"ownedShops":shop}
+    })
+
 def makeShop(shopsCollection,shopData:dict)->int:
     """Function used to generate a new barber shop. Uses the data format from the scraper. Returns the newly inserted document id."""
 
