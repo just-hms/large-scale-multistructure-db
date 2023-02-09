@@ -43,13 +43,14 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     except DuplicateKeyError:
         return -1
 
-def addAppointmentToUser(usersCollection,userId,shopId:str,shopName:str,startDate:datetime,duration:datetime):
+def addAppointmentToUser(usersCollection,userId,shopId:str,shopName:str,createdAt:str,startDate:str):
     """Adds current appointment info to the specified user"""
 
     #Create the appointment dict structure
     appointment = {}
     appointment["shopId"] = shopId
     appointment["shopName"] = shopName
+    appointment["createdAt"] = createdAt
     appointment["startDate"] = startDate
 
     #Update the specified user's appointment
