@@ -34,6 +34,7 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     user["email"] = f"{userName}@barbershop.com"
     user["password"] = f"{userName}1234"
     user["type"] = type
+    user["ownedShops"] = []
     user["currentAppointment"] = {}
 
     #Add user to the db and return its new id
