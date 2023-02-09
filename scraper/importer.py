@@ -203,6 +203,8 @@ def fakeUserList(userList,maxAmount=50):
 
 
 def main():
+    start_time = time.perf_counter()
+    print("> Starting BarberShop importer\n")
 
     #Establish connection to databases
     mongoClient = MongoClient('localhost', 27017)
@@ -264,11 +266,12 @@ def main():
             for _ in range(1,appointmentsAmount):
                 fakeAppointment(usersCollectionMongo,barberShopsCollectionMongo,shopId,random.choice(generatedUsersIds))
 
+    #Print results
+    end_time = time.perf_counter()
+    print(f"\n## Imported {importedShops} in {end_time - start_time} seconds")
+    print(f"## Database statistics:\n")
+    print(barberDatabaseMongo.command("dbstats"))
 
-    #Go through the scraped data, location by location
-    #for location, shopsList in scrapedData.items():
-    #    for shop in shopsList:
-    #        #Make the document structure the way we want to
 
 
 
