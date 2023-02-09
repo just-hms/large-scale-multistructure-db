@@ -7,7 +7,7 @@ import {faLocationDot} from "@fortawesome/free-solid-svg-icons";
 import {findShops} from "../lib/search"
 import ShopsFound from "../components/search_components/shops_found"
 import Link from "next/link";
-import { withSessionSsr } from '../lib/config/withSession';
+import Footer from "../components/footer";
 
 export default function Search({shopData}:any) {
     const router = useRouter()
@@ -17,8 +17,31 @@ export default function Search({shopData}:any) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [loaded,setLoaded] = useState(false)
+
+    // SEARCH BAR FILTER
+    const [query, setQuery] = useState('');
+
+    const searchFilter = (shops:any) => {
+      return shops.filter(
+        (el:any) => el.name.toLowerCase().includes(query.toLocaleLowerCase())
+      )
+    }
+    const filteredShops = searchFilter(shopData)
+  
+    //Handling the input on our search bar
+    const handleChange = (e:any) => {
+      setQuery(e.target.value)
+    }  
+
+
     useEffect(() => {
-      fetch("https://api.geoapify.com/v1/geocode/search?text="+area+"&apiKey=66c0af4256094d7f93fd472e1a188390")
+      const token = localStorage.getItem('token')
+      if(!token){
+        router.push("/")
+      }else{
+        setLoaded(true)
+        fetch("https://api.geoapify.com/v1/geocode/search?text="+area+"&apiKey=66c0af4256094d7f93fd472e1a188390")
         .then(response => response.json())
         .then((usefulData) => {
           // console.log(usefulData);
@@ -28,8 +51,12 @@ export default function Search({shopData}:any) {
         .catch((e) => {
           console.error(`An error occurred: ${e}`)
         });
+      }
     }, [area]);
 
+    if(!loaded){
+      return <div></div> //show nothing or a loader
+    }
     return (
     <>
     <Head>
@@ -56,9 +83,10 @@ export default function Search({shopData}:any) {
             <div className="w-full lg:w-2/3 flex items-center justify-center">
                 <div className='w-full my-5 lg:m-5 flex items-center justify-center rounded-full bg-red-900 bg-opacity-60 backdrop-blur-lg drop-shadow-lg'>
                   <input
-                    type="search"
+                    type="text"
                     className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none" 
                     form-control id="barberSearch" placeholder="Search"
+                    onChange={handleChange}
                   />
                   <button className="btn inline-block px-6 py-5 m-1 bg-red-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg text-white font-medium text-xs leading-tight uppercase rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out flex items-center" type="button" id="search_button">
                     <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" className="w-4 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -70,26 +98,21 @@ export default function Search({shopData}:any) {
         </div>
         <div className="w-full flex flex-col lg:flex-row items-center lg:items-start">
             {/* SHOPS */}
-            <div className="w-full flex flex-col items-center justify-center">
-                <ShopsFound shops={shopData}/>
+            <div className="w-full flex h-screen flex-col items-center justify-start">
+                <ShopsFound shops={filteredShops}/>
             </div>
         </div>
     </div>
+    <Footer/>
     </>
     )
 }
 
-export const getServerSideProps = withSessionSsr(
-  async ({req, res}:{req:any,res:any}) => {
-      const user = req.session.user;
-      const shopData = findShops()
-      if(!user) {
-          return {
-              notFound: true,
-          }
-      }
-      return {
-          props: { user, shopData }
-      }
+export async function getStaticProps(){
+  const shopData = await findShops()
+  return {
+      props: {
+        shopData
+      },
   }
-);
+}

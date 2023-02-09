@@ -6,14 +6,28 @@ import UserInfos from '../components/user_components/account_infos';
 import AccountReservation from '../components/user_components/account_reservations';
 import Footer from '../components/footer';
 import {getReservation}  from '../lib/user';
-import { withSessionSsr } from '../lib/config/withSession';
+import { useRouter } from 'next/router';
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function User({user, reservationData}:any) {
-
+export default function User({reservationData}:any) {
+  const router = useRouter()
+  const [loaded,setLoaded] = useState(false)
   const [content, setContent] = useState("account_info");
   let displayed_element;
+
+  useEffect(()=>{
+    const token = localStorage.getItem('token')
+    if(!token){
+      router.push("/")
+    }else{
+      setLoaded(true)
+    }
+  },[])
+  
+  if(!loaded){
+    return <div></div> //show nothing or a loader
+  }
   if (content == "account_info") {
     displayed_element = <UserInfos/>;
   } else if (content == "account_reservation"){
@@ -40,12 +54,6 @@ export default function User({user, reservationData}:any) {
                 <li>
                     <button className={`hover:text-white focus:outline-none ${content == "account_reservation" ? "font-bold" : ""}`} onClick={event => {setContent("account_reservation")}}>Last booked session</button>
                 </li>
-                <li>
-                    <button className={`hover:text-white focus:outline-none ${content == "" ? "font-bold" : ""}`}>button button</button>
-                </li>
-                <li>
-                    <button className={`hover:text-white focus:outline-none ${content == "" ? "font-bold" : ""}`}>button button</button>
-                </li>
             </ul>
         </div>
 
@@ -59,17 +67,9 @@ export default function User({user, reservationData}:any) {
 }
 
 
-export const getServerSideProps = withSessionSsr(
-  async ({req, res}:{req:any,res:any}) => {
-      const user = req.session.user;
-      const reservationData =  getReservation("user");
-      if(!user) {
-          return {
-              notFound: true,
-          }
-      }
-      return {
-          props: { user, reservationData }
-      }
+export async function getStaticProps(){
+  const reservationData =  getReservation("user");
+  return {
+      props: {reservationData }
   }
-);
+}

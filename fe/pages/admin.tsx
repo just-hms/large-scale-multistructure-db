@@ -4,14 +4,32 @@ import {useEffect, useState, useRef} from 'react';
 import Footer from '../components/footer';
 import ManageUsers from '../components/admin_components/manage_accounts';
 import ReportedReviews from '../components/admin_components/reported_reviews';
-import { getReviews } from '../lib/admin';
+import { getAccountInfos, getReviews } from '../lib/admin';
 import CreateShop from '../components/admin_components/create_shop';
+import { useRouter } from 'next/router';
 
-export default function Admin({reviewsData}:any) {
+export default function Admin({reviewsData, accountsData}:any) {
   const [content, setContent] = useState("manage_accounts");
+  const router = useRouter()
   let displayed_element;
+  const [loaded,setLoaded] = useState(false)
+  useEffect(()=>{
+    const fetchAccountsData = async () => {
+      const response = await getAccountInfos()
+      console.log(response)
+    }
+    const token = localStorage.getItem('token')
+    // TODO: check isAdmin
+    if(!token){
+      router.push("/")
+    }else{
+      // fetchAccountsData()
+      setLoaded(true)
+    }
+  },[])
+
   if (content == "manage_accounts") {
-    displayed_element = <ManageUsers/>;
+    displayed_element = <ManageUsers accounts={[{id:1111,name:"Pippo",type:"user"},{id:1111,name:"Topolino",type:"user"}]}/>;
   } else if (content == "reported_reviews"){
     displayed_element = <ReportedReviews reported_reviews={reviewsData}/>
   } else if(content == "view_analytics"){
@@ -19,6 +37,11 @@ export default function Admin({reviewsData}:any) {
   } else if(content == "create_shop"){
     displayed_element = <CreateShop/>;
   }
+
+  if(!loaded){
+    return <div></div> 
+  }
+
   return (
     <>
     <Head>
@@ -58,7 +81,6 @@ export default function Admin({reviewsData}:any) {
 
 export async function getStaticProps() {
   // TODO: actually retrieve datas
-  // const postData = getShopData(params.shop)
   const reviewsData =  await getReviews("shopname")
   return {
     props: {

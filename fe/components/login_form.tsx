@@ -4,6 +4,8 @@ import {useState, useEffect} from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
 import barber_icon from '../public/barber-shop.png'
+import { signin } from '../lib/user';
+
 
 export default function LoginForm() {
     const router = useRouter()
@@ -13,18 +15,14 @@ export default function LoginForm() {
             email: '',
             password: ''
         },
-        onSubmit: async (values) => {
-            let email = values.email
-            let password = values.password
-            const response = await fetch("/api/session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
-            if (response.ok) {
+        onSubmit: async (values) =>{
+            const response = await signin(values)
+            const response_json = await response.json()
+            if (response.ok){
+                localStorage.setItem("token", response_json.token)
                 return router.push("/home");
-            }else if(response.status === 403){
-                console.log("username/pswd wrong")
+            }else{
+                // TODO
             }
         },
     });

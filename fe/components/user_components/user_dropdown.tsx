@@ -34,13 +34,8 @@ export default function UserDropdown({elements}:any){
                     if(element === "Profile"){
                       return router.push("/user");
                     }else{
-                      const response = await fetch("/api/logout", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" }
-                      });
-                      if (response.ok) {
+                        localStorage.clear()
                         return router.push("/");
-                      }
                     }
                     }}>
                     {element}

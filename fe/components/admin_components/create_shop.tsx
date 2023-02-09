@@ -19,9 +19,9 @@ return (
           <form className="space-y-4 md:space-y-6 w-full flex flex-col justify-center items-center" onSubmit={formik.handleSubmit}>
               <h1 className='text-xl font-bold text-center w-full lg:w-3/4 border-b border-slate-500'>Create Shop</h1>
               <div className='w-full lg:w-3/4'>
-                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-slate-200">Shop`&apos`s Name</label>
+                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-slate-200">Shop Name</label>
                   <input type="text" name="name" id="name" onChange={formik.handleChange} value={formik.values.name} className="border border-slate-600 text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" placeholder="Name" required/>
-                  <label htmlFor="description" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Shop`&apos`s Description</label>
+                  <label htmlFor="description" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Shop Description</label>
                   <input type="text" name="description" id="description" onChange={formik.handleChange} value={formik.values.description} placeholder="Description" className="border border-slate-600 text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" required/>
               </div>
               <div className='flex w-full lg:w-3/4 items-center justify-end'>

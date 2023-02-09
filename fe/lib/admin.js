@@ -1,3 +1,14 @@
+import {headers} from "./request-utils"
+const url = "http://127.0.0.1:7000/" 
+
+export async function getAccountInfos(){
+  const response = await fetch(url+`/admin/user?email=""`, {
+    method: 'GET',
+    headers: headers(localStorage.getItem("token"))
+  })
+  return response;
+}
+
 export async function getReviews(shop) {
     // this function will retrieve all the shop reviews
     return [{

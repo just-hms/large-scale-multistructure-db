@@ -2,13 +2,30 @@ import { getAllShops, getReviews, getShopData } from '../../lib/shops';
 import Image from 'next/image';
 import Navbar from '../../components/navbar';
 import Head from 'next/head';
-import { withSessionSsr } from '../../lib/config/withSession';
 import barber_background from '../../public/barber_profile.jpg'
 import barber_propic from '../../public/barber_bg.png'
 import Footer from '../../components/footer';
 import Reviews from '../../components/shop_component/reviews';
 import ReactStars from 'react-stars'
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router'
+
 export default function Shop({ shopData, reviewsData }:{ shopData:any, reviewsData:any }) {
+
+  const [loaded,setLoaded] = useState(false)
+  const router = useRouter()
+  useEffect(()=>{
+    const token = localStorage.getItem('token')
+    if(!token){
+      router.push("/")
+    }else{
+      setLoaded(true)
+    }
+  },[])
+  
+  if(!loaded){
+    return <div></div> //show nothing or a loader
+  }
   return (
     <>
       <Head>
@@ -48,7 +65,7 @@ export default function Shop({ shopData, reviewsData }:{ shopData:any, reviewsDa
                             color2={'#ffffff'} />
                         </div>
                         <textarea className='bg-slate-700 focus:outline-none resize-none rounded-md p-1.5 text-sm break-words mt-1'  name="" id="" />
-                        <button type="submit" className="w-full text-sm bg-slate-700 hover:bg-slate-600 focus:outline-none rounded-lg border-slate-700 text-sm py-2 text-center mt-3 z-10">That`&apos`s what I thought</button>
+                        <button type="submit" className="w-full text-sm bg-slate-700 hover:bg-slate-600 focus:outline-none rounded-lg border-slate-700 text-sm py-2 text-center mt-3 z-10">What I thought</button>
                       </div>
                     </div>
                   </div>
@@ -97,38 +114,30 @@ export default function Shop({ shopData, reviewsData }:{ shopData:any, reviewsDa
   );  
 }
 
-export async function getServerSidePaths() {
+export async function getStaticPaths() {
   const paths = await getAllShops();
   return {
     paths: [{
       params: {
-        shop: 'shop1'
+        shop: 'pippo'
       },
     },{
       params: {
-        shop: 'shop2'
+        shop: 'pluto'
       },
     }],
     fallback: false,
   };
 }
 
-export const getServerSideProps = withSessionSsr(
-  async ({req, res}:{req:any,res:any}) => {
-      const user = req.session.user;
-      const reviewsData =  getReviews("shopname")
-      const shopData = {
-        name:"Barbiere di Siviglia",
-        title:"Barbiere di Siviglia",
-        description:"occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-      }
-      if(!user) {
-          return {
-              notFound: true,
-          }
-      }
-      return {
-          props: { user, shopData,reviewsData }
-      }
+export async function getStaticProps(){
+  const reviewsData =  await getReviews("shopname")
+  const shopData = {
+    name:"Barbiere di Siviglia",
+    title:"Barbiere di Siviglia",
+    description:"occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
   }
-);
+  return {
+      props: {shopData,reviewsData }
+  }
+  }

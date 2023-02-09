@@ -11,6 +11,7 @@ export default function ReportedReviews({reported_reviews}:any) {
                             Reported Reviews
                         </h1>
                     </div>
+                    {/* reviews */}
                     <div>
                     {reported_reviews.map((review:any)=>
                             <div key={review.id} className="w-full text-slate-200 p-3 pb-0">

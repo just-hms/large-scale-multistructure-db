@@ -4,13 +4,26 @@ import Image from 'next/image'
 import barber_background from '../public/barber_bg_1.png'
 import barber_background_vertical from '../public/barber_bg_vertical.png'
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
-import { withSessionSsr } from '../lib/config/withSession';
 
-export default function Home({user}:any){
+export default function Home(){
+  // CHECK IF THERE'S A TOKEN
+  const [loaded,setLoaded] = useState(false)
   const [query, setQuery] = useState('');
   const router = useRouter()
+  useEffect(()=>{
+    const token = localStorage.getItem('token')
+    if(!token){
+      router.push("/")
+    }else{
+      setLoaded(true)
+    }
+  },[])
+  // trick mistico
+  if(!loaded){
+    return <div></div> //show nothing or a loader
+  }
   const handleChange=(event:any)=>{
     setQuery(event.target.value);
   }
@@ -26,9 +39,9 @@ export default function Home({user}:any){
         <title>Home | Barber Shop</title>
         <link rel="icon" type="image/png" sizes="32x32" href="/barber-shop.png"></link>
       </Head>
-      <div className="w-full flex-col justify-center items-center bg-slate-900 h-screen">
+      <div className="w-full flex-col justify-center items-center bg-slate-900 h-full">
       <Navbar/>   
-        <div className="w-full h-full">
+        <div className="w-full h-screen">
           {/* large screen image */}
           <Image className="top-0 hidden lg:inline lg:w-full h-full object-cover z-0" src={barber_background} alt="barber salon"/>
           {/* small screen image */}
@@ -64,16 +77,3 @@ export default function Home({user}:any){
     </>
   )/*  */
 }
-export const getServerSideProps = withSessionSsr(
-  async ({req, res}:{req:any,res:any}) => {
-      const user = req.session.user;
-      if(!user) {
-          return {
-              notFound: true,
-          }
-      }
-      return {
-          props: { user }
-      }
-  }
-);

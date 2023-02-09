@@ -18,7 +18,7 @@ export default function ShopsFound({shops}:any) {
             <div className="w-full border-b border-slate-600 mb-3"/>
             {shops.map((shop:any)=>
             //TODO: ADD HREF TO SHOP'S PAGE
-            <Link href="" key={shop.id} className="w-full text-slate-200 px-2 flex flex-col items-center justify-start">
+            <Link href={"/shop/"+shop.name} key={shop.id} className="w-full text-slate-200 px-2 flex flex-col items-center justify-start">
                 <div key={shop.id+"container"} className="flex flex-col items-center justify-start w-full rounded-lg pb-5">
                     <div className="flex w-full items-start justify-start">
                         <div key={shop.id+"title"} className="text-sm flex items-center lg:items-start justify-start w-full text-left">

@@ -3,7 +3,7 @@ import barber_background from '../../public/barber_profile.jpg'
 import Link from 'next/link'
 
 export default function AccountReservation({reservationData}:any) {
-    console.log(reservationData)
+    // console.log(reservationData)
   return (
     <>    
     <div className='flex flex-col items-center justify-start text-left text-slate-300 text-lg w-full'>
