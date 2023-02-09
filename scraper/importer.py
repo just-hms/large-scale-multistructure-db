@@ -119,7 +119,7 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downv
     review["upvotes"] = upvotesIdList
     review["downvotes"] = downvotesIdList
     #We generate a review date as we do not have it
-    review["createdAt"] = fake.date_time_between(start_date='-10y', end_date='now').strftime("%d/%m/%Y %H:%M")
+    review["createdAt"] = fake.date_time_between(start_date='-10y', end_date='now')
 
     #Update the specified barber shop's review list
     shopsCollection.update_one({
