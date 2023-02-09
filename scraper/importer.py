@@ -13,10 +13,6 @@ from typing import Literal
 fake = Faker()
 
 
-#######
-#UTILS#
-#######
-
 ##############
 #DB FUNCTIONS#
 ##############
@@ -214,7 +210,6 @@ def main():
     #Establish connection to databases
     mongoClient = MongoClient('localhost', 27017)
 
-    #TODO: Remove after testing
     #Reset databases
     mongoClient.drop_database("barberShop")
 
@@ -270,7 +265,7 @@ def main():
 
     #Print results
     end_time = time.perf_counter()
-    print(f"\n## Imported {importedShops} in {end_time - start_time} seconds")
+    print(f"\n## Imported {importedShops} shops in {end_time - start_time} seconds")
     print(f"## Database statistics:\n")
     print(barberDatabaseMongo.command("dbstats"))
 
