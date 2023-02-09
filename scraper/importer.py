@@ -1,6 +1,8 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
+import redis
+
 from faker import Faker
 
 from datetime import timedelta
@@ -210,9 +212,11 @@ def main():
 
     #Establish connection to databases
     mongoClient = MongoClient('localhost', 27017)
+    redisClient = redis.Redis(host='localhost', port=6379)
 
     #Reset databases
     mongoClient.drop_database("barberShop")
+    redisClient.delete("barberShop:shopsCoordinates")
 
     #Connect to Mongo instance and create database and collections if needed
     barberDatabaseMongo = mongoClient["barberShop"]
@@ -263,6 +267,11 @@ def main():
             #Fake a random number of appointments
             fakeAppointments(usersCollectionMongo,barberShopsCollectionMongo,shopId,shop["name"],viewsUserList,200)
 
+            #Now add the shop id and name to Redis' Geocache
+            redisItem = str({"id":shopId,"name":shop["name"]})
+            shopLng = float(shop["coordinates"].split(" ")[1])
+            shopLat = float(shop["coordinates"].split(" ")[0])
+            redisClient.geoadd("barberShop:shopsCoordinates",[shopLng,shopLat,redisItem])
 
     #Print results
     end_time = time.perf_counter()
