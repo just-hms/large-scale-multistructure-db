@@ -63,8 +63,9 @@ export default function Home(){
                   <input
                     type="text"
                     className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none" 
-                    form-control id="barberSearch" placeholder="Desired area"
+                    id="barberSearch" placeholder="Desired area"
                     onChange={handleChange}
+                    
                   />
                   <button className="btn inline-block px-6 py-2.5 m-1 bg-red-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg text-white font-medium text-xs leading-tight uppercase rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out flex items-center" type="button" id="search_button"
                     onClick={handleClick}>
