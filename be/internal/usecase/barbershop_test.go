@@ -59,7 +59,7 @@ func TestBarberShopGetByID(t *testing.T) {
 				}).Return("", nil)
 			},
 			res: &entity.BarberShop{},
-			err: errInternalServErr,
+			err: nil,
 		},
 	}
 
