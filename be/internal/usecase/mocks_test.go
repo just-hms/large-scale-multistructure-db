@@ -840,7 +840,7 @@ func (m *MockShopViewRepo) EXPECT() *MockShopViewRepoMockRecorder {
 }
 
 // Store mocks base method.
-func (m *MockShopViewRepo) Store(ctx context.Context, view entity.ShopView) (string, error) {
+func (m *MockShopViewRepo) Store(ctx context.Context, view *entity.ShopView) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", ctx, view)
 	ret0, _ := ret[0].(string)

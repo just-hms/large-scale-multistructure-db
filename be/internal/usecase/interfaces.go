@@ -88,7 +88,7 @@ type (
 	}
 
 	ShopViewRepo interface {
-		Store(ctx context.Context, view entity.ShopView) (string, error)
+		Store(ctx context.Context, view *entity.ShopView) (string, error)
 	}
 
 	AppointmentRepo interface {

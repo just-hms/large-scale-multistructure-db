@@ -38,6 +38,7 @@ func Run() {
 		),
 	}
 
+	// TODO create an account admin
 	router := controller.Router(usecases)
 
 	router.Run()

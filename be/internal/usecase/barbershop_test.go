@@ -53,7 +53,10 @@ func TestBarberShopGetByID(t *testing.T) {
 			viewerID: "3",
 			mock: func() {
 				repo.EXPECT().GetByID(context.Background(), "1").Return(&entity.BarberShop{}, nil)
-				view.EXPECT().Store(context.Background(), "2").Return("", nil)
+				view.EXPECT().Store(context.Background(), &entity.ShopView{
+					ViewerID:     "3",
+					BarberShopID: "1",
+				}).Return("", nil)
 			},
 			res: &entity.BarberShop{},
 			err: errInternalServErr,

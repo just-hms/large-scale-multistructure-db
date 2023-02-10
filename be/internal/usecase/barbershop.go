@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"large-scale-multistructure-db/be/internal/entity"
-	"time"
 )
 
 type BarberShopUseCase struct {
@@ -32,8 +31,7 @@ func (uc *BarberShopUseCase) GetByID(ctx context.Context, viewerID string, ID st
 	}
 
 	// save the view
-	_, err = uc.viewRepo.Store(ctx, entity.ShopView{
-		CreatedAt:    time.Now(),
+	_, err = uc.viewRepo.Store(ctx, &entity.ShopView{
 		ViewerID:     viewerID,
 		BarberShopID: ID,
 	})

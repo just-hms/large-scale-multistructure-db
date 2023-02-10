@@ -269,9 +269,10 @@ func (s *IntegrationSuite) TestRegister() {
 func (s *IntegrationSuite) TestShowSelf() {
 
 	testCases := []struct {
-		name   string
-		token  string
-		status int
+		name           string
+		token          string
+		status         int
+		barberShopsLen int
 	}{
 		{
 			name:   "Wrongly formatted token",
@@ -282,6 +283,12 @@ func (s *IntegrationSuite) TestShowSelf() {
 			name:   "Correct token",
 			token:  s.params["authToken"],
 			status: http.StatusOK,
+		},
+		{
+			name:           "Show barber",
+			token:          s.params["barber1Auth"],
+			status:         http.StatusOK,
+			barberShopsLen: 1,
 		},
 	}
 
@@ -313,6 +320,8 @@ func (s *IntegrationSuite) TestShowSelf() {
 			var res response
 			err = json.Unmarshal(body, &res)
 			s.Require().Nil(err)
+
+			s.Require().Len(res.User.BarberShopIDs, tc.barberShopsLen)
 
 		}
 	}
