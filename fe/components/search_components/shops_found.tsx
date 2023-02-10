@@ -8,14 +8,13 @@ import GeneralDropdown from "../general_dropdown";
 export default function ShopsFound({shops}:any) {
     return (
         <>
-        <div className="w-full flex-col text-xl justify-start items-center px-3">
-            <div className="w-full flex flex-col lg:flex-row justify-between items-center pb-2 px-2">
+        <div className="w-full flex-col text-xl justify-start items-center px-3 overflow-auto">
+            <div className="w-full bg-slate-800 sticky top-0 flex flex-col lg:flex-row justify-between items-center pb-2 px-2 border-b border-slate-600 mb-3">
                 <div className="py-2 lg:p-0">Found {shops.length} Barber Shops</div>
-                <div className="flex items-center justify-end">
+                <div className="flex items-center justify-end " >
                     <GeneralDropdown elements={[1,2,3]} placeholder="" classname=""><div>Ordered By</div></GeneralDropdown>
                 </div>
             </div>
-            <div className="w-full border-b border-slate-600 mb-3"/>
             {shops.map((shop:any)=>
             //TODO: ADD HREF TO SHOP'S PAGE
             <Link href={"/shop/"+shop.name} key={shop.id} className="w-full text-slate-200 px-2 flex flex-col items-center justify-start">
