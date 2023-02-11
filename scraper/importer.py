@@ -91,6 +91,9 @@ def makeShop(shopsCollection,shopData:dict)->int:
     shop.pop("reviewData",None)
     ##Rename "calendar" to "hours"
     shop["hours"] = shop.pop("calendar")
+    ###Remove unused "is_overnight" key
+    for hour in shop["hours"]:
+        hour.pop("is_overnight")
     ##Prepare coordinates key better
     lat = shop["coordinates"].split(" ")[0]
     lon = shop["coordinates"].split(" ")[1]
