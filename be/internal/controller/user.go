@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/internal/usecase"
 	"large-scale-multistructure-db/be/pkg/jwt"
@@ -44,6 +45,8 @@ func (ur *UserRoutes) Login(ctx *gin.Context) {
 
 	token, err := jwt.CreateToken(user.ID)
 
+	fmt.Println("login", err)
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -66,7 +69,7 @@ func (ur *UserRoutes) Register(ctx *gin.Context) {
 		return
 	}
 
-	_, err := ur.userUseCase.Store(ctx, &entity.User{
+	err := ur.userUseCase.Store(ctx, &entity.User{
 		Password: input.Password,
 		Email:    input.Email,
 	})
@@ -120,8 +123,7 @@ func (ur *UserRoutes) Delete(ctx *gin.Context) {
 }
 
 type ModifyUserInput struct {
-	Email    string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Email string `json:"username" binding:"required"`
 }
 
 func (ur *UserRoutes) Modify(ctx *gin.Context) {
@@ -144,4 +146,58 @@ func (ur *UserRoutes) Modify(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusAccepted, gin.H{"message": "user modified"})
 
+}
+
+type LostPasswordInput struct {
+	Email string `json:"username" binding:"required"`
+}
+
+// TODO : test
+func (ur *UserRoutes) LostPassword(ctx *gin.Context) {
+	input := LostPasswordInput{}
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resetToken, err := ur.userUseCase.LostPassword(ctx, input.Email)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// THIS IS A POC YOU SHOULD RETUNR 200 AND SEND THE E-MAIL WITH THE TOKEN HERE
+
+	ctx.JSON(http.StatusAccepted, gin.H{"resetToken": resetToken})
+}
+
+type ResetPasswordInput struct {
+	Password string `json:"newPassword" binding:"required"`
+}
+
+func (ur *UserRoutes) ResetPassword(ctx *gin.Context) {
+
+	token := ctx.Param("reset_token")
+	userID, err := jwt.ExtractTokenID(token)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	input := ResetPasswordInput{}
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := ur.userUseCase.ResetPassword(ctx, userID, input.Password); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// THIS IS A POC YOU SHOULD RETUNR 200 AND SEND THE E-MAIL WITH THE TOKEN HERE
+
+	ctx.JSON(http.StatusAccepted, gin.H{"message": "password correctly resetted"})
 }

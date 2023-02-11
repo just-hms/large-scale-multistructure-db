@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"large-scale-multistructure-db/be/internal/entity"
+	"large-scale-multistructure-db/be/pkg/jwt"
 )
 
 // TranslationUseCase -.
@@ -23,22 +24,18 @@ func NewUserUseCase(r UserRepo, p PasswordAuth) *UserUseCase {
 	}
 }
 
-func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (string, error) {
+// TODO : add standard the error codes
 
-	// TODO: if there is any other error it creates the user
-
-	// TODO : standard the error codes
+func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) error {
 
 	if _, err := uc.repo.GetByEmail(ctx, user.Email); err == nil {
-		return "", UserAlreadyExists
+		return UserAlreadyExists
 	}
-
-	// TODO : add check in pwd len
 
 	hashedPassword, err := uc.password.HashAndSalt(user.Password)
 
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	user.Password = hashedPassword
@@ -65,21 +62,54 @@ func (uc *UserUseCase) DeleteByID(ctx context.Context, ID string) error {
 	return uc.repo.DeleteByID(ctx, ID)
 }
 
+// TODO: retrieve also the ID and barberShopsIDs
 func (uc *UserUseCase) GetByID(ctx context.Context, ID string) (*entity.User, error) {
 	return uc.repo.GetByID(ctx, ID)
 }
 
 func (uc *UserUseCase) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
 
-	// TODO: don't edit the password here
-
 	if _, err := uc.repo.GetByEmail(ctx, user.Email); err == nil {
 		return UserAlreadyExists
+	}
+
+	if user.Password != "" {
+		return fmt.Errorf("The password field cannot be edited here")
 	}
 
 	return uc.repo.ModifyByID(ctx, ID, user)
 }
 
+// TODO: retrieve also the ID and barberShopsIDs
 func (uc *UserUseCase) List(ctx context.Context, email string) ([]*entity.User, error) {
 	return uc.repo.List(ctx, email)
+}
+
+func (uc *UserUseCase) LostPassword(ctx context.Context, email string) (string, error) {
+	user, err := uc.repo.GetByEmail(ctx, email)
+
+	if err != nil {
+		return "", err
+	}
+
+	resetToken, err := jwt.CreateToken(user.ID)
+
+	if err != nil {
+		return "", err
+	}
+
+	return resetToken, nil
+}
+
+func (uc *UserUseCase) ResetPassword(ctx context.Context, ID string, password string) error {
+
+	hashed, err := uc.password.HashAndSalt(password)
+
+	if err != nil {
+		return err
+	}
+
+	return uc.repo.ModifyByID(ctx, ID, &entity.User{
+		Password: hashed,
+	})
 }

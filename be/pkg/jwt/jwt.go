@@ -13,6 +13,10 @@ import (
 // given an userID
 // returns a token
 func CreateToken(userID string) (string, error) {
+
+	if userID == "" {
+		return "", fmt.Errorf("cannot create token from empty string")
+	}
 	claims := jwtdriver.MapClaims{}
 
 	claims["authorized"] = true

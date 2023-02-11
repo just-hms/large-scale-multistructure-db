@@ -6,8 +6,8 @@ import (
 	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/pkg/mongo"
 
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // UserRepo represents a repository for User entities.
@@ -21,36 +21,28 @@ func NewUserRepo(m *mongo.Mongo) *UserRepo {
 }
 
 // Store inserts a new user into the repository.
-func (r *UserRepo) Store(ctx context.Context, user *entity.User) (string, error) {
+func (r *UserRepo) Store(ctx context.Context, user *entity.User) error {
+
+	user.ID = uuid.NewString()
 
 	if err := r.DB.Collection("users").FindOne(ctx, bson.M{"email": user.Email}).Err(); err == nil {
-		return "", fmt.Errorf("User already exists")
+		return fmt.Errorf("User already exists")
 	}
 
-	res, err := r.DB.Collection("users").InsertOne(ctx, user)
+	_, err := r.DB.Collection("users").InsertOne(ctx, user)
+
 	if err != nil {
-		return "", fmt.Errorf("Error inserting the user")
+		return fmt.Errorf("Error inserting the user")
 	}
 
-	oid, ok := res.InsertedID.(primitive.ObjectID)
-	if !ok {
-		return "", fmt.Errorf("Error retriving the userID")
-	}
-
-	return oid.Hex(), err
+	return nil
 }
 
 // GetByID retrieves a user by ID.
 func (r *UserRepo) GetByID(ctx context.Context, ID string) (*entity.User, error) {
 	user := &entity.User{}
 
-	oid, err := primitive.ObjectIDFromHex(ID)
-
-	if err != nil {
-		return nil, fmt.Errorf("Error converting the ID")
-	}
-
-	err = r.DB.Collection("users").FindOne(ctx, bson.M{"_id": oid}).Decode(&user)
+	err := r.DB.Collection("users").FindOne(ctx, bson.M{"_id": ID}).Decode(&user)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -63,13 +55,7 @@ func (r *UserRepo) GetByID(ctx context.Context, ID string) (*entity.User, error)
 
 func (r *UserRepo) DeleteByID(ctx context.Context, ID string) error {
 
-	oid, err := primitive.ObjectIDFromHex(ID)
-
-	if err != nil {
-		return fmt.Errorf("Error converting the ID")
-	}
-
-	res, err := r.DB.Collection("users").DeleteOne(ctx, bson.M{"_id": oid})
+	res, err := r.DB.Collection("users").DeleteOne(ctx, bson.M{"_id": ID})
 	if err != nil {
 		return err
 	}
@@ -81,17 +67,22 @@ func (r *UserRepo) DeleteByID(ctx context.Context, ID string) error {
 
 func (r *UserRepo) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
 
-	oid, err := primitive.ObjectIDFromHex(ID)
+	// TODO : partial update
+	// TODO : barbershop list
 
-	if err != nil {
-		return fmt.Errorf("Error converting the ID")
+	update := bson.M{}
+
+	if user.Email != "" {
+		update["email"] = user.Email
 	}
 
-	_, err = r.DB.Collection("users").UpdateOne(ctx, bson.M{"_id": oid}, bson.M{"$set": user})
-	if err != nil {
-		return err
+	if user.Password != "" {
+		update["password"] = user.Password
 	}
-	return nil
+
+	_, err := r.DB.Collection("users").UpdateOne(ctx, bson.M{"_id": ID}, bson.M{"$set": update})
+
+	return err
 }
 
 // TODO : improve this
