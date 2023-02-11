@@ -42,7 +42,7 @@ func (r *UserRepo) Store(ctx context.Context, user *entity.User) error {
 func (r *UserRepo) GetByID(ctx context.Context, ID string) (*entity.User, error) {
 	user := &entity.User{}
 
-	err := r.DB.Collection("users").FindOne(ctx, bson.M{"_id": user.ID}).Decode(&user)
+	err := r.DB.Collection("users").FindOne(ctx, bson.M{"_id": ID}).Decode(&user)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {

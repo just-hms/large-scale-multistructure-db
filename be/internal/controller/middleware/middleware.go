@@ -35,8 +35,8 @@ func (mr *MiddlewareRoutes) RequireAuth(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
+
 	if _, err := mr.userUseCase.GetByID(ctx, tokenID); err != nil {
-		// HERE
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}

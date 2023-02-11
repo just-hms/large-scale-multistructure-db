@@ -64,15 +64,10 @@ func (r *BarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) (st
 }
 
 func (r *BarberShopRepo) GetByID(ctx context.Context, ID string) (*entity.BarberShop, error) {
+
 	barber := &entity.BarberShop{}
 
-	oid, err := primitive.ObjectIDFromHex(ID)
-
-	if err != nil {
-		return nil, fmt.Errorf("Error converting the ID")
-	}
-
-	err = r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": oid}).Decode(&barber)
+	err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": ID}).Decode(barber)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
