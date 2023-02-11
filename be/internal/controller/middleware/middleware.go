@@ -47,6 +47,7 @@ func (mr *MiddlewareRoutes) RequireAuth(ctx *gin.Context) {
 func (mr *MiddlewareRoutes) RequireAdmin(ctx *gin.Context) {
 
 	token := ExtractTokenFromRequest(ctx)
+
 	tokenID, err := jwt.ExtractTokenID(token)
 
 	if err != nil {
@@ -55,6 +56,7 @@ func (mr *MiddlewareRoutes) RequireAdmin(ctx *gin.Context) {
 	}
 
 	user, err := mr.userUseCase.GetByID(ctx, tokenID)
+
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return

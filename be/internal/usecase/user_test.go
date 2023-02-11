@@ -144,7 +144,7 @@ func TestUserStore(t *testing.T) {
 						Email:    "new_email",
 						Password: "hashed_password",
 					},
-				).Return("", nil)
+				).Return(nil)
 			},
 			err: nil,
 		},
@@ -158,7 +158,7 @@ func TestUserStore(t *testing.T) {
 
 			tc.mock()
 
-			_, err := user.Store(context.Background(), tc.input)
+			err := user.Store(context.Background(), tc.input)
 
 			require.ErrorIs(t, tc.err, err)
 		})
@@ -229,10 +229,12 @@ func TestUserLostPassword(t *testing.T) {
 		expect error
 	}{
 		{
-			name:  "Correct with existsing mail",
+			name:  "Correct with existing mail",
 			input: "existing_email",
 			mock: func() {
-				repo.EXPECT().GetByEmail(context.Background(), "existing_email").Return(&entity.User{}, nil)
+				repo.EXPECT().GetByEmail(context.Background(), "existing_email").Return(&entity.User{
+					ID: "random_id",
+				}, nil)
 			},
 			expect: nil,
 		},

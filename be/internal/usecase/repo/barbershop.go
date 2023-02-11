@@ -6,6 +6,7 @@ import (
 	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/pkg/mongo"
 
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -42,6 +43,8 @@ func (r *BarberShopRepo) Find(ctx context.Context, lat string, lon string, name 
 }
 
 func (r *BarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) (string, error) {
+
+	shop.ID = uuid.NewString()
 
 	if err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"name": shop.Name}).Err(); err == nil {
 		return "", fmt.Errorf("Barber shop already exists")

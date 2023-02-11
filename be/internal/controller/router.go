@@ -31,7 +31,7 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 
 	api := router.Group("/api")
 
-	api.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, `{"message" : "ok"}`) })
+	api.GET("/health/", func(c *gin.Context) { c.JSON(http.StatusOK, `{"message" : "ok"}`) })
 
 	// create the routes based on the given usecases
 	var (
@@ -62,12 +62,12 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 	// link the path to the routes
 	user := api.Group("/user")
 	{
-		user.POST("/", ur.Register)                                        // TESTED
-		user.POST("/login", ur.Login)                                      // TESTED
-		user.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)      // TESTED
-		user.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete) // TESTED
-		user.POST("/lost_password", ur.LostPassword)
-		user.POST("/reset_password", ur.ResetPassword)
+		user.POST("/", ur.Register)                                         // TESTED
+		user.POST("/login/", ur.Login)                                      // TESTED
+		user.GET("/self/", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)      // TESTED
+		user.DELETE("/self/", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete) // TESTED
+		user.POST("/lost_password/", ur.LostPassword)
+		user.POST("/reset_password/", ur.ResetPassword)
 	}
 
 	admin := api.Group("/admin")
@@ -78,15 +78,15 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 		admin.DELETE("/user/:id", ur.Delete) // TESTED
 		admin.PUT("/user/:id", ur.Modify)
 
-		admin.POST("/barber_shop", br.Create)
-		admin.DELETE("/", br.Delete)
+		admin.POST("/barber_shop/", br.Create)
+		admin.DELETE("/barber_shop/", br.Delete)
 	}
 
 	// TODO: require barber
 	barberShop := api.Group("/barber_shop")
 	barberShop.Use(mr.RequireAuth)
 	{
-		barberShop.GET("/", br.Find)
+		barberShop.GET("", br.Find)
 		barberShop.GET("/:id", br.Show)
 		barberShop.PUT("/", br.Modify)
 	}

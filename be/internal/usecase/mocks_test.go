@@ -139,12 +139,11 @@ func (mr *MockUserMockRecorder) ResetPassword(ctx, ID, newPassword interface{}) 
 }
 
 // Store mocks base method.
-func (m *MockUser) Store(ctx context.Context, user *entity.User) (string, error) {
+func (m *MockUser) Store(ctx context.Context, user *entity.User) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", ctx, user)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Store indicates an expected call of Store.
@@ -623,12 +622,11 @@ func (mr *MockUserRepoMockRecorder) ModifyByID(ctx, ID, user interface{}) *gomoc
 }
 
 // Store mocks base method.
-func (m *MockUserRepo) Store(ctx context.Context, user *entity.User) (string, error) {
+func (m *MockUserRepo) Store(ctx context.Context, user *entity.User) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", ctx, user)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Store indicates an expected call of Store.

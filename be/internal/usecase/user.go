@@ -26,16 +26,16 @@ func NewUserUseCase(r UserRepo, p PasswordAuth) *UserUseCase {
 
 // TODO : add standard the error codes
 
-func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) (string, error) {
+func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) error {
 
 	if _, err := uc.repo.GetByEmail(ctx, user.Email); err == nil {
-		return "", UserAlreadyExists
+		return UserAlreadyExists
 	}
 
 	hashedPassword, err := uc.password.HashAndSalt(user.Password)
 
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	user.Password = hashedPassword

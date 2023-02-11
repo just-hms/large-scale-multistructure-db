@@ -1,8 +1,10 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"large-scale-multistructure-db/be/internal/controller"
+	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/internal/usecase"
 	"large-scale-multistructure-db/be/internal/usecase/auth"
 	"large-scale-multistructure-db/be/internal/usecase/repo"
@@ -27,18 +29,26 @@ func Run() {
 
 	// UseCase
 
+	userUsecase := usecase.NewUserUseCase(
+		repo.NewUserRepo(mongo),
+		auth.NewPasswordAuth(),
+	)
+
 	usecases := []usecase.Usecase{
-		usecase.NewUserUseCase(
-			repo.NewUserRepo(mongo),
-			auth.NewPasswordAuth(),
-		),
+		userUsecase,
 		usecase.NewBarberShopUseCase(
 			repo.NewBarberShopRepo(mongo),
 			repo.NewShopViewRepo(mongo),
 		),
 	}
 
+	userUsecase.Store(context.TODO(), &entity.User{
+		Email:    "admin@admin.com",
+		Password: "super_secret",
+	})
+
 	// TODO create an account admin
+
 	router := controller.Router(usecases)
 
 	router.Run()

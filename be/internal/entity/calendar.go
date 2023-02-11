@@ -1,5 +1,6 @@
 package entity
 
 type Calendar struct {
-	Slots []*Slot
+	BarberShopID string
+	Slots        []*Slot
 }

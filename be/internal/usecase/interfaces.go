@@ -14,7 +14,7 @@ type (
 
 	User interface {
 		Login(ctx context.Context, user *entity.User) (*entity.User, error)     // IMPLEMENTED | TESTED
-		Store(ctx context.Context, user *entity.User) (string, error)           // IMPLEMENTED | TESTED
+		Store(ctx context.Context, user *entity.User) error                     // IMPLEMENTED | TESTED
 		GetByID(ctx context.Context, ID string) (*entity.User, error)           // IMPLEMENTED | TESTED
 		ModifyByID(ctx context.Context, ID string, user *entity.User) error     // IMPLEMENTED | TESTED
 		DeleteByID(ctx context.Context, ID string) error                        // IMPLEMENTED | TESTED
@@ -63,7 +63,7 @@ type (
 
 	// UserRepo -.
 	UserRepo interface {
-		Store(ctx context.Context, user *entity.User) (string, error)
+		Store(ctx context.Context, user *entity.User) error
 		GetByID(ctx context.Context, ID string) (*entity.User, error)
 		DeleteByID(ctx context.Context, ID string) error
 		ModifyByID(ctx context.Context, ID string, user *entity.User) error
