@@ -54,7 +54,10 @@ type (
 		Store(ctx context.Context, userID string, shopID string) error
 		GetByBarberShop(ctx context.Context, shopID string) ([]*entity.Review, error)
 		DeleteByID(ctx context.Context, ID string) error
-		VoteByID(ctx context.Context, ID string) error
+
+		UpVoteByID(ctx context.Context, voterID, ID string) error
+		DownVoteByID(ctx context.Context, voterID, ID string) error
+		RemoveVoteByID(ctx context.Context, voterID, ID string) error
 	}
 
 	// TODO : add analytics, maybe raw access to db using custom store for each one
@@ -101,7 +104,12 @@ type (
 		Store(ctx context.Context, userID string, shopID string) error
 		GetByBarberShop(ctx context.Context, shopID string) ([]*entity.Review, error)
 		DeleteByID(ctx context.Context, ID string) error
-		VoteByID(ctx context.Context, ID string) error
+	}
+
+	VoteRepo interface {
+		DownVote(ctx context.Context, voterID string, shopID string) error
+		UpVote(ctx context.Context, voterID string, shopID string) error
+		RemoveVote(ctx context.Context, voterID string, shopID string) error
 	}
 
 	Usecase interface{}
