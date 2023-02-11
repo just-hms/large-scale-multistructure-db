@@ -113,7 +113,7 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downv
     #Create the review dict structure
     review = {}
     review["userId"] = userId
-    review["username"] = shopReview["username"]
+    review["username"] = shopReview["username"].replace(" ", "")
     review["rating"] = shopReview["rating"]
     review["reported"] = False
     review["content"] = shopReview["body"]
