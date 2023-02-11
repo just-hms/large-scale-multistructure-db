@@ -13,7 +13,7 @@ services:
 
   backend:
     build:
-      dockerfile: ./docker/deploy/Dockerfile
+      dockerfile: ./docker/dev/Dockerfile
       context: ../../
     ports:
       - "127.0.0.1:7000:8080"

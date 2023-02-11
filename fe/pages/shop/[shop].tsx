@@ -10,7 +10,7 @@ import Reviews from '../../components/shop_component/reviews';
 import ReactStars from 'react-stars'
 import { useRouter } from 'next/router';
 
-export default function Shop({ shopData, reviewsData }) {
+export default function Shop({ shopData, reviewsData }:{ shopData:any, reviewsData:any }) {
   return (
     <>
       <Head>
@@ -50,7 +50,7 @@ export default function Shop({ shopData, reviewsData }) {
                             color2={'#ffffff'} />
                         </div>
                         <textarea className='bg-slate-700 focus:outline-none resize-none rounded-md p-1.5 text-sm break-words mt-1'  name="" id="" />
-                        <button type="submit" className="w-full text-sm bg-slate-700 hover:bg-slate-600 focus:outline-none rounded-lg border-slate-700 text-sm py-2 text-center mt-3 z-10">That's what I thought</button>
+                        <button type="submit" className="w-full text-sm bg-slate-700 hover:bg-slate-600 focus:outline-none rounded-lg border-slate-700 text-sm py-2 text-center mt-3 z-10">That`&apos`s what I thought</button>
                       </div>
                     </div>
                   </div>
@@ -96,7 +96,7 @@ export default function Shop({ shopData, reviewsData }) {
         <Footer/>
       </div>
     </>
-  );
+  );  
 }
 
 export async function getStaticPaths() {

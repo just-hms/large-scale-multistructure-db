@@ -1,4 +1,5 @@
-import { useRouter} from "next/router"
+import { useRouter } from "next/router"
+import { useState, useEffect } from "react";
 import Head from "next/head"
 import Navbar from "../components/navbar"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,10 +8,27 @@ import {findShops} from "../lib/search"
 import ShopsFound from "../components/search_components/shops_found"
 import Link from "next/link";
 
-export default function Search({shopData}) {
+export default function Search({shopData}:any) {
     const router = useRouter()
     // query parameter
-    const { area } = router.query
+    const { area } = router.query 
+    // fetch latitude and longitude given a request
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    useEffect(() => {
+      fetch("https://api.geoapify.com/v1/geocode/search?text="+area+"&apiKey=66c0af4256094d7f93fd472e1a188390")
+        .then(response => response.json())
+        .then((usefulData) => {
+          // console.log(usefulData);
+          setLoading(false);
+          setData(usefulData);
+        })
+        .catch((e) => {
+          console.error(`An error occurred: ${e}`)
+        });
+    }, [area]);
+
     return (
     <>
     <Head>

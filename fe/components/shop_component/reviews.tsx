@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown, faStar} from "@fortawesome/free-solid-svg-icons";
-export default function Reviews(reviews) {
+export default function Reviews(reviews:any) {
     return (
         <>
             <div>
-            {reviews.children.map((review)=>
+            {reviews.children.map((review:any)=>
                     <div key={review.id} className="w-full text-slate-200">
                         <div key={review.id+"container"} className="flex flex-col items-center justify-start w-full bg-slate-700 rounded-lg p-3 shadow-md shadow-black/30 mb-3 z-0">
                             <div key={review.id+"name"} className="text-md w-full text-left font-normal">{review.name}</div>
