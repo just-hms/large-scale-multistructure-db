@@ -286,12 +286,11 @@ func (mr *MockBarberShopMockRecorder) ModifyByID(ctx, ID, shop interface{}) *gom
 }
 
 // Store mocks base method.
-func (m *MockBarberShop) Store(ctx context.Context, shop *entity.BarberShop) (string, error) {
+func (m *MockBarberShop) Store(ctx context.Context, shop *entity.BarberShop) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", ctx, shop)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Store indicates an expected call of Store.
@@ -497,12 +496,11 @@ func (mr *MockReviewMockRecorder) GetByBarberShop(ctx, shopID interface{}) *gomo
 }
 
 // Store mocks base method.
-func (m *MockReview) Store(ctx context.Context, userID, shopID string) (string, error) {
+func (m *MockReview) Store(ctx context.Context, userID, shopID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", ctx, userID, shopID)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Store indicates an expected call of Store.
@@ -717,12 +715,11 @@ func (mr *MockBarberShopRepoMockRecorder) ModifyByID(ctx, ID, shop interface{}) 
 }
 
 // Store mocks base method.
-func (m *MockBarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) (string, error) {
+func (m *MockBarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", ctx, shop)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Store indicates an expected call of Store.
@@ -755,12 +752,11 @@ func (m *MockSlotRepo) EXPECT() *MockSlotRepoMockRecorder {
 }
 
 // Book mocks base method.
-func (m *MockSlotRepo) Book(ctx context.Context, appointment *entity.Appointment) (string, error) {
+func (m *MockSlotRepo) Book(ctx context.Context, appointment *entity.Appointment) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Book", ctx, appointment)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Book indicates an expected call of Book.
@@ -770,12 +766,11 @@ func (mr *MockSlotRepoMockRecorder) Book(ctx, appointment interface{}) *gomock.C
 }
 
 // Cancel mocks base method.
-func (m *MockSlotRepo) Cancel(ctx context.Context, appointment *entity.Appointment) (string, error) {
+func (m *MockSlotRepo) Cancel(ctx context.Context, appointment *entity.Appointment) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Cancel", ctx, appointment)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Cancel indicates an expected call of Cancel.
@@ -800,12 +795,11 @@ func (mr *MockSlotRepoMockRecorder) GetByBarberShopID(ctx, ID interface{}) *gomo
 }
 
 // SetHoliday mocks base method.
-func (m *MockSlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) (string, error) {
+func (m *MockSlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetHoliday", ctx, shopID, date, unavailableEmployees)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // SetHoliday indicates an expected call of SetHoliday.
@@ -838,12 +832,11 @@ func (m *MockShopViewRepo) EXPECT() *MockShopViewRepoMockRecorder {
 }
 
 // Store mocks base method.
-func (m *MockShopViewRepo) Store(ctx context.Context, view *entity.ShopView) (string, error) {
+func (m *MockShopViewRepo) Store(ctx context.Context, view *entity.ShopView) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", ctx, view)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Store indicates an expected call of Store.
@@ -876,12 +869,11 @@ func (m *MockAppointmentRepo) EXPECT() *MockAppointmentRepoMockRecorder {
 }
 
 // Book mocks base method.
-func (m *MockAppointmentRepo) Book(ctx context.Context, appointment *entity.Appointment) (string, error) {
+func (m *MockAppointmentRepo) Book(ctx context.Context, appointment *entity.Appointment) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Book", ctx, appointment)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Book indicates an expected call of Book.
@@ -891,12 +883,11 @@ func (mr *MockAppointmentRepoMockRecorder) Book(ctx, appointment interface{}) *g
 }
 
 // Cancel mocks base method.
-func (m *MockAppointmentRepo) Cancel(ctx context.Context, appointment *entity.Appointment) (string, error) {
+func (m *MockAppointmentRepo) Cancel(ctx context.Context, appointment *entity.Appointment) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Cancel", ctx, appointment)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Cancel indicates an expected call of Cancel.
@@ -906,12 +897,11 @@ func (mr *MockAppointmentRepoMockRecorder) Cancel(ctx, appointment interface{}) 
 }
 
 // DeleteByID mocks base method.
-func (m *MockAppointmentRepo) DeleteByID(ctx context.Context, ID string) (string, error) {
+func (m *MockAppointmentRepo) DeleteByID(ctx context.Context, ID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteByID", ctx, ID)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // DeleteByID indicates an expected call of DeleteByID.
@@ -973,12 +963,11 @@ func (mr *MockReviewRepoMockRecorder) GetByBarberShop(ctx, shopID interface{}) *
 }
 
 // Store mocks base method.
-func (m *MockReviewRepo) Store(ctx context.Context, userID, shopID string) (string, error) {
+func (m *MockReviewRepo) Store(ctx context.Context, userID, shopID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", ctx, userID, shopID)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Store indicates an expected call of Store.

@@ -1,11 +1,18 @@
 package entity
 
+const (
+	ADMIN  = "admin"
+	USER   = "user"
+	BARBER = "barber"
+)
+
 type User struct {
 	ID       string `bson:"_id"`
-	Email    string
-	Password string
-	IsAdmin  bool
+	Email    string `bson:"email"`
+	Username string `bson:"username"`
+	Password string `bson:"password"`
+	Type     string `bson:"type"`
 
 	CurrentAppointment *Appointment
-	BarberShopIDs      []string
+	OwnedShops         []*BarberShop
 }

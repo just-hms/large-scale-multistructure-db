@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/internal/usecase"
 	"large-scale-multistructure-db/be/pkg/jwt"
@@ -44,8 +43,6 @@ func (ur *UserRoutes) Login(ctx *gin.Context) {
 	}
 
 	token, err := jwt.CreateToken(user.ID)
-
-	fmt.Println("login", err)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

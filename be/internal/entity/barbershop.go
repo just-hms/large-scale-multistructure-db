@@ -1,10 +1,14 @@
 package entity
 
 type BarberShop struct {
-	ID              string `bson:"_id"`
-	Name            string
-	Latitude        string
-	Longitude       string
-	EmployeesNumber int
-	AverageRating   float64
+	ID     string `bson:"_id"`
+	Name   string
+	Rating float64
+
+	Hours       []*Hour
+	Location    string
+	ImageLink   string
+	Phone       string
+	Coordinates Coordinates
+	Employees   int
 }

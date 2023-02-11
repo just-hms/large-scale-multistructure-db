@@ -31,7 +31,7 @@ func (uc *BarberShopUseCase) GetByID(ctx context.Context, viewerID string, ID st
 	}
 
 	// save the view
-	_, err = uc.viewRepo.Store(ctx, &entity.ShopView{
+	err = uc.viewRepo.Store(ctx, &entity.ShopView{
 		ViewerID:     viewerID,
 		BarberShopID: ID,
 	})
@@ -44,7 +44,7 @@ func (uc *BarberShopUseCase) GetByID(ctx context.Context, viewerID string, ID st
 
 }
 
-func (uc *BarberShopUseCase) Store(ctx context.Context, shop *entity.BarberShop) (string, error) {
+func (uc *BarberShopUseCase) Store(ctx context.Context, shop *entity.BarberShop) error {
 	return uc.shopRepo.Store(ctx, shop)
 }
 func (uc *BarberShopUseCase) ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error {

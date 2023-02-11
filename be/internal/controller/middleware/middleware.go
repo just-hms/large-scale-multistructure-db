@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/internal/usecase"
 	"large-scale-multistructure-db/be/pkg/jwt"
 	"net/http"
@@ -62,7 +63,7 @@ func (mr *MiddlewareRoutes) RequireAdmin(ctx *gin.Context) {
 		return
 	}
 
-	if !user.IsAdmin {
+	if user.Type != entity.ADMIN {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 	}
 
@@ -86,4 +87,42 @@ func (mr *MiddlewareRoutes) MarkWithAuthID(ctx *gin.Context) {
 
 }
 
-// TODO: implement a requireBarber using the id in the request
+func (mr *MiddlewareRoutes) RequireBarber(ctx *gin.Context) {
+
+	token := ExtractTokenFromRequest(ctx)
+	tokenID, err := jwt.ExtractTokenID(token)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	user, err := mr.userUseCase.GetByID(ctx, tokenID)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	if user.Type != entity.BARBER {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	}
+
+	// TODO: check this, mostly for appointments
+
+	barberShopID := ctx.Param("id")
+
+	if barberShopID == "" {
+		ctx.Next()
+		return
+	}
+
+	for _, b := range user.OwnedShops {
+		if b.ID == barberShopID {
+			ctx.Next()
+			return
+		}
+	}
+
+	ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+}

@@ -56,7 +56,7 @@ func TestBarberShopGetByID(t *testing.T) {
 				view.EXPECT().Store(context.Background(), &entity.ShopView{
 					ViewerID:     "3",
 					BarberShopID: "1",
-				}).Return("", nil)
+				}).Return(nil)
 			},
 			res: &entity.BarberShop{},
 			err: nil,

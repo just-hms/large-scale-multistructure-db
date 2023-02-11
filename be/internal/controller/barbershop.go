@@ -39,12 +39,13 @@ func (br *BarberShopRoutes) Find(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"barberShops": barbers})
 }
 
+// TODO add more things
 type CreateBarbershopInput struct {
 	Name            string  `json:"name" binding:"required"`
 	Latitude        float64 `json:"latitude" binding:"required"`
 	Longitude       float64 `json:"longitude" binding:"required"`
 	EmployeesNumber int     `json:"employees_number" binding:"required"`
-	AverageRating   float64 `json:"average_rating"`
+	Rating          float64 `json:"rating"`
 }
 
 func (br *BarberShopRoutes) Create(ctx *gin.Context) {
@@ -55,12 +56,14 @@ func (br *BarberShopRoutes) Create(ctx *gin.Context) {
 		return
 	}
 
-	_, err := br.barberShopUseCase.Store(ctx, &entity.BarberShop{
-		Name:            input.Name,
-		Latitude:        fmt.Sprintf("%f", input.Latitude),
-		Longitude:       fmt.Sprintf("%f", input.Longitude),
-		EmployeesNumber: input.EmployeesNumber,
-		AverageRating:   input.AverageRating,
+	err := br.barberShopUseCase.Store(ctx, &entity.BarberShop{
+		Name: input.Name,
+		Coordinates: entity.Coordinates{
+			Latitude:  fmt.Sprintf("%f", input.Latitude),
+			Longitude: fmt.Sprintf("%f", input.Longitude),
+		},
+		Employees: input.EmployeesNumber,
+		Rating:    input.Rating,
 	})
 
 	if err != nil {
@@ -95,30 +98,32 @@ func (br *BarberShopRoutes) Show(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"user": barberShop})
 }
 
-type ModifyBarbershopInput struct {
-	Name            string  `json:"name" binding:"required"`
-	Latitude        float64 `json:"latitude" binding:"required"`
-	Longitude       float64 `json:"longitude" binding:"required"`
-	EmployeesNumber int     `json:"employees_number" binding:"required"`
-	AverageRating   float64 `json:"average_rating"`
+type ModifyBarberShopInput struct {
+	Name      string  `json:"name"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Employees int     `json:"employees"`
+	Rating    float64 `json:"rating"`
 }
 
 func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
 
 	ID := ctx.Param("id")
 
-	input := ModifyBarbershopInput{}
+	input := ModifyBarberShopInput{}
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	err := br.barberShopUseCase.ModifyByID(ctx, ID, &entity.BarberShop{
-		Name:            input.Name,
-		Latitude:        fmt.Sprintf("%f", input.Latitude),
-		Longitude:       fmt.Sprintf("%f", input.Longitude),
-		EmployeesNumber: input.EmployeesNumber,
-		AverageRating:   input.AverageRating,
+		Name: input.Name,
+		Coordinates: entity.Coordinates{
+			Latitude:  fmt.Sprintf("%f", input.Latitude),
+			Longitude: fmt.Sprintf("%f", input.Longitude),
+		},
+		Employees: input.Employees,
+		Rating:    input.Rating,
 	})
 
 	if err != nil {

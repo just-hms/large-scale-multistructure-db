@@ -31,7 +31,7 @@ type (
 	BarberShop interface {
 		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error) // IMPLEMENTED
 		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)                        // IMPLEMENTED
-		Store(ctx context.Context, shop *entity.BarberShop) (string, error)                                         // IMPLEMENTED
+		Store(ctx context.Context, shop *entity.BarberShop) error                                                   // IMPLEMENTED
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error                                   // IMPLEMENTED
 		DeleteByID(ctx context.Context, ID string) error                                                            // IMPLEMENTED
 	}
@@ -51,7 +51,7 @@ type (
 	}
 
 	Review interface {
-		Store(ctx context.Context, userID string, shopID string) (string, error)
+		Store(ctx context.Context, userID string, shopID string) error
 		GetByBarberShop(ctx context.Context, shopID string) ([]*entity.Review, error)
 		DeleteByID(ctx context.Context, ID string) error
 		VoteByID(ctx context.Context, ID string) error
@@ -72,7 +72,7 @@ type (
 	}
 
 	BarberShopRepo interface {
-		Store(ctx context.Context, shop *entity.BarberShop) (string, error)
+		Store(ctx context.Context, shop *entity.BarberShop) error
 		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error)
 		GetByID(ctx context.Context, ID string) (*entity.BarberShop, error)
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
@@ -82,23 +82,23 @@ type (
 	// TODO: add something that refresh the slots every day
 	SlotRepo interface {
 		GetByBarberShopID(ctx context.Context, ID string) ([]*entity.Slot, error)
-		Book(ctx context.Context, appointment *entity.Appointment) (string, error)
-		Cancel(ctx context.Context, appointment *entity.Appointment) (string, error)
-		SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) (string, error)
+		Book(ctx context.Context, appointment *entity.Appointment) error
+		Cancel(ctx context.Context, appointment *entity.Appointment) error
+		SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error
 	}
 
 	ShopViewRepo interface {
-		Store(ctx context.Context, view *entity.ShopView) (string, error)
+		Store(ctx context.Context, view *entity.ShopView) error
 	}
 
 	AppointmentRepo interface {
-		Book(ctx context.Context, appointment *entity.Appointment) (string, error)
-		Cancel(ctx context.Context, appointment *entity.Appointment) (string, error)
-		DeleteByID(ctx context.Context, ID string) (string, error)
+		Book(ctx context.Context, appointment *entity.Appointment) error
+		Cancel(ctx context.Context, appointment *entity.Appointment) error
+		DeleteByID(ctx context.Context, ID string) error
 	}
 
 	ReviewRepo interface {
-		Store(ctx context.Context, userID string, shopID string) (string, error)
+		Store(ctx context.Context, userID string, shopID string) error
 		GetByBarberShop(ctx context.Context, shopID string) ([]*entity.Review, error)
 		DeleteByID(ctx context.Context, ID string) error
 		VoteByID(ctx context.Context, ID string) error

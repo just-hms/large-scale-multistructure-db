@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BarberShopRepo struct {
@@ -42,32 +41,26 @@ func (r *BarberShopRepo) Find(ctx context.Context, lat string, lon string, name 
 	return shops, nil
 }
 
-func (r *BarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) (string, error) {
+func (r *BarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) error {
 
 	shop.ID = uuid.NewString()
 
 	if err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"name": shop.Name}).Err(); err == nil {
-		return "", fmt.Errorf("Barber shop already exists")
+		return fmt.Errorf("Barber shop already exists")
 	}
 
-	res, err := r.DB.Collection("barbershops").InsertOne(ctx, shop)
+	_, err := r.DB.Collection("barbershops").InsertOne(ctx, shop)
 	if err != nil {
-		return "", fmt.Errorf("Error inserting the user")
+		return fmt.Errorf("Error inserting the barber shop")
 	}
-
-	oid, ok := res.InsertedID.(primitive.ObjectID)
-	if !ok {
-		return "", fmt.Errorf("Error retriving the userID")
-	}
-
-	return oid.Hex(), err
+	return nil
 }
 
 func (r *BarberShopRepo) GetByID(ctx context.Context, ID string) (*entity.BarberShop, error) {
 
 	barber := &entity.BarberShop{}
 
-	err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": ID}).Decode(barber)
+	err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": ID}).Decode(&barber)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -79,26 +72,15 @@ func (r *BarberShopRepo) GetByID(ctx context.Context, ID string) (*entity.Barber
 }
 
 func (r *BarberShopRepo) ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error {
-	oid, err := primitive.ObjectIDFromHex(ID)
-
-	if err != nil {
-		return fmt.Errorf("Error converting the ID")
-	}
-
-	_, err = r.DB.Collection("users").UpdateOne(ctx, bson.M{"_id": oid}, bson.M{"$set": shop})
+	_, err := r.DB.Collection("users").UpdateOne(ctx, bson.M{"_id": ID}, bson.M{"$set": shop})
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func (r *BarberShopRepo) DeleteByID(ctx context.Context, ID string) error {
-	oid, err := primitive.ObjectIDFromHex(ID)
 
-	if err != nil {
-		return fmt.Errorf("Error converting the ID")
-	}
-
-	res, err := r.DB.Collection("barbershops").DeleteOne(ctx, bson.M{"_id": oid})
+	res, err := r.DB.Collection("barbershops").DeleteOne(ctx, bson.M{"_id": ID})
 	if err != nil {
 		return err
 	}

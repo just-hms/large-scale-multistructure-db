@@ -79,16 +79,15 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 		admin.PUT("/user/:id", ur.Modify)
 
 		admin.POST("/barber_shop/", br.Create)
-		admin.DELETE("/barber_shop/", br.Delete)
+		admin.DELETE("/barber_shop/:id", br.Delete)
 	}
 
-	// TODO: require barber
 	barberShop := api.Group("/barber_shop")
 	barberShop.Use(mr.RequireAuth)
 	{
 		barberShop.GET("", br.Find)
 		barberShop.GET("/:id", br.Show)
-		barberShop.PUT("/", br.Modify)
+		barberShop.PUT("/:id", mr.RequireBarber, br.Modify)
 	}
 
 	return router
