@@ -89,6 +89,8 @@ def makeShop(shopsCollection,shopData:dict)->int:
         shop["phone"] = ""
     ##Add reviews once the shop exists. Delete them in the meanwhile.
     shop.pop("reviewData",None)
+    ##Rename "calendar" to "hours"
+    shop["hours"] = shop.pop("calendar")
     ##Prepare coordinates key better
     lat = shop["coordinates"].split(" ")[0]
     lon = shop["coordinates"].split(" ")[1]
