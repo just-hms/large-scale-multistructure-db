@@ -7,6 +7,7 @@ import redis
 from faker import Faker
 
 from datetime import timedelta
+from datetime import datetime
 import json
 import random
 import time
@@ -92,9 +93,12 @@ def makeShop(shopsCollection,shopData:dict)->int:
     shop.pop("reviewData",None)
     ##Rename "calendar" to "hours"
     shop["hours"] = shop.pop("calendar")
-    ###Remove unused "is_overnight" key
+    ###Remove unused "is_overnight" key and convert to time string fields
     for hour in shop["hours"]:
         hour.pop("is_overnight")
+        hour["start"] = datetime(1,1,1,int(hour["start"][0:2]),int(hour["start"][2:4]))
+        if hour["end"] != "":
+            hour["end"] = datetime(1,1,1,int(hour["end"][0:2]),int(hour["end"][2:4]))
     ##Prepare coordinates key better
     lat = shop["coordinates"].split(" ")[0]
     lon = shop["coordinates"].split(" ")[1]
