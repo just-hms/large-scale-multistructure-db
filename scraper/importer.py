@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from bson.objectid import ObjectId
 
 import redis
 
@@ -115,6 +116,8 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downv
 
     #Create the review dict structure
     review = {}
+    #Generate an id for the review
+    review["reviewId"] = ObjectId()
     review["userId"] = userId
     review["username"] = shopReview["username"].replace(" ", "")
     review["rating"] = shopReview["rating"]
@@ -183,6 +186,8 @@ def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,m
     for _ in range(appointmentsAmount):
         randomView = random.choice(viewsList)
         appointment = {}
+        #Add id to appointment
+        appointment["appointmentId"] = ObjectId()
         #Fake appointment date
         appointment["createdAt"] = fake.date_time_between(start_date=randomView["viewCreation"], end_date=randomView["viewCreation"]+timedelta(minutes=5))
         appointment["startDate"] = fake.date_time_between(start_date=appointment["createdAt"], end_date=appointment["createdAt"]+timedelta(days=5))
