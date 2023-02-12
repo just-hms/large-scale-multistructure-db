@@ -45,6 +45,7 @@ func Run() {
 	userUsecase.Store(context.TODO(), &entity.User{
 		Email:    "admin@admin.com",
 		Password: "super_secret",
+		Type:     entity.ADMIN,
 	})
 
 	// TODO create an account admin
