@@ -170,7 +170,7 @@ func (ur *UserRoutes) LostPassword(ctx *gin.Context) {
 }
 
 type ResetPasswordInput struct {
-	Password string `json:"newPassword" binding:"required"`
+	Password string `json:"newpassword" binding:"required"`
 }
 
 func (ur *UserRoutes) ResetPassword(ctx *gin.Context) {

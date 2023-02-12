@@ -217,7 +217,7 @@ response ✔️ -> status : `200`
 
 ```json
 {
-	"recoveryToken" : "token",
+	"resetToken" : "token",
 }
 ```
 
