@@ -91,20 +91,13 @@ def makeShop(shopsCollection,shopData:dict)->int:
         shop["phone"] = ""
     ##Add reviews once the shop exists. Delete them in the meanwhile.
     shop.pop("reviewData",None)
-    ##Rename "calendar" to "hours"
-    shop["hours"] = shop.pop("calendar")
-    ###Remove unused "is_overnight" key and convert to time string fields
-    for hour in shop["hours"]:
-        hour.pop("is_overnight")
-        hour["start"] = datetime(1,1,1,int(hour["start"][0:2]),int(hour["start"][2:4]))
-        if hour["end"] != "":
-            hour["end"] = datetime(1,1,1,int(hour["end"][0:2]),int(hour["end"][2:4]))
-    ##Prepare coordinates key better
+    ##Remove calendar
+    shop.pop("calendar")
     lat = shop["coordinates"].split(" ")[0]
     lon = shop["coordinates"].split(" ")[1]
-    shop["coordinates"] = {}
-    shop["coordinates"]["lat"] = float(lat)
-    shop["coordinates"]["lon"] = float(lon)
+    shop["latitude"] = float(lat)
+    shop["longitude"] = float(lon)
+    shop.pop("coordinates")
     ##Fake number of employees
     shop["employees"] = random.randint(1,3)
     ##Prepare fields
