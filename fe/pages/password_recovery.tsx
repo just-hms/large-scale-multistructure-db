@@ -23,7 +23,7 @@ export default function SignupForm() {
                 const response = await changePassword(values)
                 console.log(response)
                 if(response.ok){
-                    // return router.push("/");
+                    return router.push("/");
                 }else if(response.status == 400){
                     setError("Email not valid")
                 }

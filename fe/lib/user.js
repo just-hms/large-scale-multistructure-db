@@ -59,7 +59,7 @@ export async function changePassword(values){
     method: 'POST',
     headers: headers(),
     body: JSON.stringify({
-            "email": values.email,
+            "username": values.email,
     })
   })
   return response;
