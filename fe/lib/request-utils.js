@@ -2,7 +2,7 @@
 export function headers(token){
     if(token)
         return new Headers({
-        'Authorization': 'Token ' + token, 
+        'Authorization': 'Bearer ' + token, 
         'Content-Type': 'application/json'
         }); 
 

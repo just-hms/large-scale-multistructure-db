@@ -32,7 +32,10 @@ export default function UserDropdown({elements}:any){
                   <button key={`link-`+element} className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   onClick={ async (event) => {
                     if(element === "Profile"){
-                      return router.push("/user");
+                      if(localStorage.getItem("isAdmin") === "false")
+                        return router.push("/user");
+                      else if(localStorage.getItem("isAdmin") === "true")
+                        return router.push("/admin");
                     }else{
                         localStorage.clear()
                         return router.push("/");

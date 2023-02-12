@@ -5,7 +5,7 @@ import {useEffect, useState, useRef} from 'react';
 import UserInfos from '../components/user_components/account_infos';
 import AccountReservation from '../components/user_components/account_reservations';
 import Footer from '../components/footer';
-import {getReservation}  from '../lib/user';
+import {getReservation, getUserInfos}  from '../lib/user';
 import { useRouter } from 'next/router';
 
 const inter = Inter({ subsets: ['latin'] })
@@ -14,6 +14,7 @@ export default function User({reservationData}:any) {
   const router = useRouter()
   const [loaded,setLoaded] = useState(false)
   const [content, setContent] = useState("account_info");
+  const [userData, setUserData] = useState([])
   let displayed_element;
 
   useEffect(()=>{
@@ -21,15 +22,19 @@ export default function User({reservationData}:any) {
     if(!token){
       router.push("/")
     }else{
-      setLoaded(true)
+      const fetchData = async () => {
+        setUserData(await (await getUserInfos()).json())
+        setLoaded(true)
+      }
+      fetchData()
     }
   },[])
-  
+
   if(!loaded){
     return <div></div> //show nothing or a loader
   }
   if (content == "account_info") {
-    displayed_element = <UserInfos/>;
+    displayed_element = <UserInfos userdata={userData}/>;
   } else if (content == "account_reservation"){
     displayed_element = <><AccountReservation reservationData={reservationData}/></>;
   } else if(content == ""){
@@ -70,6 +75,6 @@ export default function User({reservationData}:any) {
 export async function getStaticProps(){
   const reservationData =  getReservation("user");
   return {
-      props: {reservationData }
+      props: {reservationData}
   }
 }

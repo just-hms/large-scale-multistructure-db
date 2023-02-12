@@ -1,5 +1,5 @@
 import {headers} from "./request-utils"
-const url = "http://127.0.0.1:7000/" 
+const url = "http://127.0.0.1:7000/api/" 
 
 export async function getAccountInfos(){
   const response = await fetch(url+`/admin/user?email=""`, {

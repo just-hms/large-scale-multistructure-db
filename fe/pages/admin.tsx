@@ -21,10 +21,12 @@ export default function Admin({reviewsData, accountsData}:any) {
     }
     const token = localStorage.getItem('token')
     // TODO: check isAdmin
-    if(!token){
-      router.push("/")
+    const isAdmin = localStorage.getItem("isAdmin")
+    // TODO CHANGE TO FALSE !!!!!
+    if(!token || isAdmin === "true"){
+      router.push("/home")
     }else{
-      // fetchAccountsData()
+      fetchAccountsData()
       setLoaded(true)
     }
   },[])
