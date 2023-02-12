@@ -7,7 +7,7 @@ import ReportedReviews from '../components/admin_components/reported_reviews';
 import { getReviews } from '../lib/admin';
 import CreateShop from '../components/admin_components/create_shop';
 
-export default function Admin({reviewsData}) {
+export default function Admin({reviewsData}:any) {
   const [content, setContent] = useState("manage_accounts");
   let displayed_element;
   if (content == "manage_accounts") {

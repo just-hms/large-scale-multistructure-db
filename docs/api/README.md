@@ -63,7 +63,7 @@ response ❌ -> status : `401` | `400`
 
 ## 🔑 `GET` /user/self/
 
-> also the current appointment
+> TODO also the current appointment
 
 response ✔️ -> status : `200`
 
@@ -178,7 +178,7 @@ response ❌ -> status : `401` | `400`
 
 > TODO: check shopPermission
 
-response ✔️ -> status : `200`
+response ✔️ -> status : `202`
 
 ```json
 {
@@ -203,7 +203,7 @@ response ❌ -> status : `401` | `400`
 
 # Password
 
-## `POST` /user/password_recovery/
+## `POST` /user/lost_password/
 
 request
 
@@ -217,7 +217,7 @@ response ✔️ -> status : `200`
 
 ```json
 {
-	"memssage" : "errorMessage",
+	"recoveryToken" : "token",
 }
 ```
 
@@ -229,13 +229,13 @@ response ❌ -> status : `400`
 }
 ```
 
-## 🔑 `POST` /user/confirm_recovery?token=""
+## 🔑 `POST` /user/reset_password?reset_token=""
 
 request
 
 ```json
 {
-	"password" : "super_secret",
+	"newpassword" : "super_secret",
 }
 ```
 
@@ -300,7 +300,7 @@ response ❌ -> status : `401` | `400`
 }
 ```
 
-## 🛠️ `POST` /admin/barber_shop/:id
+## 🛠️ `POST` /admin/barber_shop/
 
 response ✔️ -> status : `201`
 
@@ -331,7 +331,7 @@ request
 }
 ```
 
-response ✔️ -> status : `201`
+response ✔️ -> status : `202`
 
 ```json
 {
@@ -380,6 +380,7 @@ request
 {
 	"date" : "01/12/2000",
 	"slot" : 1,
+	"barberShopID" : 1
 }
 ```
 
@@ -455,7 +456,7 @@ response ❌ -> status : `401` | `400`
 
 # Holidays
 
-## 💈 `POST` /barber_shop/:id/holidays
+## 💈 `PUT` /barber_shop/:id/holidays
 
 request 
 
@@ -467,7 +468,7 @@ request
 }
 ```
 
-response ✔️ -> status : `201`
+response ✔️ -> status : `202`
 
 ```json
 {
@@ -517,7 +518,7 @@ response ❌ -> status : `401` | `400`
 ```
 
 
-## 🔑 `GET` /barber_shop/:id/review?page=""&sort_by=""
+## 🔑 `GET` /barber_shop/:id/review/
 
 `sort_by` = `upvote` | `downvote` | `recent` | `oldest`
 
@@ -544,30 +545,6 @@ response ❌ -> status : `401` | `400`
 ```
 
 ## 🛠️ `DELETE` /review/:id
-
-response ✔️ -> status : `200`
-
-```json
-{
-	"message" : "message",
-}
-```
-
-response ❌ -> status : `401` | `400`
-
-```json
-{
-	"error" : "errorMessage",
-}
-```
-
-## 💈 `POST` /review/:id/report
-
-request
-
-```
-TODO : 
-```
 
 response ✔️ -> status : `200`
 

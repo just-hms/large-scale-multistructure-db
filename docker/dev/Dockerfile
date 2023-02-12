@@ -1,8 +1,9 @@
-FROM golang:1.19.3 as builder
+FROM golang:1.19.3 as build
 WORKDIR /app
 
 RUN apt update && \
-	apt upgrade -y
+	apt upgrade -y && \
+	apt-get install -y netcat
 
 COPY go.mod go.sum ./
 RUN go mod download && \
@@ -13,15 +14,4 @@ COPY . .
 RUN mkdir -p build && \
 	go build -o build ./...
 
-FROM ubuntu:22.04
-WORKDIR /app
-
-RUN apt update && \
-	apt upgrade -y && \
-	apt-get install -y netcat
-
-
-COPY --from=builder /app/build/cmd .
-COPY --from=builder /app/docker/deploy/entrypoint.sh .
-
-CMD ["./entrypoint.sh"]
+CMD ["sh", "./docker/dev/entrypoint.sh"]

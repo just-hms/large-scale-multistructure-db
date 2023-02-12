@@ -10,7 +10,7 @@ import ModifyShop from '../components/barber_components/modify_shop';
 import BarberReservations from '../components/barber_components/barber_reservations';
 
 // TODO: a  barber can
-export default function User({reservationsData, shopData}) {
+export default function User({reservationsData, shopData}:{reservationsData:any, shopData:any}) {
 
   const [content, setContent] = useState("account_info");
   let displayed_element;

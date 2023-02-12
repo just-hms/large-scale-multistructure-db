@@ -11,22 +11,23 @@ export default function Home() {
 
   const [query, setQuery] = useState('');
   const router = useRouter()
-  const handleChange=(event)=>{
+  const handleChange=(event:any)=>{
     setQuery(event.target.value);
   }
   function handleClick() {
-    if(query.length > 0)
-      router.push("/search?area="+query);
+    if(query.length > 0){
+      var route = "/search?area="+encodeURIComponent(query)
+      router.push(route);
+    }
   }
-
   return (
     <>
       <Head>
         <title>Home | Barber Shop</title>
         <link rel="icon" type="image/png" sizes="32x32" href="/barber-shop.png"></link>
       </Head>
-      <Navbar/>
       <div className="w-full flex-col justify-center items-center bg-slate-900 h-screen">
+      <Navbar/>   
         <div className="w-full h-full">
           {/* large screen image */}
           <Image className="top-0 hidden lg:inline lg:w-full h-full object-cover z-0" src={barber_background} alt="barber salon"/>

@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import {useRouter} from 'next/router'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
 import barber_icon from '../public/barber-shop.png'
@@ -14,8 +14,22 @@ export default function LoginForm() {
             password: ''
         },
             onSubmit: values => {
-                // TODO: check values and yadda yadda
-                router.push("/home")
+                fetch('http://127.0.0.1:7000/user/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                            "email": "email",
+                            "password":"password"
+                    })
+                })
+                .then(response => response.json())
+                .then(response => console.log(JSON.stringify(response)))
+                .catch((e) => {
+                console.error(`An error occurred: ${e}`)
+                });
+                // router.push("/home")
         },
     });
     return (

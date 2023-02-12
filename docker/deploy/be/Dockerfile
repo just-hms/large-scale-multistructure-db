@@ -9,7 +9,7 @@ RUN go mod download && \
 	go mod verify && \
 	go mod tidy
 
-COPY . .
+COPY . .	
 RUN mkdir -p build && \
 	go build -o build ./...
 
@@ -22,6 +22,8 @@ RUN apt update && \
 
 
 COPY --from=builder /app/build/cmd .
-COPY --from=builder /app/docker/deploy/entrypoint.sh .
+COPY --from=builder /app/docker/deploy/be/entrypoint.sh .
 
-CMD ["./entrypoint.sh"]
+ENV GIN_MODE=release
+
+CMD ["sh", "./entrypoint.sh"]

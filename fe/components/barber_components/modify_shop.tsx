@@ -1,15 +1,8 @@
-import { getAllShops, getReviews, getShopData } from '../../lib/shops';
 import Image from 'next/image';
-import Navbar from '../../components/navbar';
-import Head from 'next/head';
-
 import barber_background from '../../public/barber_profile.jpg'
 import barber_propic from '../../public/barber_bg.png'
-import Footer from '../../components/footer';
-import Reviews from '../../components/shop_component/reviews';
-import ReactStars from 'react-stars'
 
-export default function ModifyShop({ shopData }) {
+export default function ModifyShop({ shopData }:any) {
   return (
     <>
       <div className='h-full w-full lg:px-5'>

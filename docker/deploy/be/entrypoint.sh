@@ -18,5 +18,3 @@ done
 echo "cache started"
 
 ./cmd
-
-
