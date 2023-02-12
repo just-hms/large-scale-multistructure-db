@@ -13,11 +13,13 @@ import (
 
 type BarberShopRoutes struct {
 	barberShopUseCase usecase.BarberShop
+	calendarUseCase   usecase.Calendar
 }
 
-func NewBarberShopRoutes(uc usecase.BarberShop) *BarberShopRoutes {
+func NewBarberShopRoutes(uc usecase.BarberShop, cl usecase.Calendar) *BarberShopRoutes {
 	return &BarberShopRoutes{
 		barberShopUseCase: uc,
+		calendarUseCase:   cl,
 	}
 }
 
@@ -42,10 +44,9 @@ func (br *BarberShopRoutes) Find(ctx *gin.Context) {
 // TODO add more things
 type CreateBarbershopInput struct {
 	Name            string  `json:"name" binding:"required"`
-	Latitude        float64 `json:"latitude" binding:"required"`
-	Longitude       float64 `json:"longitude" binding:"required"`
+	Latitude        float64 `json:"Latitude" binding:"required"`
+	Longitude       float64 `json:"Longitude" binding:"required"`
 	EmployeesNumber int     `json:"employees_number" binding:"required"`
-	Rating          float64 `json:"rating"`
 }
 
 func (br *BarberShopRoutes) Create(ctx *gin.Context) {
@@ -57,17 +58,14 @@ func (br *BarberShopRoutes) Create(ctx *gin.Context) {
 	}
 
 	err := br.barberShopUseCase.Store(ctx, &entity.BarberShop{
-		Name: input.Name,
-		Coordinates: entity.Coordinates{
-			Latitude:  fmt.Sprintf("%f", input.Latitude),
-			Longitude: fmt.Sprintf("%f", input.Longitude),
-		},
+		Name:      input.Name,
+		Latitude:  fmt.Sprintf("%f", input.Latitude),
+		Longitude: fmt.Sprintf("%f", input.Longitude),
 		Employees: input.EmployeesNumber,
-		Rating:    input.Rating,
 	})
 
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -100,10 +98,9 @@ func (br *BarberShopRoutes) Show(ctx *gin.Context) {
 
 type ModifyBarberShopInput struct {
 	Name      string  `json:"name"`
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
+	Lat       float64 `json:"Latitude"`
+	Lon       float64 `json:"Longitude"`
 	Employees int     `json:"employees"`
-	Rating    float64 `json:"rating"`
 }
 
 func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
@@ -117,13 +114,10 @@ func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
 	}
 
 	err := br.barberShopUseCase.ModifyByID(ctx, ID, &entity.BarberShop{
-		Name: input.Name,
-		Coordinates: entity.Coordinates{
-			Latitude:  fmt.Sprintf("%f", input.Latitude),
-			Longitude: fmt.Sprintf("%f", input.Longitude),
-		},
+		Name:      input.Name,
+		Latitude:  fmt.Sprintf("%f", input.Lat),
+		Longitude: fmt.Sprintf("%f", input.Lon),
 		Employees: input.Employees,
-		Rating:    input.Rating,
 	})
 
 	if err != nil {
@@ -146,4 +140,18 @@ func (br *BarberShopRoutes) Delete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusAccepted, gin.H{})
+}
+
+func (br *BarberShopRoutes) Calendar(ctx *gin.Context) {
+
+	ID := ctx.Param("id")
+	slots, err := br.calendarUseCase.GetByBarberShopID(ctx, ID)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusAccepted, gin.H{"calendar": slots})
+
 }

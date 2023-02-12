@@ -24,7 +24,12 @@ func CORSAllowAll() gin.HandlerFunc {
 	}
 }
 
-func Router(usecases []usecase.Usecase) *gin.Engine {
+func Router(
+	userUsecase usecase.User,
+	barberShopUsecase usecase.BarberShop,
+	appointmentUsecase usecase.Appointment,
+	calendarUsecase usecase.Calendar,
+) *gin.Engine {
 
 	router := gin.Default()
 	router.Use(CORSAllowAll())
@@ -34,30 +39,13 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 	api.GET("/health/", func(c *gin.Context) { c.JSON(http.StatusOK, `{"message" : "ok"}`) })
 
 	// create the routes based on the given usecases
-	var (
-		mr *middleware.MiddlewareRoutes
-		ur *UserRoutes
-		br *BarberShopRoutes
-	)
-
-	for _, uc := range usecases {
-
-		switch u := uc.(type) {
-
-		// TODO : check this in the https://github.com/evrone/go-clean-template
-
-		case *usecase.UserUseCase:
-			mr = middleware.NewMiddlewareRoutes(u)
-			ur = NewUserRoutes(u)
-		case *usecase.BarberShopUseCase:
-			br = NewBarberShopRoutes(u)
-		}
-	}
+	mr := middleware.NewMiddlewareRoutes(userUsecase)
+	ur := NewUserRoutes(userUsecase)
+	br := NewBarberShopRoutes(barberShopUsecase, calendarUsecase)
+	ar := NewAppointmentRoutes(appointmentUsecase, userUsecase)
 
 	// TODO :
-	// - fix trailing /
 	// - don't return hash password
-	// - return the ID
 
 	// link the path to the routes
 	user := api.Group("/user")
@@ -68,6 +56,8 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 		user.DELETE("/self/", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete) // TESTED
 		user.POST("/lost_password/", ur.LostPassword)
 		user.POST("/reset_password/", ur.ResetPassword)
+
+		user.DELETE("/self/appointment", ar.DeleteSelfAppointment)
 	}
 
 	admin := api.Group("/admin")
@@ -80,6 +70,11 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 
 		admin.POST("/barber_shop/", br.Create)
 		admin.DELETE("/barber_shop/:id", br.Delete)
+
+		admin.DELETE("/barber_shop/:id/calendar", br.Calendar)
+
+		admin.DELETE("/barber_shop/:id/appointment", ar.DeleteAppointment)
+		admin.DELETE("/barber_shop/:id/holidays", ar.SetHolidays)
 	}
 
 	barberShop := api.Group("/barber_shop")
@@ -88,6 +83,10 @@ func Router(usecases []usecase.Usecase) *gin.Engine {
 		barberShop.GET("", br.Find)
 		barberShop.GET("/:id", br.Show)
 		barberShop.PUT("/:id", mr.RequireBarber, br.Modify)
+
+		// appointments
+		barberShop.PUT("/:id/appointment", ar.Book)
+
 	}
 
 	return router

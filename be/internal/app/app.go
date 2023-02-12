@@ -9,6 +9,7 @@ import (
 	"large-scale-multistructure-db/be/internal/usecase/auth"
 	"large-scale-multistructure-db/be/internal/usecase/repo"
 	"large-scale-multistructure-db/be/pkg/mongo"
+	"large-scale-multistructure-db/be/pkg/redis"
 )
 
 // TODO : fix this to devide the router from the rest, and put it in controllers
@@ -25,32 +26,46 @@ func Run() {
 		return
 	}
 
-	// redis := redis.New()
+	redis := redis.New(&redis.RedisOptions{})
 
-	// UseCase
+	userRepo := repo.NewUserRepo(mongo)
+	barberShopRepo := repo.NewBarberShopRepo(mongo)
+	viewShopRepo := repo.NewShopViewRepo(mongo)
+	appintmentRepo := repo.NewAppointmentRepo(mongo)
+	slotRepo := repo.NewSlotRepo(redis)
 
-	userUsecase := usecase.NewUserUseCase(
-		repo.NewUserRepo(mongo),
-		auth.NewPasswordAuth(),
+	password := auth.NewPasswordAuth()
+
+	userUseCase := usecase.NewUserUseCase(
+		userRepo,
+		password,
 	)
 
-	usecases := []usecase.Usecase{
-		userUsecase,
-		usecase.NewBarberShopUseCase(
-			repo.NewBarberShopRepo(mongo),
-			repo.NewShopViewRepo(mongo),
-		),
-	}
+	barberUseCase := usecase.NewBarberShopUseCase(
+		barberShopRepo,
+		viewShopRepo,
+	)
 
-	userUsecase.Store(context.TODO(), &entity.User{
+	appointmentUseCase := usecase.NewAppoinmentUseCase(
+		appintmentRepo,
+		slotRepo,
+	)
+	calendarUseCase := usecase.NewCalendarUseCase(
+		slotRepo,
+	)
+
+	userUseCase.Store(context.TODO(), &entity.User{
 		Email:    "admin@admin.com",
 		Password: "super_secret",
 		Type:     entity.ADMIN,
 	})
 
-	// TODO create an account admin
-
-	router := controller.Router(usecases)
+	router := controller.Router(
+		userUseCase,
+		barberUseCase,
+		appointmentUseCase,
+		calendarUseCase,
+	)
 
 	router.Run()
 }

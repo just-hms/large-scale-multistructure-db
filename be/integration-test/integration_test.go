@@ -13,6 +13,7 @@ import (
 	"large-scale-multistructure-db/be/internal/usecase/repo"
 	"large-scale-multistructure-db/be/pkg/jwt"
 	"large-scale-multistructure-db/be/pkg/mongo"
+	"large-scale-multistructure-db/be/pkg/redis"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -52,24 +53,35 @@ func (s *IntegrationSuite) SetupSuite() {
 		return
 	}
 
+	redis := redis.New(&redis.RedisOptions{})
+
 	// create repos and usecases
 	// TODO add barbershop ones
 	userRepo := repo.NewUserRepo(mongo)
 	barberShopRepo := repo.NewBarberShopRepo(mongo)
 	viewShopRepo := repo.NewShopViewRepo(mongo)
+	appintmentRepo := repo.NewAppointmentRepo(mongo)
+	slotRepo := repo.NewSlotRepo(redis)
 
 	password := auth.NewPasswordAuth()
 
-	usecases := []usecase.Usecase{
-		usecase.NewUserUseCase(
-			userRepo,
-			password,
-		),
-		usecase.NewBarberShopUseCase(
-			barberShopRepo,
-			viewShopRepo,
-		),
-	}
+	userUseCase := usecase.NewUserUseCase(
+		userRepo,
+		password,
+	)
+
+	barberUseCase := usecase.NewBarberShopUseCase(
+		barberShopRepo,
+		viewShopRepo,
+	)
+
+	appointmentUseCase := usecase.NewAppoinmentUseCase(
+		appintmentRepo,
+		slotRepo,
+	)
+	calendarUseCase := usecase.NewCalendarUseCase(
+		slotRepo,
+	)
 
 	// Fill the test DB
 
@@ -111,11 +123,9 @@ func (s *IntegrationSuite) SetupSuite() {
 		// create barberShops
 
 		barberShop1 := &entity.BarberShop{
-			Name: "barberShop1",
-			Coordinates: entity.Coordinates{
-				Latitude:  "1",
-				Longitude: "1",
-			},
+			Name:      "barberShop1",
+			Latitude:  "1",
+			Longitude: "1",
 			Employees: 2,
 		}
 		barberShopRepo.Store(context.TODO(), barberShop1)
@@ -125,7 +135,10 @@ func (s *IntegrationSuite) SetupSuite() {
 			Password: p,
 			Type:     entity.BARBER,
 			OwnedShops: []*entity.BarberShop{
-				barberShop1,
+				{
+					Name: barberShop1.Name,
+					ID:   barberShop1.ID,
+				},
 			},
 		}
 
@@ -135,11 +148,9 @@ func (s *IntegrationSuite) SetupSuite() {
 		s.params["barber1Auth"], _ = jwt.CreateToken(barber1.ID)
 
 		barberShop2 := &entity.BarberShop{
-			Name: "barberShop2",
-			Coordinates: entity.Coordinates{
-				Latitude:  "1",
-				Longitude: "2",
-			},
+			Name:      "barberShop2",
+			Latitude:  "1",
+			Longitude: "2",
 			Employees: 2,
 		}
 
@@ -149,8 +160,12 @@ func (s *IntegrationSuite) SetupSuite() {
 			Email:    "barber2@example.com",
 			Password: p,
 			Type:     entity.BARBER,
+
 			OwnedShops: []*entity.BarberShop{
-				barberShop2,
+				{
+					Name: barberShop2.Name,
+					ID:   barberShop2.ID,
+				},
 			},
 		}
 
@@ -163,7 +178,14 @@ func (s *IntegrationSuite) SetupSuite() {
 
 	// serv the mock server and db
 	s.params = make(map[string]string)
-	s.srv = controller.Router(usecases)
+
+	s.srv = controller.Router(
+		userUseCase,
+		barberUseCase,
+		appointmentUseCase,
+		calendarUseCase,
+	)
+
 	s.mongo = mongo
 }
 
@@ -335,8 +357,8 @@ func (s *IntegrationSuite) TestShowSelf() {
 			// assert that the response status code is as expected
 			s.Require().Equal(tc.status, w.Code)
 
-			// check for user len if the request was accepted
-			if w.Code == http.StatusAccepted {
+			// check for user barbershops len if the request was accepted
+			if w.Code == http.StatusOK {
 
 				body, err := io.ReadAll(w.Body)
 
@@ -609,6 +631,105 @@ func (s *IntegrationSuite) TestUserDelete() {
 	}
 }
 
+func (s *IntegrationSuite) TestUserModify() {
+
+	testCases := []struct {
+		name           string
+		token          string
+		ID             string
+		status         int
+		barberShopsLen int
+		input          controller.ModifyUserInput
+	}{
+		{
+			name:   "Wrongly formatted token",
+			token:  "wrong_token",
+			ID:     "genericID",
+			status: http.StatusUnauthorized,
+			input:  controller.ModifyUserInput{},
+		},
+		{
+			name:   "Not an admin",
+			token:  s.params["authToken"],
+			ID:     "genericID",
+			status: http.StatusUnauthorized,
+			input:  controller.ModifyUserInput{},
+		},
+		{
+			name:  "Add a shop",
+			token: s.params["adminToken"],
+			ID:    s.params["authID"],
+			input: controller.ModifyUserInput{
+				BarbershopsID: []string{
+					s.params["barberShop1ID"],
+				},
+			},
+			barberShopsLen: 1,
+			status:         http.StatusAccepted,
+		},
+		{
+			name:   "Remove a shop",
+			token:  s.params["adminToken"],
+			ID:     s.params["authID"],
+			status: http.StatusAccepted,
+			input: controller.ModifyUserInput{
+				BarbershopsID: []string{},
+			},
+			barberShopsLen: 0,
+		},
+	}
+
+	for _, tc := range testCases {
+
+		s.T().Run(tc.name, func(t *testing.T) {
+
+			modifyUserJson, _ := json.Marshal(tc.input)
+
+			// create a request for the self endpoint
+			var req *http.Request
+
+			req, _ = http.NewRequest("PUT", "/api/admin/user/"+tc.ID, bytes.NewBuffer(modifyUserJson))
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Add("Authorization", "Bearer "+tc.token)
+
+			// serve the request to the test server
+			w := httptest.NewRecorder()
+			s.srv.ServeHTTP(w, req)
+
+			// assert that the response status code is as expected
+			s.Require().Equal(tc.status, w.Code)
+
+			if w.Code == http.StatusAccepted {
+
+				req, _ = http.NewRequest("GET", "/api/admin/user/"+tc.ID, nil)
+				req.Header.Set("Content-Type", "application/json")
+				req.Header.Add("Authorization", "Bearer "+tc.token)
+
+				w2 := httptest.NewRecorder()
+				s.srv.ServeHTTP(w2, req)
+
+				body, err := io.ReadAll(w.Body)
+
+				// require no error in reading the response
+				s.Require().Nil(err)
+
+				type response struct {
+					User entity.User `json:"user"`
+				}
+
+				var res response
+				err = json.Unmarshal(body, &res)
+				s.Require().Nil(err)
+
+				s.Require().Len(res.User.OwnedShops, tc.barberShopsLen)
+
+			}
+
+		})
+
+	}
+}
+
 // BARBER SHOPS
 
 func (s *IntegrationSuite) TestBarberShopFind() {
@@ -718,7 +839,6 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 	}
 }
 
-// TODO : check if the viewShop is stored
 func (s *IntegrationSuite) TestBarberShopShow() {
 	testCases := []struct {
 		name   string
@@ -821,7 +941,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 				Longitude:       1,
 				EmployeesNumber: 2,
 			},
-			status: http.StatusUnauthorized,
+			status: http.StatusBadRequest,
 		},
 		{
 			name:   "Invalid input",
@@ -833,7 +953,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 			token: s.params["adminToken"],
 			newBarberShop: &controller.CreateBarbershopInput{
 				Name:            "barberShop7",
-				Latitude:        1,
+				Latitude:        1.1,
 				Longitude:       1,
 				EmployeesNumber: 2,
 			},
@@ -967,3 +1087,5 @@ func (s *IntegrationSuite) TestBarberShopDeleteByID() {
 
 	}
 }
+
+// appointments

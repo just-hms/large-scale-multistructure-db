@@ -14,5 +14,5 @@ type User struct {
 	Type     string `bson:"type"`
 
 	CurrentAppointment *Appointment
-	OwnedShops         []*BarberShop
+	OwnedShops         []*BarberShop `bson:"ownedShops"`
 }

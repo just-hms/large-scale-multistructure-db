@@ -113,3 +113,7 @@ func (uc *UserUseCase) ResetPassword(ctx context.Context, ID string, password st
 		Password: hashed,
 	})
 }
+
+func (uc *UserUseCase) EditShopsByIDs(ctx context.Context, ID string, IDs []string) error {
+	return uc.repo.EditShopsByIDs(ctx, ID, IDs)
+}

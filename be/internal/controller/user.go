@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/internal/usecase"
 	"large-scale-multistructure-db/be/pkg/jwt"
@@ -69,6 +70,7 @@ func (ur *UserRoutes) Register(ctx *gin.Context) {
 	err := ur.userUseCase.Store(ctx, &entity.User{
 		Password: input.Password,
 		Email:    input.Email,
+		Type:     entity.USER,
 	})
 
 	if err != nil {
@@ -120,12 +122,16 @@ func (ur *UserRoutes) Delete(ctx *gin.Context) {
 }
 
 type ModifyUserInput struct {
-	Email string `json:"username" binding:"required"`
+	Email         string   `json:"email"`
+	BarbershopsID []string `json:"barbershopsId"`
 }
 
 func (ur *UserRoutes) Modify(ctx *gin.Context) {
 	input := ModifyUserInput{}
+
 	if err := ctx.ShouldBindJSON(&input); err != nil {
+		fmt.Println("kek")
+
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -141,6 +147,11 @@ func (ur *UserRoutes) Modify(ctx *gin.Context) {
 		return
 	}
 
+	if err := ur.userUseCase.EditShopsByIDs(ctx, ID, input.BarbershopsID); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	ctx.JSON(http.StatusAccepted, gin.H{"message": "user modified"})
 
 }
@@ -149,7 +160,6 @@ type LostPasswordInput struct {
 	Email string `json:"email" binding:"required"`
 }
 
-// TODO : test
 func (ur *UserRoutes) LostPassword(ctx *gin.Context) {
 	input := LostPasswordInput{}
 	if err := ctx.ShouldBindJSON(&input); err != nil {

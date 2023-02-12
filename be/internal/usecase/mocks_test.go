@@ -50,6 +50,20 @@ func (mr *MockUserMockRecorder) DeleteByID(ctx, ID interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByID", reflect.TypeOf((*MockUser)(nil).DeleteByID), ctx, ID)
 }
 
+// EditShopsByIDs mocks base method.
+func (m *MockUser) EditShopsByIDs(ctx context.Context, ID string, IDs []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "EditShopsByIDs", ctx, ID, IDs)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// EditShopsByIDs indicates an expected call of EditShopsByIDs.
+func (mr *MockUserMockRecorder) EditShopsByIDs(ctx, ID, IDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EditShopsByIDs", reflect.TypeOf((*MockUser)(nil).EditShopsByIDs), ctx, ID, IDs)
+}
+
 // GetByID mocks base method.
 func (m *MockUser) GetByID(ctx context.Context, ID string) (*entity.User, error) {
 	m.ctrl.T.Helper()
@@ -361,12 +375,11 @@ func (m *MockAppointment) EXPECT() *MockAppointmentMockRecorder {
 }
 
 // Book mocks base method.
-func (m *MockAppointment) Book(ctx context.Context, appointment *entity.Appointment) (string, error) {
+func (m *MockAppointment) Book(ctx context.Context, appointment *entity.Appointment) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Book", ctx, appointment)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Book indicates an expected call of Book.
@@ -376,33 +389,17 @@ func (mr *MockAppointmentMockRecorder) Book(ctx, appointment interface{}) *gomoc
 }
 
 // Cancel mocks base method.
-func (m *MockAppointment) Cancel(ctx context.Context, appointment *entity.Appointment) (string, error) {
+func (m *MockAppointment) Cancel(ctx context.Context, appointment *entity.Appointment) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Cancel", ctx, appointment)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Cancel indicates an expected call of Cancel.
 func (mr *MockAppointmentMockRecorder) Cancel(ctx, appointment interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Cancel", reflect.TypeOf((*MockAppointment)(nil).Cancel), ctx, appointment)
-}
-
-// DeleteByID mocks base method.
-func (m *MockAppointment) DeleteByID(ctx context.Context, ID string) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteByID", ctx, ID)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// DeleteByID indicates an expected call of DeleteByID.
-func (mr *MockAppointmentMockRecorder) DeleteByID(ctx, ID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByID", reflect.TypeOf((*MockAppointment)(nil).DeleteByID), ctx, ID)
 }
 
 // MockHoliday is a mock of Holiday interface.
@@ -429,12 +426,11 @@ func (m *MockHoliday) EXPECT() *MockHolidayMockRecorder {
 }
 
 // Set mocks base method.
-func (m *MockHoliday) Set(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) (string, error) {
+func (m *MockHoliday) Set(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Set", ctx, shopID, date, unavailableEmployees)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Set indicates an expected call of Set.
@@ -480,6 +476,20 @@ func (mr *MockReviewMockRecorder) DeleteByID(ctx, ID interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByID", reflect.TypeOf((*MockReview)(nil).DeleteByID), ctx, ID)
 }
 
+// DownVoteByID mocks base method.
+func (m *MockReview) DownVoteByID(ctx context.Context, voterID, ID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DownVoteByID", ctx, voterID, ID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DownVoteByID indicates an expected call of DownVoteByID.
+func (mr *MockReviewMockRecorder) DownVoteByID(ctx, voterID, ID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DownVoteByID", reflect.TypeOf((*MockReview)(nil).DownVoteByID), ctx, voterID, ID)
+}
+
 // GetByBarberShop mocks base method.
 func (m *MockReview) GetByBarberShop(ctx context.Context, shopID string) ([]*entity.Review, error) {
 	m.ctrl.T.Helper()
@@ -493,6 +503,20 @@ func (m *MockReview) GetByBarberShop(ctx context.Context, shopID string) ([]*ent
 func (mr *MockReviewMockRecorder) GetByBarberShop(ctx, shopID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByBarberShop", reflect.TypeOf((*MockReview)(nil).GetByBarberShop), ctx, shopID)
+}
+
+// RemoveVoteByID mocks base method.
+func (m *MockReview) RemoveVoteByID(ctx context.Context, voterID, ID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveVoteByID", ctx, voterID, ID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveVoteByID indicates an expected call of RemoveVoteByID.
+func (mr *MockReviewMockRecorder) RemoveVoteByID(ctx, voterID, ID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveVoteByID", reflect.TypeOf((*MockReview)(nil).RemoveVoteByID), ctx, voterID, ID)
 }
 
 // Store mocks base method.
@@ -509,18 +533,18 @@ func (mr *MockReviewMockRecorder) Store(ctx, userID, shopID interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockReview)(nil).Store), ctx, userID, shopID)
 }
 
-// VoteByID mocks base method.
-func (m *MockReview) VoteByID(ctx context.Context, ID string) error {
+// UpVoteByID mocks base method.
+func (m *MockReview) UpVoteByID(ctx context.Context, voterID, ID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "VoteByID", ctx, ID)
+	ret := m.ctrl.Call(m, "UpVoteByID", ctx, voterID, ID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// VoteByID indicates an expected call of VoteByID.
-func (mr *MockReviewMockRecorder) VoteByID(ctx, ID interface{}) *gomock.Call {
+// UpVoteByID indicates an expected call of UpVoteByID.
+func (mr *MockReviewMockRecorder) UpVoteByID(ctx, voterID, ID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VoteByID", reflect.TypeOf((*MockReview)(nil).VoteByID), ctx, ID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpVoteByID", reflect.TypeOf((*MockReview)(nil).UpVoteByID), ctx, voterID, ID)
 }
 
 // MockUserRepo is a mock of UserRepo interface.
@@ -558,6 +582,20 @@ func (m *MockUserRepo) DeleteByID(ctx context.Context, ID string) error {
 func (mr *MockUserRepoMockRecorder) DeleteByID(ctx, ID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByID", reflect.TypeOf((*MockUserRepo)(nil).DeleteByID), ctx, ID)
+}
+
+// EditShopsByIDs mocks base method.
+func (m *MockUserRepo) EditShopsByIDs(ctx context.Context, ID string, IDs []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "EditShopsByIDs", ctx, ID, IDs)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// EditShopsByIDs indicates an expected call of EditShopsByIDs.
+func (mr *MockUserRepoMockRecorder) EditShopsByIDs(ctx, ID, IDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EditShopsByIDs", reflect.TypeOf((*MockUserRepo)(nil).EditShopsByIDs), ctx, ID, IDs)
 }
 
 // GetByEmail mocks base method.
@@ -910,6 +948,21 @@ func (mr *MockAppointmentRepoMockRecorder) DeleteByID(ctx, ID interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByID", reflect.TypeOf((*MockAppointmentRepo)(nil).DeleteByID), ctx, ID)
 }
 
+// GetByID mocks base method.
+func (m *MockAppointmentRepo) GetByID(ctx context.Context, ID string) (*entity.Appointment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", ctx, ID)
+	ret0, _ := ret[0].(*entity.Appointment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockAppointmentRepoMockRecorder) GetByID(ctx, ID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockAppointmentRepo)(nil).GetByID), ctx, ID)
+}
+
 // MockReviewRepo is a mock of ReviewRepo interface.
 type MockReviewRepo struct {
 	ctrl     *gomock.Controller
@@ -976,18 +1029,69 @@ func (mr *MockReviewRepoMockRecorder) Store(ctx, userID, shopID interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockReviewRepo)(nil).Store), ctx, userID, shopID)
 }
 
-// VoteByID mocks base method.
-func (m *MockReviewRepo) VoteByID(ctx context.Context, ID string) error {
+// MockVoteRepo is a mock of VoteRepo interface.
+type MockVoteRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockVoteRepoMockRecorder
+}
+
+// MockVoteRepoMockRecorder is the mock recorder for MockVoteRepo.
+type MockVoteRepoMockRecorder struct {
+	mock *MockVoteRepo
+}
+
+// NewMockVoteRepo creates a new mock instance.
+func NewMockVoteRepo(ctrl *gomock.Controller) *MockVoteRepo {
+	mock := &MockVoteRepo{ctrl: ctrl}
+	mock.recorder = &MockVoteRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockVoteRepo) EXPECT() *MockVoteRepoMockRecorder {
+	return m.recorder
+}
+
+// DownVote mocks base method.
+func (m *MockVoteRepo) DownVote(ctx context.Context, voterID, shopID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "VoteByID", ctx, ID)
+	ret := m.ctrl.Call(m, "DownVote", ctx, voterID, shopID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// VoteByID indicates an expected call of VoteByID.
-func (mr *MockReviewRepoMockRecorder) VoteByID(ctx, ID interface{}) *gomock.Call {
+// DownVote indicates an expected call of DownVote.
+func (mr *MockVoteRepoMockRecorder) DownVote(ctx, voterID, shopID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VoteByID", reflect.TypeOf((*MockReviewRepo)(nil).VoteByID), ctx, ID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DownVote", reflect.TypeOf((*MockVoteRepo)(nil).DownVote), ctx, voterID, shopID)
+}
+
+// RemoveVote mocks base method.
+func (m *MockVoteRepo) RemoveVote(ctx context.Context, voterID, shopID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveVote", ctx, voterID, shopID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveVote indicates an expected call of RemoveVote.
+func (mr *MockVoteRepoMockRecorder) RemoveVote(ctx, voterID, shopID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveVote", reflect.TypeOf((*MockVoteRepo)(nil).RemoveVote), ctx, voterID, shopID)
+}
+
+// UpVote mocks base method.
+func (m *MockVoteRepo) UpVote(ctx context.Context, voterID, shopID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpVote", ctx, voterID, shopID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpVote indicates an expected call of UpVote.
+func (mr *MockVoteRepoMockRecorder) UpVote(ctx, voterID, shopID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpVote", reflect.TypeOf((*MockVoteRepo)(nil).UpVote), ctx, voterID, shopID)
 }
 
 // MockUsecase is a mock of Usecase interface.

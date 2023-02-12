@@ -13,12 +13,14 @@ type (
 	// INTERFACES
 
 	User interface {
-		Login(ctx context.Context, user *entity.User) (*entity.User, error)     // IMPLEMENTED | TESTED
-		Store(ctx context.Context, user *entity.User) error                     // IMPLEMENTED | TESTED
-		GetByID(ctx context.Context, ID string) (*entity.User, error)           // IMPLEMENTED | TESTED
-		ModifyByID(ctx context.Context, ID string, user *entity.User) error     // IMPLEMENTED | TESTED
-		DeleteByID(ctx context.Context, ID string) error                        // IMPLEMENTED | TESTED
-		List(ctx context.Context, email string) ([]*entity.User, error)         // IMPLEMENTED | TESTED
+		Login(ctx context.Context, user *entity.User) (*entity.User, error) // IMPLEMENTED | TESTED
+		Store(ctx context.Context, user *entity.User) error                 // IMPLEMENTED | TESTED
+		GetByID(ctx context.Context, ID string) (*entity.User, error)       // IMPLEMENTED | TESTED
+		ModifyByID(ctx context.Context, ID string, user *entity.User) error // IMPLEMENTED | TESTED
+		DeleteByID(ctx context.Context, ID string) error                    // IMPLEMENTED | TESTED
+		List(ctx context.Context, email string) ([]*entity.User, error)     // IMPLEMENTED | TESTED
+		EditShopsByIDs(ctx context.Context, ID string, IDs []string) error
+
 		LostPassword(ctx context.Context, email string) (string, error)         // IMPLEMENTED
 		ResetPassword(ctx context.Context, ID string, newPassword string) error // IMPLEMENTED
 	}
@@ -37,17 +39,16 @@ type (
 	}
 
 	Calendar interface {
-		GetByBarberShopID(ctx context.Context, ID string) (*entity.Calendar, error)
+		GetByBarberShopID(ctx context.Context, ID string) (*entity.Calendar, error) // IMPLEMENTED
 	}
 
 	Appointment interface {
-		Book(ctx context.Context, appointment *entity.Appointment) (string, error)
-		Cancel(ctx context.Context, appointment *entity.Appointment) (string, error)
-		DeleteByID(ctx context.Context, ID string) (string, error)
+		Book(ctx context.Context, appointment *entity.Appointment) error   // IMPLEMENTED
+		Cancel(ctx context.Context, appointment *entity.Appointment) error // IMPLEMENTED
 	}
 
 	Holiday interface {
-		Set(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) (string, error)
+		Set(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error // IMPLEMENTED
 	}
 
 	Review interface {
@@ -72,6 +73,7 @@ type (
 		ModifyByID(ctx context.Context, ID string, user *entity.User) error
 		GetByEmail(ctx context.Context, email string) (*entity.User, error)
 		List(ctx context.Context, email string) ([]*entity.User, error)
+		EditShopsByIDs(ctx context.Context, ID string, IDs []string) error
 	}
 
 	BarberShopRepo interface {
@@ -82,7 +84,6 @@ type (
 		DeleteByID(ctx context.Context, ID string) error
 	}
 
-	// TODO: add something that refresh the slots every day
 	SlotRepo interface {
 		GetByBarberShopID(ctx context.Context, ID string) ([]*entity.Slot, error)
 		Book(ctx context.Context, appointment *entity.Appointment) error
@@ -97,7 +98,6 @@ type (
 	AppointmentRepo interface {
 		Book(ctx context.Context, appointment *entity.Appointment) error
 		Cancel(ctx context.Context, appointment *entity.Appointment) error
-		DeleteByID(ctx context.Context, ID string) error
 	}
 
 	ReviewRepo interface {

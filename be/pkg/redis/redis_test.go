@@ -7,7 +7,7 @@ import (
 
 func TestRedisSetup(t *testing.T) {
 
-	redis := redis.New()
+	redis := redis.New(&redis.RedisOptions{})
 
 	_, err := redis.Client.Ping().Result()
 

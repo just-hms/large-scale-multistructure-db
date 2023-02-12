@@ -123,3 +123,33 @@ func (r *UserRepo) GetByEmail(ctx context.Context, email string) (*entity.User, 
 	}
 	return user, nil
 }
+
+func (r *UserRepo) EditShopsByIDs(ctx context.Context, ID string, IDs []string) error {
+
+	ownedShops := []*entity.BarberShop{}
+
+	for _, barbershopID := range IDs {
+
+		barbershop := &entity.BarberShop{}
+		err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": barbershopID}).Decode(&barbershop)
+
+		if err != nil {
+			return err
+		}
+
+		ownedShops = append(
+			ownedShops,
+			&entity.BarberShop{
+				ID:   barbershopID,
+				Name: barbershop.Name,
+			},
+		)
+	}
+
+	filter := bson.M{"_id": ID}
+	update := bson.M{"$set": bson.M{"ownedShops": ownedShops}}
+
+	_, err := r.DB.Collection("users").UpdateOne(ctx, filter, update)
+
+	return err
+}

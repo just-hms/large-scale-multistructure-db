@@ -5,10 +5,15 @@ type BarberShop struct {
 	Name   string
 	Rating float64
 
-	Hours       []*Hour
-	Location    string
-	ImageLink   string
-	Phone       string
-	Coordinates Coordinates
-	Employees   int
+	Location  string
+	ImageLink string
+	Phone     string
+
+	Employees int
+
+	Latitude  string
+	Longitude string
+
+	Reviews      []*Review
+	Appointments []*Appointment
 }
