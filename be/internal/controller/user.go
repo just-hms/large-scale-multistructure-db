@@ -146,7 +146,7 @@ func (ur *UserRoutes) Modify(ctx *gin.Context) {
 }
 
 type LostPasswordInput struct {
-	Email string `json:"username" binding:"required"`
+	Email string `json:"email" binding:"required"`
 }
 
 // TODO : test
