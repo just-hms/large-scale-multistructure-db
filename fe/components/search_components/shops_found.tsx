@@ -6,19 +6,18 @@ import barber_background from '../../public/barber_profile.jpg'
 import GeneralDropdown from "../general_dropdown";
 
 export default function ShopsFound({shops}:any) {
+    // console.log(shops)
     return (
         <>
-        <div className="w-full flex-col text-xl justify-start items-center px-3">
-            <div className="w-full flex flex-col lg:flex-row justify-between items-center pb-2 px-2">
-                <div className="py-2 lg:p-0">Found {shops.length} Barber Shops</div>
-                <div className="flex items-center justify-end">
+        <div className="w-full flex-col text-xl justify-start items-center px-3 overflow-auto">
+            <div className="w-full bg-slate-800 sticky top-0 flex flex-col lg:flex-row justify-between items-center pb-2 px-2 border-b border-slate-600 mb-3">
+                <div className="py-2 lg:p-0">Found {(shops)?shops.length:0} Barber Shops</div>
+                {/* <div className="flex items-center justify-end " >
                     <GeneralDropdown elements={[1,2,3]} placeholder="" classname=""><div>Ordered By</div></GeneralDropdown>
-                </div>
+                </div> */}
             </div>
-            <div className="w-full border-b border-slate-600 mb-3"/>
-            {shops.map((shop:any)=>
-            //TODO: ADD HREF TO SHOP'S PAGE
-            <Link href="" key={shop.id} className="w-full text-slate-200 px-2 flex flex-col items-center justify-start">
+            {(shops !== undefined)?shops.map((shop:any)=>
+            <Link href={"/shop/"+shop.name} key={shop.id} className="w-full text-slate-200 px-2 flex flex-col items-center justify-start">
                 <div key={shop.id+"container"} className="flex flex-col items-center justify-start w-full rounded-lg pb-5">
                     <div className="flex w-full items-start justify-start">
                         <div key={shop.id+"title"} className="text-sm flex items-center lg:items-start justify-start w-full text-left">
@@ -43,7 +42,7 @@ export default function ShopsFound({shops}:any) {
                     </div>
                 </div>
             </Link>
-            )}
+            ):<></>}
         </div>
         </>
     );

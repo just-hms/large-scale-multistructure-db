@@ -2,22 +2,41 @@ import { getAllShops, getReviews, getShopData } from '../../lib/shops';
 import Image from 'next/image';
 import Navbar from '../../components/navbar';
 import Head from 'next/head';
-
 import barber_background from '../../public/barber_profile.jpg'
 import barber_propic from '../../public/barber_bg.png'
 import Footer from '../../components/footer';
 import Reviews from '../../components/shop_component/reviews';
 import ReactStars from 'react-stars'
-import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router'
 
 export default function Shop({ shopData, reviewsData }:{ shopData:any, reviewsData:any }) {
+
+  const [loaded,setLoaded] = useState(false)
+  const router = useRouter()
+  useEffect(()=>{
+    const token = localStorage.getItem('token')
+    if(!token){
+      router.push("/")
+    }else{
+      setLoaded(true)
+    }
+  },[])
+  
+  if(!loaded){
+    return <div></div> //show nothing or a loader
+  }
   return (
     <>
       <Head>
         <title>{shopData.title} | Barber Shop</title>
       <link rel="icon" type="image/png" sizes="32x32" href="/barber-shop.png"></link>
       </Head>
-      <Navbar></Navbar>
+      <Navbar style="absolute top-0">
+        <svg className='w-full bg-slate-800/0 h-full' viewBox='0 0 1440 100' preserveAspectRatio="xMidYMid">
+            <path className='w-full fill-slate-900' d="M 0 90 C 480 0 600 0 720 10.7 C 840 21 960 43 1080 48 C 1200 53 1320 43 1380 37.3 L 1440 32 L 1440 0 L 1380 0 C 1320 0 1200 0 1080 0 C 960 0 840 0 720 0 C 600 0 480 0 360 0 C 240 0 120 0 60 0 L 0 0 Z"></path>
+        </svg>
+      </Navbar>
       <div className='h-full'>
         <div className='h-96 w-full'>
           <Image className="w-full h-full object-cover " src={barber_background} alt="barber salon"/>
@@ -31,12 +50,12 @@ export default function Shop({ shopData, reviewsData }:{ shopData:any, reviewsDa
                   <div className="mx-5 text-center font-bold leading-tight tracking-tight text-slate-200 sticky top-0 bg-slate-800 w-full flex flex-col items-center">
                     <h1 className='text-2xl py-1 border-b border-slate-600 w-5/6'>Reviews</h1>
                   </div>
-                  <div className="text-lg text-center font-bold leading-tight tracking-tight text-slate-300 break-words p-3 mx-5">
+                  <div className="text-lg text-center  font-bold leading-tight tracking-tight text-slate-300 break-words p-3 mx-5">
                     <Reviews>{reviewsData}</Reviews>
                   </div>
                   {/* leave a review */}
                   <div className='bg-slate-800 border-t border-slate-600 w-full sticky bottom-0'>
-                    <div className="shadow-md shadow-black/70 rounded-b-3xl bg-slate-800 text-white w-full flex flex-col items-center justify-start">
+                    <div className="shadow-md shadow-black/70  bg-slate-800 text-white w-full flex flex-col items-center justify-start">
                       <h1 className="text-md text-center font-bold leading-tight tracking-tight text-slate-200 py-2">
                         Leave a review!
                       </h1>
@@ -50,7 +69,7 @@ export default function Shop({ shopData, reviewsData }:{ shopData:any, reviewsDa
                             color2={'#ffffff'} />
                         </div>
                         <textarea className='bg-slate-700 focus:outline-none resize-none rounded-md p-1.5 text-sm break-words mt-1'  name="" id="" />
-                        <button type="submit" className="w-full text-sm bg-slate-700 hover:bg-slate-600 focus:outline-none rounded-lg border-slate-700 text-sm py-2 text-center mt-3 z-10">That`&apos`s what I thought</button>
+                        <button type="submit" className="w-full text-sm bg-slate-700 hover:bg-slate-600 focus:outline-none rounded-lg border-slate-700 text-sm py-2 text-center mt-3 z-10">What I thought</button>
                       </div>
                     </div>
                   </div>
@@ -104,31 +123,25 @@ export async function getStaticPaths() {
   return {
     paths: [{
       params: {
-        shop: 'shop1'
+        shop: 'pippo'
       },
     },{
       params: {
-        shop: 'shop2'
+        shop: 'pluto'
       },
     }],
     fallback: false,
   };
 }
 
-export async function getStaticProps() {
-  // TODO: actually retrieve datas
-  // const postData = getShopData(params.shop)
-  const reviewsData =  getReviews("shopname")
+export async function getStaticProps(){
+  const reviewsData =  await getReviews("shopname")
   const shopData = {
     name:"Barbiere di Siviglia",
     title:"Barbiere di Siviglia",
     description:"occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
   }
   return {
-    props: {
-      shopData,
-      reviewsData
-    },
+      props: {shopData,reviewsData }
   }
-}
-
+  }

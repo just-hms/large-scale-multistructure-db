@@ -9,19 +9,19 @@ export default function Footer() {
           <ul>
             <li>
             <h1>Find us on GitHub:</h1>
-              <a className='hover:text-white hover:cursor-pointer'>
+              <a href='https://github.com/b0-n0-b0' className='hover:text-white hover:cursor-pointer'>
                 <FontAwesomeIcon icon={faGithub} className="pr-3"/>
                 Edoardo Geraci
               </a>
             </li>
             <li>
-              <a className='hover:text-white hover:cursor-pointer'>
+              <a href='https://github.com/just-hms' className='hover:text-white hover:cursor-pointer'>
                 <FontAwesomeIcon icon={faGithub} className="pr-3"/>
                 Alessandro Versari
               </a>
             </li>
             <li>
-              <a className='hover:text-white hover:cursor-pointer'>
+              <a href='https://github.com/SilverBeamx' className='hover:text-white hover:cursor-pointer'>
                 <FontAwesomeIcon icon={faGithub} className="pr-3"/>
                 Andrea Bedini
               </a>

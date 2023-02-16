@@ -1,16 +1,28 @@
 import Head from 'next/head'
 import Navbar from '../components/navbar'
 import Image from 'next/image'
-import barber_background from '../public/barber_bg_1.png'
+import barber_background from '../public/barber_bg.jpg'
 import barber_background_vertical from '../public/barber_bg_vertical.png'
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
 
-export default function Home() {
-
+export default function Home(){
+  // CHECK IF THERE'S A TOKEN
+  const [loaded,setLoaded] = useState(false)
   const [query, setQuery] = useState('');
   const router = useRouter()
+  useEffect(()=>{
+    const token = localStorage.getItem('token')
+    if(!token){
+      router.push("/")
+    }else{
+      setLoaded(true)
+    }
+  },[])
+  if(!loaded){
+    return <div></div> 
+  }
   const handleChange=(event:any)=>{
     setQuery(event.target.value);
   }
@@ -26,9 +38,13 @@ export default function Home() {
         <title>Home | Barber Shop</title>
         <link rel="icon" type="image/png" sizes="32x32" href="/barber-shop.png"></link>
       </Head>
-      <div className="w-full flex-col justify-center items-center bg-slate-900 h-screen">
-      <Navbar/>   
-        <div className="w-full h-full">
+      <div className="w-full flex-col justify-center items-center bg-slate-900 h-full">
+      <Navbar style="absolute top-0">
+        <svg className='w-full bg-slate-800/0 h-full' viewBox='0 0 1440 100' preserveAspectRatio="xMidYMid">
+            <path className='w-full fill-slate-900' d="M 0 90 C 480 0 600 0 720 10.7 C 840 21 960 43 1080 48 C 1200 53 1320 43 1380 37.3 L 1440 32 L 1440 0 L 1380 0 C 1320 0 1200 0 1080 0 C 960 0 840 0 720 0 C 600 0 480 0 360 0 C 240 0 120 0 60 0 L 0 0 Z"></path>
+        </svg>
+      </Navbar>
+        <div className="w-full h-screen">
           {/* large screen image */}
           <Image className="top-0 hidden lg:inline lg:w-full h-full object-cover z-0" src={barber_background} alt="barber salon"/>
           {/* small screen image */}
@@ -44,10 +60,11 @@ export default function Home() {
               <div className='flex justify-center'>
                 <div className='w-full lg:w-1/2 m-5 flex items-center justify-center rounded-full bg-red-900 bg-opacity-60 backdrop-blur-lg drop-shadow-lg'>
                   <input
-                    type="search"
+                    type="text"
                     className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none" 
-                    form-control id="barberSearch" placeholder="Desired area"
+                    id="barberSearch" placeholder="Desired area"
                     onChange={handleChange}
+                    
                   />
                   <button className="btn inline-block px-6 py-2.5 m-1 bg-red-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg text-white font-medium text-xs leading-tight uppercase rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out flex items-center" type="button" id="search_button"
                     onClick={handleClick}>

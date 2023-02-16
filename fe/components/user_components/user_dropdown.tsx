@@ -1,8 +1,9 @@
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment} from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 export default function UserDropdown({elements}:any){
+  const router = useRouter()
   return (
     <div className="inline-block text-sm leading-none rounded-full text-white border-slate-700 hover:text-slate-500">
       <Menu as="div" className="relative inline-block">
@@ -28,9 +29,21 @@ export default function UserDropdown({elements}:any){
               <div key={`container-`+element} className="px-1 py-1">
                 <Menu.Item key={`item-`+element}>
                 {({ active }) => (
-                  <Link key={`link-`+element} href={`/${(element == "Profile")?"user":"logout"}`} className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                  <button key={`link-`+element} className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                  onClick={ async (event) => {
+                    if(element === "Profile"){
+                      if(localStorage.getItem("Type") === "user")
+                        return router.push("/user");
+                      else if(localStorage.getItem("Type") === "admin")
+                        return router.push("/admin");
+                    }else{
+                        localStorage.clear()
+                        return router.push("/");
+                    }
+                    }}>
                     {element}
-                  </Link>
+                    
+                  </button>
                   )}
                   </Menu.Item>
               </div>
