@@ -46,9 +46,10 @@ func (r *AppointmentRepo) Cancel(ctx context.Context, appointment *entity.Appoin
 	if err != nil {
 		return err
 	}
+
 	// remove the appoinment from the user
 
-	userFilter := bson.M{"_id": appointment.UserID, "currentAppointment._id": appointment.ID}
+	userFilter := bson.M{"_id": appointment.UserID}
 	userUpdate := bson.M{"$unset": bson.M{"currentAppointment": ""}}
 	_, err = r.DB.Collection("users").UpdateOne(ctx, userFilter, userUpdate)
 	return err

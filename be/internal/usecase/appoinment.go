@@ -19,6 +19,8 @@ func NewAppoinmentUseCase(r AppointmentRepo, c SlotRepo) *AppoinmentUseCase {
 }
 
 func (uc *AppoinmentUseCase) Book(ctx context.Context, appointment *entity.Appointment) error {
+
+	// TODO check if the hour has meaning
 	err := uc.repo.Book(ctx, appointment)
 
 	if err != nil {

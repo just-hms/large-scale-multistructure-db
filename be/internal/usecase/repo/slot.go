@@ -107,7 +107,7 @@ func (r *SlotRepo) getByDateAndShop(barberShopID string, date time.Time) (*entit
 	}
 
 	slot := &entity.Slot{}
-	if err := json.Unmarshal([]byte(data), &slot); err != nil {
+	if err := json.Unmarshal([]byte(data), slot); err != nil {
 		return nil, err
 	}
 
@@ -126,7 +126,13 @@ func (r *SlotRepo) setByDateAndShop(barberShopID string, date time.Time, slot *e
 
 	// TODO fix this so it expires the next day, or at least all at the same time
 	seconds := slot.Start.Sub(time.Now())
-	err := r.Client.Set(key, slot, time.Second*seconds).Err()
+	bytes, err := json.Marshal(slot)
+
+	if err != nil {
+		return err
+	}
+
+	err = r.Client.Set(key, bytes, time.Second*seconds).Err()
 
 	return err
 }

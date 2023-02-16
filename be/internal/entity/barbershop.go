@@ -14,6 +14,6 @@ type BarberShop struct {
 	Latitude  string
 	Longitude string
 
-	Reviews      []*Review
-	Appointments []*Appointment
+	Reviews      []*Review      `bson:",omitempty"`
+	Appointments []*Appointment `bson:",omitempty"`
 }

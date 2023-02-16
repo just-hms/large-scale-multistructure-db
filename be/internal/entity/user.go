@@ -13,6 +13,6 @@ type User struct {
 	Password string `bson:"password"`
 	Type     string `bson:"type"`
 
-	CurrentAppointment *Appointment
-	OwnedShops         []*BarberShop `bson:"ownedShops"`
+	CurrentAppointment *Appointment  `bson:"currentAppointment,omitempty"`
+	OwnedShops         []*BarberShop `bson:"ownedShops,omitempty"`
 }

@@ -57,7 +57,7 @@ func Router(
 		user.POST("/lost_password/", ur.LostPassword)
 		user.POST("/reset_password/", ur.ResetPassword)
 
-		user.DELETE("/self/appointment", ar.DeleteSelfAppointment)
+		user.DELETE("/self/appointment", mr.RequireAuth, ar.DeleteSelfAppointment)
 	}
 
 	admin := api.Group("/admin")
@@ -85,7 +85,7 @@ func Router(
 		barberShop.PUT("/:id", mr.RequireBarber, br.Modify)
 
 		// appointments
-		barberShop.PUT("/:id/appointment", ar.Book)
+		barberShop.POST("/:id/appointment/", ar.Book)
 
 	}
 

@@ -18,6 +18,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -56,7 +57,7 @@ func (s *IntegrationSuite) SetupSuite() {
 	redis := redis.New(&redis.RedisOptions{})
 
 	// create repos and usecases
-	// TODO add barbershop ones
+
 	userRepo := repo.NewUserRepo(mongo)
 	barberShopRepo := repo.NewBarberShopRepo(mongo)
 	viewShopRepo := repo.NewShopViewRepo(mongo)
@@ -102,6 +103,17 @@ func (s *IntegrationSuite) SetupSuite() {
 
 		s.params["authID"] = us.ID
 		s.params["authToken"], _ = jwt.CreateToken(us.ID)
+
+		us2 := &entity.User{
+			Email:    "another@example.com",
+			Password: p,
+			Type:     entity.USER,
+		}
+
+		userRepo.Store(context.TODO(), us)
+
+		s.params["auth2ID"] = us2.ID
+		s.params["auth2Token"], _ = jwt.CreateToken(us2.ID)
 
 		admin := &entity.User{
 			Email:    "admin@example.com",
@@ -174,6 +186,15 @@ func (s *IntegrationSuite) SetupSuite() {
 		s.params["barberShop2ID"] = barberShop2.ID
 		s.params["barber2Auth"], _ = jwt.CreateToken(barber2.ID)
 
+		appointment := &entity.Appointment{
+			Start:        time.Now().Add(time.Hour),
+			UserID:       us2.ID,
+			BarbershopID: barberShop2.ID,
+		}
+
+		appointmentUseCase.Book(context.TODO(), appointment)
+
+		s.params["appointmentID"] = appointment.ID
 	}
 
 	// serv the mock server and db
@@ -1089,3 +1110,132 @@ func (s *IntegrationSuite) TestBarberShopDeleteByID() {
 }
 
 // appointments
+
+func (s *IntegrationSuite) TestBook() {
+
+	testCases := []struct {
+		name   string
+		token  string
+		ID     string
+		status int
+		input  controller.BookAppointmentInput
+	}{
+		{
+			name:   "Require Login",
+			status: http.StatusUnauthorized,
+			ID:     s.params["barberShop2ID"],
+			input: controller.BookAppointmentInput{
+				DateTime: time.Now().Add(time.Hour),
+			},
+		},
+		{
+			name:   "Correctly booked",
+			token:  s.params["authToken"],
+			ID:     s.params["barberShop2ID"],
+			status: http.StatusCreated,
+			input: controller.BookAppointmentInput{
+				DateTime: time.Now().Add(time.Hour),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+
+		s.T().Run(tc.name, func(t *testing.T) {
+
+			BookingJson, _ := json.Marshal(tc.input)
+
+			// create a request for the register endpoint
+			req, _ := http.NewRequest("POST", "/api/barber_shop/"+tc.ID+"/appointment/", bytes.NewBuffer(BookingJson))
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Add("Authorization", "Bearer "+tc.token)
+
+			// serve the request to the test server
+			w := httptest.NewRecorder()
+			s.srv.ServeHTTP(w, req)
+
+			// assert that the response status code is as expected
+			s.Require().Equal(tc.status, w.Code)
+		})
+
+	}
+}
+
+func (s *IntegrationSuite) TestCancelSelfAppointment() {
+
+	testCases := []struct {
+		name   string
+		token  string
+		status int
+	}{
+		{
+			name:   "Require Login",
+			status: http.StatusUnauthorized,
+		},
+		{
+			name:   "Correctly deleted",
+			token:  s.params["auth2Token"],
+			status: http.StatusAccepted,
+		},
+	}
+
+	for _, tc := range testCases {
+
+		s.T().Run(tc.name, func(t *testing.T) {
+
+			// create a request for the register endpoint
+			req, _ := http.NewRequest("DELETE", "/api/user/self/appointment", nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Add("Authorization", "Bearer "+tc.token)
+
+			// serve the request to the test server
+			w := httptest.NewRecorder()
+			s.srv.ServeHTTP(w, req)
+
+			// assert that the response status code is as expected
+			s.Require().Equal(tc.status, w.Code)
+		})
+
+	}
+}
+
+func (s *IntegrationSuite) TestCancelAppointment() {
+
+	testCases := []struct {
+		name   string
+		token  string
+		status int
+		ID     string
+	}{
+		{
+			name:   "Require Login",
+			status: http.StatusUnauthorized,
+			ID:     s.params["appointmentID"],
+		},
+		{
+			name:   "Correctly deleted",
+			token:  s.params["barber2Auth"],
+			status: http.StatusAccepted,
+			ID:     s.params["appointmentID"],
+		},
+	}
+
+	for _, tc := range testCases {
+
+		s.T().Run(tc.name, func(t *testing.T) {
+
+			// create a request for the register endpoint
+			req, _ := http.NewRequest("DELETE", "/barber_shop/"+tc.ID+"/appointment", nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Add("Authorization", "Bearer "+tc.token)
+
+			// serve the request to the test server
+			w := httptest.NewRecorder()
+			s.srv.ServeHTTP(w, req)
+
+			// assert that the response status code is as expected
+			s.Require().Equal(tc.status, w.Code)
+		})
+
+	}
+}
