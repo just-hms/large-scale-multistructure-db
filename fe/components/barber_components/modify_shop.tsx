@@ -43,6 +43,7 @@ export default function ModifyShop({ shopData }:any) {
                     <div className='h-20 w-50 bg-white'>
                     </div>
                   </div>
+                  <div></div>
                 </div>
               </div>
             </div>
