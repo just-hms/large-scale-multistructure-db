@@ -165,8 +165,8 @@ func (s *IntegrationSuite) TestShowSelf() {
 			// assert that the response status code is as expected
 			s.Require().Equal(tc.status, w.Code)
 
-			// check for user len if the request was accepted
-			if w.Code == http.StatusAccepted {
+			// check for user barbershops len if the request was accepted
+			if w.Code == http.StatusOK {
 
 				body, err := io.ReadAll(w.Body)
 
@@ -434,6 +434,105 @@ func (s *IntegrationSuite) TestUserDelete() {
 
 			// assert that the response status code is as expected
 			s.Require().Equal(tc.status, w.Code)
+		})
+
+	}
+}
+
+func (s *IntegrationSuite) TestUserModify() {
+
+	testCases := []struct {
+		name           string
+		token          string
+		ID             string
+		status         int
+		barberShopsLen int
+		input          controller.ModifyUserInput
+	}{
+		{
+			name:   "Wrongly formatted token",
+			token:  "wrong_token",
+			ID:     "genericID",
+			status: http.StatusUnauthorized,
+			input:  controller.ModifyUserInput{},
+		},
+		{
+			name:   "Not an admin",
+			token:  s.params["authToken"],
+			ID:     "genericID",
+			status: http.StatusUnauthorized,
+			input:  controller.ModifyUserInput{},
+		},
+		{
+			name:  "Add a shop",
+			token: s.params["adminToken"],
+			ID:    s.params["authID"],
+			input: controller.ModifyUserInput{
+				BarbershopsID: []string{
+					s.params["barberShop1ID"],
+				},
+			},
+			barberShopsLen: 1,
+			status:         http.StatusAccepted,
+		},
+		{
+			name:   "Remove a shop",
+			token:  s.params["adminToken"],
+			ID:     s.params["authID"],
+			status: http.StatusAccepted,
+			input: controller.ModifyUserInput{
+				BarbershopsID: []string{},
+			},
+			barberShopsLen: 0,
+		},
+	}
+
+	for _, tc := range testCases {
+
+		s.T().Run(tc.name, func(t *testing.T) {
+
+			modifyUserJson, _ := json.Marshal(tc.input)
+
+			// create a request for the self endpoint
+			var req *http.Request
+
+			req, _ = http.NewRequest("PUT", "/api/admin/user/"+tc.ID, bytes.NewBuffer(modifyUserJson))
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Add("Authorization", "Bearer "+tc.token)
+
+			// serve the request to the test server
+			w := httptest.NewRecorder()
+			s.srv.ServeHTTP(w, req)
+
+			// assert that the response status code is as expected
+			s.Require().Equal(tc.status, w.Code)
+
+			if w.Code == http.StatusAccepted {
+
+				req, _ = http.NewRequest("GET", "/api/admin/user/"+tc.ID, nil)
+				req.Header.Set("Content-Type", "application/json")
+				req.Header.Add("Authorization", "Bearer "+tc.token)
+
+				w2 := httptest.NewRecorder()
+				s.srv.ServeHTTP(w2, req)
+
+				body, err := io.ReadAll(w.Body)
+
+				// require no error in reading the response
+				s.Require().Nil(err)
+
+				type response struct {
+					User entity.User `json:"user"`
+				}
+
+				var res response
+				err = json.Unmarshal(body, &res)
+				s.Require().Nil(err)
+
+				s.Require().Len(res.User.OwnedShops, tc.barberShopsLen)
+
+			}
+
 		})
 
 	}

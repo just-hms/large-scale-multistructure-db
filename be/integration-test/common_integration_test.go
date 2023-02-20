@@ -10,7 +10,9 @@ import (
 	"large-scale-multistructure-db/be/internal/usecase/repo"
 	"large-scale-multistructure-db/be/pkg/jwt"
 	"large-scale-multistructure-db/be/pkg/mongo"
+	"large-scale-multistructure-db/be/pkg/redis"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -46,23 +48,35 @@ func (s *IntegrationSuite) SetupSuite() {
 		return
 	}
 
+	redis := redis.New(&redis.RedisOptions{})
+
 	// create repos and usecases
+
 	userRepo := repo.NewUserRepo(mongo)
 	barberShopRepo := repo.NewBarberShopRepo(mongo)
 	viewShopRepo := repo.NewShopViewRepo(mongo)
+	appintmentRepo := repo.NewAppointmentRepo(mongo)
+	slotRepo := repo.NewSlotRepo(redis)
 
 	password := auth.NewPasswordAuth()
 
-	usecases := []usecase.Usecase{
-		usecase.NewUserUseCase(
-			userRepo,
-			password,
-		),
-		usecase.NewBarberShopUseCase(
-			barberShopRepo,
-			viewShopRepo,
-		),
-	}
+	userUseCase := usecase.NewUserUseCase(
+		userRepo,
+		password,
+	)
+
+	barberUseCase := usecase.NewBarberShopUseCase(
+		barberShopRepo,
+		viewShopRepo,
+	)
+
+	appointmentUseCase := usecase.NewAppoinmentUseCase(
+		appintmentRepo,
+		slotRepo,
+	)
+	calendarUseCase := usecase.NewCalendarUseCase(
+		slotRepo,
+	)
 
 	// Fill the test DB
 
@@ -84,6 +98,17 @@ func (s *IntegrationSuite) SetupSuite() {
 		s.params["authID"] = us.ID
 		s.params["authToken"], _ = jwt.CreateToken(us.ID)
 
+		us2 := &entity.User{
+			Email:    "another@example.com",
+			Password: p,
+			Type:     entity.USER,
+		}
+
+		userRepo.Store(context.TODO(), us)
+
+		s.params["auth2ID"] = us2.ID
+		s.params["auth2Token"], _ = jwt.CreateToken(us2.ID)
+
 		admin := &entity.User{
 			Email:    "admin@example.com",
 			Password: p,
@@ -104,11 +129,9 @@ func (s *IntegrationSuite) SetupSuite() {
 		// create barberShops
 
 		barberShop1 := &entity.BarberShop{
-			Name: "barberShop1",
-			Coordinates: entity.Coordinates{
-				Latitude:  "1",
-				Longitude: "1",
-			},
+			Name:      "barberShop1",
+			Latitude:  "1",
+			Longitude: "1",
 			Employees: 2,
 		}
 		barberShopRepo.Store(context.TODO(), barberShop1)
@@ -118,7 +141,10 @@ func (s *IntegrationSuite) SetupSuite() {
 			Password: p,
 			Type:     entity.BARBER,
 			OwnedShops: []*entity.BarberShop{
-				barberShop1,
+				{
+					Name: barberShop1.Name,
+					ID:   barberShop1.ID,
+				},
 			},
 		}
 
@@ -128,11 +154,9 @@ func (s *IntegrationSuite) SetupSuite() {
 		s.params["barber1Auth"], _ = jwt.CreateToken(barber1.ID)
 
 		barberShop2 := &entity.BarberShop{
-			Name: "barberShop2",
-			Coordinates: entity.Coordinates{
-				Latitude:  "1",
-				Longitude: "2",
-			},
+			Name:      "barberShop2",
+			Latitude:  "1",
+			Longitude: "2",
 			Employees: 2,
 		}
 
@@ -142,8 +166,12 @@ func (s *IntegrationSuite) SetupSuite() {
 			Email:    "barber2@example.com",
 			Password: p,
 			Type:     entity.BARBER,
+
 			OwnedShops: []*entity.BarberShop{
-				barberShop2,
+				{
+					Name: barberShop2.Name,
+					ID:   barberShop2.ID,
+				},
 			},
 		}
 
@@ -152,11 +180,27 @@ func (s *IntegrationSuite) SetupSuite() {
 		s.params["barberShop2ID"] = barberShop2.ID
 		s.params["barber2Auth"], _ = jwt.CreateToken(barber2.ID)
 
+		appointment := &entity.Appointment{
+			Start:        time.Now().Add(time.Hour),
+			UserID:       us2.ID,
+			BarbershopID: barberShop2.ID,
+		}
+
+		appointmentUseCase.Book(context.TODO(), appointment)
+
+		s.params["appointmentID"] = appointment.ID
 	}
 
 	// serv the mock server and db
 	s.params = make(map[string]string)
-	s.srv = controller.Router(usecases)
+
+	s.srv = controller.Router(
+		userUseCase,
+		barberUseCase,
+		appointmentUseCase,
+		calendarUseCase,
+	)
+
 	s.mongo = mongo
 }
 

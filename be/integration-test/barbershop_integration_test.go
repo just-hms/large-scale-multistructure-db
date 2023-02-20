@@ -119,7 +119,6 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 	}
 }
 
-// TODO : check if the viewShop is stored
 func (s *IntegrationSuite) TestBarberShopShow() {
 	testCases := []struct {
 		name   string
@@ -222,7 +221,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 				Longitude:       1,
 				EmployeesNumber: 2,
 			},
-			status: http.StatusUnauthorized,
+			status: http.StatusBadRequest,
 		},
 		{
 			name:   "Invalid input",
@@ -234,7 +233,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 			token: s.params["adminToken"],
 			newBarberShop: &controller.CreateBarbershopInput{
 				Name:            "barberShop7",
-				Latitude:        1,
+				Latitude:        1.1,
 				Longitude:       1,
 				EmployeesNumber: 2,
 			},
