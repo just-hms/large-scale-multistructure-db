@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"large-scale-multistructure-db/be/internal/controller/middleware"
 	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/internal/usecase"
@@ -45,15 +44,13 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 		return
 	}
 
-	ID := ctx.Param("id")
+	ID := ctx.Param("shopid")
 
 	err = ur.appoinmentUseCase.Book(ctx, &entity.Appointment{
 		Start:        input.DateTime,
 		BarbershopID: ID,
 		UserID:       tokenID,
 	})
-
-	fmt.Println(err)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -107,7 +104,7 @@ func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 		return
 	}
 
-	ID := ctx.Param("id")
+	ID := ctx.Param("appointmentid")
 
 	err := ur.appoinmentUseCase.Cancel(ctx, &entity.Appointment{
 		BarbershopID: ID,

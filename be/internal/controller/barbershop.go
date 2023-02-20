@@ -74,7 +74,7 @@ func (br *BarberShopRoutes) Create(ctx *gin.Context) {
 
 func (br *BarberShopRoutes) Show(ctx *gin.Context) {
 
-	ID := ctx.Param("id")
+	ID := ctx.Param("shopid")
 
 	// TODO mark it with the middleware
 	token := middleware.ExtractTokenFromRequest(ctx)
@@ -105,7 +105,7 @@ type ModifyBarberShopInput struct {
 
 func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
 
-	ID := ctx.Param("id")
+	ID := ctx.Param("shopid")
 
 	input := ModifyBarberShopInput{}
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -130,7 +130,7 @@ func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
 
 func (br *BarberShopRoutes) Delete(ctx *gin.Context) {
 
-	ID := ctx.Param("id")
+	ID := ctx.Param("shopid")
 
 	err := br.barberShopUseCase.DeleteByID(ctx, ID)
 
@@ -144,7 +144,7 @@ func (br *BarberShopRoutes) Delete(ctx *gin.Context) {
 
 func (br *BarberShopRoutes) Calendar(ctx *gin.Context) {
 
-	ID := ctx.Param("id")
+	ID := ctx.Param("shopid")
 	slots, err := br.calendarUseCase.GetByBarberShopID(ctx, ID)
 
 	if err != nil {

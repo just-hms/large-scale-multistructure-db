@@ -44,7 +44,7 @@ func (s *IntegrationSuite) TestLogin() {
 			loginUserJson, _ := json.Marshal(tc.loginUser)
 
 			// create a request for the login endpoint
-			req, _ := http.NewRequest("POST", "/api/user/login/", bytes.NewBuffer(loginUserJson))
+			req, _ := http.NewRequest("POST", "/api/user/login", bytes.NewBuffer(loginUserJson))
 			req.Header.Set("Content-Type", "application/json")
 
 			// serve the request to the test server
@@ -85,22 +85,22 @@ func (s *IntegrationSuite) TestRegister() {
 
 	testCases := []struct {
 		name         string
-		creationUser *entity.User
+		creationUser *controller.RegisterInput
 		status       int
 	}{
 		{
 			name:         "Already exists",
-			creationUser: &entity.User{Email: "correct@example.com", Password: "password"},
+			creationUser: &controller.RegisterInput{Email: "correct@example.com", Password: "password"},
 			status:       http.StatusUnauthorized,
 		},
 		{
 			name:         "Invalid input",
-			creationUser: &entity.User{Email: "not_an_email", Password: "password"},
+			creationUser: &controller.RegisterInput{Email: "not_an_email", Password: "password"},
 			status:       http.StatusBadRequest,
 		},
 		{
 			name:         "Correctly Created",
-			creationUser: &entity.User{Email: "new@example.com", Password: "password"},
+			creationUser: &controller.RegisterInput{Email: "new@example.com", Password: "password"},
 			status:       http.StatusCreated,
 		},
 	}
@@ -111,7 +111,7 @@ func (s *IntegrationSuite) TestRegister() {
 			loginUserJson, _ := json.Marshal(tc.creationUser)
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("POST", "/api/user/", bytes.NewBuffer(loginUserJson))
+			req, _ := http.NewRequest("POST", "/api/user", bytes.NewBuffer(loginUserJson))
 			req.Header.Set("Content-Type", "application/json")
 
 			// serve the request to the test server
@@ -155,7 +155,7 @@ func (s *IntegrationSuite) TestShowSelf() {
 		s.T().Run(tc.name, func(t *testing.T) {
 
 			// create a request for the self endpoint
-			req, _ := http.NewRequest("GET", "/api/user/self/", nil)
+			req, _ := http.NewRequest("GET", "/api/user/self", nil)
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -213,7 +213,7 @@ func (s *IntegrationSuite) TestDeleteSelf() {
 		s.T().Run(tc.name, func(t *testing.T) {
 
 			// create a request for the self endpoint
-			req, _ := http.NewRequest("DELETE", "/api/user/self/", nil)
+			req, _ := http.NewRequest("DELETE", "/api/user/self", nil)
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 

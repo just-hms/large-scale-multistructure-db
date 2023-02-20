@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"large-scale-multistructure-db/be/internal/entity"
 	"large-scale-multistructure-db/be/internal/usecase"
 	"large-scale-multistructure-db/be/pkg/jwt"
@@ -130,8 +129,6 @@ func (ur *UserRoutes) Modify(ctx *gin.Context) {
 	input := ModifyUserInput{}
 
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		fmt.Println("kek")
-
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

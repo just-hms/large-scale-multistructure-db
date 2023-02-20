@@ -7,7 +7,7 @@ import (
 
 func (s *IntegrationSuite) TestHealth() {
 
-	req, _ := http.NewRequest("GET", "/api/health/", nil)
+	req, _ := http.NewRequest("GET", "/api/health", nil)
 
 	w := httptest.NewRecorder()
 	s.srv.ServeHTTP(w, req)

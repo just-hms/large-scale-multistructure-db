@@ -118,7 +118,6 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 
 	}
 }
-
 func (s *IntegrationSuite) TestBarberShopShow() {
 	testCases := []struct {
 		name   string
@@ -248,7 +247,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 			newBarberShopJson, _ := json.Marshal(tc.newBarberShop)
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("POST", "/api/admin/barber_shop/", bytes.NewBuffer(newBarberShopJson))
+			req, _ := http.NewRequest("POST", "/api/admin/barber_shop", bytes.NewBuffer(newBarberShopJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 

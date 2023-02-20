@@ -104,7 +104,7 @@ func (s *IntegrationSuite) SetupSuite() {
 			Type:     entity.USER,
 		}
 
-		userRepo.Store(context.TODO(), us)
+		userRepo.Store(context.TODO(), us2)
 
 		s.params["auth2ID"] = us2.ID
 		s.params["auth2Token"], _ = jwt.CreateToken(us2.ID)

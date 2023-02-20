@@ -45,7 +45,7 @@ func (s *IntegrationSuite) TestBook() {
 			BookingJson, _ := json.Marshal(tc.input)
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("POST", "/api/barber_shop/"+tc.ID+"/appointment/", bytes.NewBuffer(BookingJson))
+			req, _ := http.NewRequest("POST", "/api/barber_shop/"+tc.ID+"/appointment", bytes.NewBuffer(BookingJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
