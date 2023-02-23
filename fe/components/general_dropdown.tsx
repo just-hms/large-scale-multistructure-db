@@ -10,7 +10,6 @@ export default function GeneralDropdown({placeholder,elements,children,classname
     if(placeholder == undefined)
         placeholder = elements[0]
     const [selected_value,setSelectedValue] = useState(placeholder)
-    console.log(selected_value)
   return (
     <div className={`inline-block leading-none `+` ` + classname}>
         <Menu as="div" className="relative inline-block">

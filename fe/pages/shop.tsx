@@ -73,7 +73,6 @@ export default function Shop() {
       }
     }
   },[shopid])
-
   if(!loaded){
     return <div></div>
   }

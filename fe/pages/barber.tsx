@@ -8,7 +8,7 @@ import ModifyShop from '../components/barber_components/modify_shop';
 import BarberReservations from '../components/barber_components/barber_reservations';
 import { useRouter } from 'next/router';
 import { getUserInfos } from '../lib/user';
-export default function User({reservationsData, shopData}:{reservationsData:any, shopData:any}) {
+export default function User() {
 
   const [content, setContent] = useState("account_info");
   const [loaded,setLoaded] = useState(false)
@@ -23,6 +23,7 @@ export default function User({reservationsData, shopData}:{reservationsData:any,
     }else{
       const fetchData = async () => {
         setUserData(await (await getUserInfos()).json())
+        // TODO: from here construct [{"name":id,"name":id}] for shops and give it to ModifyShop
         setLoaded(true)
       }
       fetchData()
@@ -31,10 +32,13 @@ export default function User({reservationsData, shopData}:{reservationsData:any,
   if (content == "account_info") {
     displayed_element = <UserInfos userdata={userData}/>;
   } else if (content == "modify_shop"){
-    displayed_element = <ModifyShop shopData={shopData}/>;
+    // give the list of shops which is inside userData
+    displayed_element = <ModifyShop/>;
   } else if (content == "reservations"){
-    displayed_element = <BarberReservations reservations={reservationsData}/>;
+    displayed_element = <BarberReservations/>;
   } else if (content == "analytics"){
+    displayed_element = <></>;
+  } else if (content == "calendar"){
     displayed_element = <></>;
   }
   if(!loaded){
@@ -67,6 +71,9 @@ export default function User({reservationsData, shopData}:{reservationsData:any,
                 <li className='mx-2 '>
                     <button className={`hover:text-white focus:outline-none ${content == "analytics" ? "font-bold" : ""}`} onClick={event => {setContent("analytics")}}>Analytics</button>
                 </li>
+                <li className='mx-2 '>
+                    <button className={`hover:text-white focus:outline-none ${content == "calendar" ? "font-bold" : ""}`} onClick={event => {setContent("calendar")}}>Calendar</button>
+                </li>
             </ul>
         </div>
 
@@ -80,19 +87,19 @@ export default function User({reservationsData, shopData}:{reservationsData:any,
 }
 
 
-export async function getStaticProps() {
+// export async function getStaticProps() {
 
-  const reservationsData =  getReservations("barber");
-  // TODO: actually retrieve datas
-  const shopData = {
-    name:"Barbiere di Siviglia",
-    title:"Barbiere di Siviglia",
-    description:"occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-  }
-  return {
-    props: {
-      reservationsData,
-      shopData,
-    }
-  }
-}
+//   const reservationsData =  getReservations("barber");
+//   // TODO: actually retrieve datas
+//   const shopData = {
+//     name:"Barbiere di Siviglia",
+//     title:"Barbiere di Siviglia",
+//     description:"occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+//   }
+//   return {
+//     props: {
+//       reservationsData,
+//       shopData,
+//     }
+//   }
+// }

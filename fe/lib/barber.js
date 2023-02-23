@@ -28,3 +28,4 @@ export function getReservations(barber) {
       },];
   }
     
+  value={textareaValue} onChange={(e) => setTextareaValue(e.target.value)
