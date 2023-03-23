@@ -3,9 +3,10 @@ package repo
 import (
 	"context"
 	"fmt"
-	"large-scale-multistructure-db/be/internal/entity"
-	"large-scale-multistructure-db/be/pkg/mongo"
 	"time"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 )
 
 type ShopViewRepo struct {

@@ -6,7 +6,7 @@ package usecase_test
 
 import (
 	context "context"
-	entity "large-scale-multistructure-db/be/internal/entity"
+	entity "github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	reflect "reflect"
 	time "time"
 

@@ -1,8 +1,9 @@
 package jwt_test
 
 import (
-	"large-scale-multistructure-db/be/pkg/jwt"
 	"testing"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 
 	"github.com/stretchr/testify/assert"
 )

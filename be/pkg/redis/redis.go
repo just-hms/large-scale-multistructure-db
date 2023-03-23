@@ -1,29 +1,29 @@
 package redis
 
 import (
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/osext"
+
 	redisdriver "github.com/go-redis/redis"
 )
-
-// TODO: put this in
-const RedisAddr = "cache:6379"
-const RedisPassword = ""
 
 type Redis struct {
 	Client *redisdriver.Client
 }
 
-// get url and options as param
-// add const
+func New() (*Redis, error) {
+	redisAddr, err := osext.GetStringEnv("REDIS_ADDRESS")
+	if err != nil {
+		return nil, err
+	}
 
-// get url and options as param
-
-func New() *Redis {
+	// it's ok if the password is empty
+	redisPassword, _ := osext.GetStringEnv("REDIS_PASSWORD")
 
 	return &Redis{
 		Client: redisdriver.NewClient(&redisdriver.Options{
-			Addr:     RedisAddr,
-			Password: RedisPassword,
+			Addr:     redisAddr,
+			Password: redisPassword,
 			DB:       0,
 		}),
-	}
+	}, nil
 }
