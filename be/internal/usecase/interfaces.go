@@ -2,8 +2,9 @@ package usecase
 
 import (
 	"context"
-	"large-scale-multistructure-db/be/internal/entity"
 	"time"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 )
 
 //go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test

@@ -6,17 +6,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"large-scale-multistructure-db/be/internal/controller"
-	"large-scale-multistructure-db/be/internal/entity"
-	"large-scale-multistructure-db/be/internal/usecase"
-	"large-scale-multistructure-db/be/internal/usecase/auth"
-	"large-scale-multistructure-db/be/internal/usecase/repo"
-	"large-scale-multistructure-db/be/pkg/jwt"
-	"large-scale-multistructure-db/be/pkg/mongo"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/auth"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -44,7 +45,7 @@ func (s *IntegrationSuite) SetupSuite() {
 	fmt.Println(">>> From SetupSuite")
 
 	mongo, err := mongo.New(&mongo.Options{
-		DB_NAME: "test",
+		DBName: "test",
 	})
 
 	if err != nil {

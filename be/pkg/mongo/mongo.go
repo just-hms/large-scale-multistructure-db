@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
+
 	mongodriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -12,8 +14,7 @@ import (
 var ErrNoDocuments = mongodriver.ErrNoDocuments
 
 type Options struct {
-	DB_URI  string
-	DB_NAME string
+	DBName string
 }
 
 type Mongo struct {
@@ -28,15 +29,12 @@ func New(opt *Options) (*Mongo, error) {
 
 	m := &Mongo{}
 
-	if opt.DB_URI == "" {
-		opt.DB_URI = "mongodb://db:27017"
+	dbUri, err := env.GetString("MONGO_URI")
+	if err != nil {
+		return nil, err
 	}
 
-	if opt.DB_NAME == "" {
-		opt.DB_NAME = "test"
-	}
-
-	client, err := mongodriver.NewClient(options.Client().ApplyURI(opt.DB_URI))
+	client, err := mongodriver.NewClient(options.Client().ApplyURI(dbUri))
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +47,7 @@ func New(opt *Options) (*Mongo, error) {
 		return nil, err
 	}
 
-	m.DB = client.Database(opt.DB_NAME)
+	m.DB = client.Database(opt.DBName)
 
 	return m, nil
 }

@@ -1,5 +1,27 @@
 # large-scale-multi-structure-DB
 
+## Requirements
+
+- `docker`
+- `docker compose` plugin
+
+## test
+
+### docker
+
+```shell
+sudo make test
+```
+
+### locally
+
+```shell
+# edit the env file
+sudo make down
+sudo make infrastructure
+go test ./...
+```
+
 ## google docs
 
 - https://docs.google.com/document/d/18_51BtU6xor5OmC4hQTUU8mCdDXr_RVSLhZaOjpiBwo

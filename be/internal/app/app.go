@@ -3,12 +3,13 @@ package app
 import (
 	"context"
 	"fmt"
-	"large-scale-multistructure-db/be/internal/controller"
-	"large-scale-multistructure-db/be/internal/entity"
-	"large-scale-multistructure-db/be/internal/usecase"
-	"large-scale-multistructure-db/be/internal/usecase/auth"
-	"large-scale-multistructure-db/be/internal/usecase/repo"
-	"large-scale-multistructure-db/be/pkg/mongo"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/auth"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 )
 
 // TODO : fix this to devide the router from the rest, and put it in controllers
@@ -17,17 +18,13 @@ func Run() {
 	// Repository
 
 	mongo, err := mongo.New(&mongo.Options{
-		DB_NAME: "barber-deploy",
+		DBName: "barber-deploy",
 	})
 
 	if err != nil {
 		fmt.Printf("mongo-error: %s", err.Error())
 		return
 	}
-
-	// redis := redis.New()
-
-	// UseCase
 
 	userUsecase := usecase.NewUserUseCase(
 		repo.NewUserRepo(mongo),
