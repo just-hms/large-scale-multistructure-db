@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/osext"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
 	mongodriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -29,7 +29,7 @@ func New(opt *Options) (*Mongo, error) {
 
 	m := &Mongo{}
 
-	dbUri, err := osext.GetStringEnv("MONGO_URI")
+	dbUri, err := env.GetString("MONGO_URI")
 	if err != nil {
 		return nil, err
 	}

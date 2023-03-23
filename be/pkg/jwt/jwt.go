@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/osext"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
 	jwtdriver "github.com/golang-jwt/jwt"
 )
@@ -24,7 +24,7 @@ func CreateToken(userID string) (string, error) {
 	claims["authorized"] = true
 	claims["userID"] = userID
 
-	lifespan, err := osext.GetIntegerEnv("TOKEN_HOUR_LIFE_SPAN")
+	lifespan, err := env.GetInteger("TOKEN_HOUR_LIFE_SPAN")
 	if err != nil {
 		return "", err
 	}
@@ -33,7 +33,7 @@ func CreateToken(userID string) (string, error) {
 
 	token := jwtdriver.NewWithClaims(jwtdriver.SigningMethodHS256, claims)
 
-	apiSecret, err := osext.GetStringEnv("API_SECRET")
+	apiSecret, err := env.GetString("API_SECRET")
 	if err != nil {
 		return "", err
 	}

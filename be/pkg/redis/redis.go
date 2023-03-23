@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/osext"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
 	redisdriver "github.com/go-redis/redis"
 )
@@ -11,13 +11,13 @@ type Redis struct {
 }
 
 func New() (*Redis, error) {
-	redisAddr, err := osext.GetStringEnv("REDIS_ADDRESS")
+	redisAddr, err := env.GetString("REDIS_ADDRESS")
 	if err != nil {
 		return nil, err
 	}
 
 	// it's ok if the password is empty
-	redisPassword, _ := osext.GetStringEnv("REDIS_PASSWORD")
+	redisPassword, _ := env.GetString("REDIS_PASSWORD")
 
 	return &Redis{
 		Client: redisdriver.NewClient(&redisdriver.Options{

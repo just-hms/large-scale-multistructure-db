@@ -1,4 +1,4 @@
-package osext
+package env
 
 import (
 	"errors"
@@ -33,7 +33,7 @@ func load() {
 	}
 }
 
-func GetIntegerEnv(key string) (int, error) {
+func GetInteger(key string) (int, error) {
 	if !loaded {
 		load()
 	}
@@ -44,7 +44,7 @@ func GetIntegerEnv(key string) (int, error) {
 	return strconv.Atoi(env)
 }
 
-func GetStringEnv(key string) (string, error) {
+func GetString(key string) (string, error) {
 	if !loaded {
 		load()
 	}
