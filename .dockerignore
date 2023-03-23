@@ -1,3 +1,9 @@
 .git
 README.md
 .gitignore
+
+# folder which aren't used in deployment
+scraper/
+.github/
+.vscode/
+.idea/

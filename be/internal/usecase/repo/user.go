@@ -3,8 +3,9 @@ package repo
 import (
 	"context"
 	"fmt"
-	"large-scale-multistructure-db/be/internal/entity"
-	"large-scale-multistructure-db/be/pkg/mongo"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"

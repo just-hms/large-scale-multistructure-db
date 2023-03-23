@@ -1,17 +1,19 @@
 package redis_test
 
 import (
-	"large-scale-multistructure-db/be/pkg/redis"
 	"testing"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRedisSetup(t *testing.T) {
 
-	redis := redis.New(&redis.RedisOptions{})
+	r, err := redis.New()
+	assert.Nil(t, err)
 
-	_, err := redis.Client.Ping().Result()
+	_, err = r.Client.Ping().Result()
 
-	if err != nil {
-		t.Errorf("Failed to connect to Redis: %v", err)
-	}
+	assert.Nil(t, err)
 }

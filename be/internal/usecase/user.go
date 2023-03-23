@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"large-scale-multistructure-db/be/internal/entity"
-	"large-scale-multistructure-db/be/pkg/jwt"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 )
 
 // TranslationUseCase -.

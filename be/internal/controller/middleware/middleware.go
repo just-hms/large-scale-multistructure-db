@@ -1,11 +1,12 @@
 package middleware
 
 import (
-	"large-scale-multistructure-db/be/internal/entity"
-	"large-scale-multistructure-db/be/internal/usecase"
-	"large-scale-multistructure-db/be/pkg/jwt"
 	"net/http"
 	"strings"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )

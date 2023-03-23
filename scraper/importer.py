@@ -1,11 +1,13 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from bson.objectid import ObjectId
 
 import redis
 
 from faker import Faker
 
 from datetime import timedelta
+from datetime import datetime
 import json
 import random
 import time
@@ -89,17 +91,13 @@ def makeShop(shopsCollection,shopData:dict)->int:
         shop["phone"] = ""
     ##Add reviews once the shop exists. Delete them in the meanwhile.
     shop.pop("reviewData",None)
-    ##Rename "calendar" to "hours"
-    shop["hours"] = shop.pop("calendar")
-    ###Remove unused "is_overnight" key
-    for hour in shop["hours"]:
-        hour.pop("is_overnight")
-    ##Prepare coordinates key better
+    ##Remove calendar
+    shop.pop("calendar")
     lat = shop["coordinates"].split(" ")[0]
     lon = shop["coordinates"].split(" ")[1]
-    shop["coordinates"] = {}
-    shop["coordinates"]["lat"] = float(lat)
-    shop["coordinates"]["lon"] = float(lon)
+    shop["latitude"] = float(lat)
+    shop["longitude"] = float(lon)
+    shop.pop("coordinates")
     ##Fake number of employees
     shop["employees"] = random.randint(1,3)
     ##Prepare fields
@@ -115,6 +113,8 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downv
 
     #Create the review dict structure
     review = {}
+    #Generate an id for the review
+    review["reviewId"] = ObjectId()
     review["userId"] = userId
     review["username"] = shopReview["username"].replace(" ", "")
     review["rating"] = shopReview["rating"]
@@ -183,6 +183,8 @@ def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,m
     for _ in range(appointmentsAmount):
         randomView = random.choice(viewsList)
         appointment = {}
+        #Add id to appointment
+        appointment["appointmentId"] = ObjectId()
         #Fake appointment date
         appointment["createdAt"] = fake.date_time_between(start_date=randomView["viewCreation"], end_date=randomView["viewCreation"]+timedelta(minutes=5))
         appointment["startDate"] = fake.date_time_between(start_date=appointment["createdAt"], end_date=appointment["createdAt"]+timedelta(days=5))

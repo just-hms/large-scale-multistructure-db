@@ -3,11 +3,12 @@ package integration_test
 import (
 	"bytes"
 	"encoding/json"
-	"large-scale-multistructure-db/be/internal/controller"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 )
 
 func (s *IntegrationSuite) TestBook() {

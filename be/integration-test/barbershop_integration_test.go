@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"large-scale-multistructure-db/be/internal/controller"
-	"large-scale-multistructure-db/be/internal/entity"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 )
 
 func (s *IntegrationSuite) TestBarberShopFind() {

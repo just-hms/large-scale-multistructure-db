@@ -2,7 +2,8 @@ package usecase
 
 import (
 	"context"
-	"large-scale-multistructure-db/be/internal/entity"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 )
 
 type BarberShopUseCase struct {

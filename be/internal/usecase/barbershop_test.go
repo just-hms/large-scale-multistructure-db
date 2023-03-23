@@ -2,9 +2,10 @@ package usecase_test
 
 import (
 	"context"
-	"large-scale-multistructure-db/be/internal/entity"
-	"large-scale-multistructure-db/be/internal/usecase"
 	"testing"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"

@@ -3,16 +3,17 @@ package integration_test
 import (
 	"context"
 	"fmt"
-	"large-scale-multistructure-db/be/internal/controller"
-	"large-scale-multistructure-db/be/internal/entity"
-	"large-scale-multistructure-db/be/internal/usecase"
-	"large-scale-multistructure-db/be/internal/usecase/auth"
-	"large-scale-multistructure-db/be/internal/usecase/repo"
-	"large-scale-multistructure-db/be/pkg/jwt"
-	"large-scale-multistructure-db/be/pkg/mongo"
-	"large-scale-multistructure-db/be/pkg/redis"
 	"testing"
 	"time"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/auth"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -39,17 +40,18 @@ func (s *IntegrationSuite) SetupSuite() {
 
 	fmt.Println(">>> From SetupSuite")
 
-	mongo, err := mongo.New(&mongo.Options{
-		DB_NAME: "test",
-	})
+	mongo, err := mongo.New(&mongo.Options{DBName: "test"})
 
 	if err != nil {
 		fmt.Printf("mongo-error: %s", err.Error())
 		return
 	}
 
-	redis := redis.New(&redis.RedisOptions{})
-
+	redis, err := redis.New()
+	if err != nil {
+		fmt.Printf("redis-error: %s", err.Error())
+		return
+	}
 	// create repos and usecases
 
 	userRepo := repo.NewUserRepo(mongo)

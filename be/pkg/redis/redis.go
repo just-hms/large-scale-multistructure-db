@@ -1,48 +1,29 @@
 package redis
 
 import (
-	redisdriver "github.com/go-redis/redis"
-)
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
-// TODO: put this in
-const (
-	DEFAULT_ADDRESS = "cache:6379"
-	DEFAULT_PASWORD = ""
-	DEFAULT_DB      = 0
+	redisdriver "github.com/go-redis/redis"
 )
 
 type Redis struct {
 	Client *redisdriver.Client
 }
 
-type RedisOptions struct {
-	Address  string
-	Password string
-	DB       int
-}
-
-// get url and options as param
-// add const
-
-// get url and options as param
-
-func New(opt *RedisOptions) *Redis {
-
-	if opt.Address == "" {
-		opt.Address = DEFAULT_ADDRESS
+func New() (*Redis, error) {
+	redisAddr, err := env.GetString("REDIS_ADDRESS")
+	if err != nil {
+		return nil, err
 	}
-	if opt.DB == 0 {
-		opt.DB = DEFAULT_DB
-	}
-	if opt.Password == "" {
-		opt.Password = DEFAULT_PASWORD
-	}
+
+	// it's ok if the password is empty
+	redisPassword, _ := env.GetString("REDIS_PASSWORD")
 
 	return &Redis{
 		Client: redisdriver.NewClient(&redisdriver.Options{
-			Addr:     opt.Address,
-			Password: opt.Password,
-			DB:       opt.DB,
+			Addr:     redisAddr,
+			Password: redisPassword,
+			DB:       0,
 		}),
-	}
+	}, nil
 }

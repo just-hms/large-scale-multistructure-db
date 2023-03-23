@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"large-scale-multistructure-db/be/internal/controller"
-	"large-scale-multistructure-db/be/internal/entity"
-	"large-scale-multistructure-db/be/pkg/jwt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 )
 
 func (s *IntegrationSuite) TestLogin() {

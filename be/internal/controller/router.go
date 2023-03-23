@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"large-scale-multistructure-db/be/internal/controller/middleware"
-	"large-scale-multistructure-db/be/internal/usecase"
 	"net/http"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
 
 	"github.com/gin-gonic/gin"
 )
