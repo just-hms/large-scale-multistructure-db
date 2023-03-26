@@ -27,21 +27,11 @@ func Run() {
 		return
 	}
 
-	userRepo := repo.NewUserRepo(mongo)
-	barberShopRepo := repo.NewBarberShopRepo(mongo)
-	viewShopRepo := repo.NewShopViewRepo(mongo)
-	appintmentRepo := repo.NewAppointmentRepo(mongo)
-	slotRepo := repo.NewSlotRepo(redis)
+	ucs := BuildRequirements(mongo, redis)
 
-	password := auth.NewPasswordAuth()
+	userUsecase := ucs[usecase.USER].(usecase.User)
 
-	ucs := make([]usecase.Usecase, usecase.LEN)
-	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
-	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
-	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(appintmentRepo, slotRepo)
-	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
-
-	userRepo.Store(context.TODO(), &entity.User{
+	userUsecase.Store(context.TODO(), &entity.User{
 		Email:    "admin@admin.com",
 		Password: "super_secret",
 		Type:     entity.ADMIN,
@@ -51,4 +41,23 @@ func Run() {
 	router := controller.Router(ucs, true)
 
 	router.Run()
+}
+
+func BuildRequirements(m *mongo.Mongo, r *redis.Redis) []usecase.Usecase {
+
+	userRepo := repo.NewUserRepo(m)
+	barberShopRepo := repo.NewBarberShopRepo(m)
+	viewShopRepo := repo.NewShopViewRepo(m)
+	appintmentRepo := repo.NewAppointmentRepo(m)
+	slotRepo := repo.NewSlotRepo(r)
+
+	password := auth.NewPasswordAuth()
+
+	ucs := make([]usecase.Usecase, usecase.LEN)
+	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
+	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
+	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(appintmentRepo, slotRepo)
+	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
+
+	return ucs
 }

@@ -6,11 +6,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/app"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
-	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/auth"
-	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
@@ -41,145 +40,73 @@ func (s *IntegrationSuite) SetupSuite() {
 	fmt.Println(">>> From SetupSuite")
 
 	mongo, err := mongo.New(&mongo.Options{DBName: "test"})
-
-	if err != nil {
-		fmt.Printf("mongo-error: %s", err.Error())
-		return
-	}
-
+	s.Require().NoError(err)
 	redis, err := redis.New()
-	if err != nil {
-		fmt.Printf("redis-error: %s", err.Error())
-		return
-	}
+	s.Require().NoError(err)
 
-	// create repos and usecases
-	userRepo := repo.NewUserRepo(mongo)
-	barberShopRepo := repo.NewBarberShopRepo(mongo)
-	viewShopRepo := repo.NewShopViewRepo(mongo)
-	appintmentRepo := repo.NewAppointmentRepo(mongo)
-	slotRepo := repo.NewSlotRepo(redis)
-
-	password := auth.NewPasswordAuth()
-
-	ucs := make([]usecase.Usecase, usecase.LEN)
-	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
-	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
-	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(appintmentRepo, slotRepo)
-	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
-
-	// Fill the test DB
+	ucs := app.BuildRequirements(mongo, redis)
 
 	s.resetDB = func() {
 
 		mongo.DB.Drop(context.TODO())
 
-		p, _ := password.HashAndSalt("password")
+		// create barbershops
+		shops := []*entity.BarberShop{
+			{Name: "barberShop1", Employees: 2, Latitude: "1", Longitude: "1"},
+			{Name: "barberShop2", Employees: 2, Latitude: "1", Longitude: "2"},
+		}
+		barberShopUsecase := ucs[usecase.BARBER_SHOP].(*usecase.BarberShopUseCase)
+		for _, s := range shops {
+			barberShopUsecase.Store(context.TODO(), s)
+		}
 
 		// create users
-		us := &entity.User{
-			Email:    "correct@example.com",
-			Password: p,
-			Type:     entity.USER,
-		}
+		users := []*entity.User{
+			{Email: "correct@example.com", Password: "password", Type: entity.USER},
+			{Email: "another@example.com", Password: "password", Type: entity.USER},
+			{Email: "admin@example.com", Password: "password", Type: entity.ADMIN},
+			{Email: "to.filter@example.com", Password: "password", Type: entity.USER},
 
-		userRepo.Store(context.TODO(), us)
-
-		s.params["authID"] = us.ID
-		s.params["authToken"], _ = jwt.CreateToken(us.ID)
-
-		us2 := &entity.User{
-			Email:    "another@example.com",
-			Password: p,
-			Type:     entity.USER,
-		}
-
-		userRepo.Store(context.TODO(), us2)
-
-		s.params["auth2ID"] = us2.ID
-		s.params["auth2Token"], _ = jwt.CreateToken(us2.ID)
-
-		admin := &entity.User{
-			Email:    "admin@example.com",
-			Password: p,
-			Type:     entity.ADMIN,
-		}
-
-		userRepo.Store(context.TODO(), admin)
-
-		s.params["adminID"] = admin.ID
-		s.params["adminToken"], _ = jwt.CreateToken(admin.ID)
-
-		userRepo.Store(context.TODO(), &entity.User{
-			Email:    "to.filter@example.com",
-			Password: p,
-			Type:     entity.USER,
-		})
-
-		// create barberShops
-
-		barberShop1 := &entity.BarberShop{
-			Name:      "barberShop1",
-			Latitude:  "1",
-			Longitude: "1",
-			Employees: 2,
-		}
-		barberShopRepo.Store(context.TODO(), barberShop1)
-
-		barber1 := &entity.User{
-			Email:    "barber1@example.com",
-			Password: p,
-			Type:     entity.BARBER,
-			OwnedShops: []*entity.BarberShop{
-				{
-					Name: barberShop1.Name,
-					ID:   barberShop1.ID,
-				},
+			{
+				Email: "barber1@example.com", Password: "password", Type: entity.BARBER,
+				OwnedShops: []*entity.BarberShop{{Name: shops[0].Name, ID: shops[0].ID}},
+			},
+			{
+				Email: "barber2@example.com", Password: "password", Type: entity.BARBER,
+				OwnedShops: []*entity.BarberShop{{Name: shops[1].Name, ID: shops[1].ID}},
 			},
 		}
-
-		userRepo.Store(context.TODO(), barber1)
-
-		s.params["barberShop1ID"] = barberShop1.ID
-		s.params["barber1Auth"], _ = jwt.CreateToken(barber1.ID)
-
-		barberShop2 := &entity.BarberShop{
-			Name:      "barberShop2",
-			Latitude:  "1",
-			Longitude: "2",
-			Employees: 2,
+		userUsecase := ucs[usecase.USER].(*usecase.UserUseCase)
+		for _, u := range users {
+			userUsecase.Store(context.TODO(), u)
 		}
 
-		barberShopRepo.Store(context.TODO(), barberShop2)
+		s.params["authID"] = users[0].ID
+		s.params["authToken"], _ = jwt.CreateToken(users[0].ID)
 
-		barber2 := &entity.User{
-			Email:    "barber2@example.com",
-			Password: p,
-			Type:     entity.BARBER,
+		s.params["auth2ID"] = users[1].ID
+		s.params["auth2Token"], _ = jwt.CreateToken(users[1].ID)
 
-			OwnedShops: []*entity.BarberShop{
-				{
-					Name: barberShop2.Name,
-					ID:   barberShop2.ID,
-				},
-			},
+		s.params["adminID"] = users[2].ID
+		s.params["adminToken"], _ = jwt.CreateToken(users[2].ID)
+
+		s.params["barberShop1ID"] = shops[0].ID
+		s.params["barber1Auth"], _ = jwt.CreateToken(users[3].ID)
+
+		s.params["barberShop2ID"] = shops[1].ID
+		s.params["barber2Auth"], _ = jwt.CreateToken(users[4].ID)
+
+		// appointments
+
+		appointments := []*entity.Appointment{
+			{Start: time.Now().Add(time.Hour), UserID: users[1].ID, BarbershopID: shops[1].ID},
+		}
+		appointmentUsecase := ucs[usecase.APPOINTMENT].(*usecase.AppoinmentUseCase)
+		for _, a := range appointments {
+			appointmentUsecase.Book(context.TODO(), a)
 		}
 
-		userRepo.Store(context.TODO(), barber2)
-
-		s.params["barberShop2ID"] = barberShop2.ID
-		s.params["barber2Auth"], _ = jwt.CreateToken(barber2.ID)
-
-		appointment := &entity.Appointment{
-			Start:        time.Now().Add(time.Hour),
-			UserID:       us2.ID,
-			BarbershopID: barberShop2.ID,
-		}
-
-		err := appintmentRepo.Book(context.TODO(), appointment)
-		s.Require().NoError(err)
-
-		s.params["appointmentID"] = appointment.ID
+		s.params["appointmentID"] = appointments[0].ID
 	}
 
 	// serv the mock server and db

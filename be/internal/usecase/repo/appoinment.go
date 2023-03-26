@@ -20,17 +20,14 @@ func NewAppointmentRepo(m *mongo.Mongo) *AppointmentRepo {
 
 func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointment) error {
 
+	appointment.ID = primitive.NewObjectID().Hex()
+
 	filter := bson.M{"_id": appointment.BarbershopID}
 	update := bson.M{"$push": bson.M{"appointments": appointment}}
 
-	res, err := r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
+	_, err := r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
-	}
-
-	if res.ModifiedCount > 0 {
-		appointmentID, _ := res.UpsertedID.(primitive.ObjectID)
-		appointment.ID = appointmentID.Hex()
 	}
 
 	// add the appointment
