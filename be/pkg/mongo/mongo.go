@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
@@ -29,12 +30,21 @@ func New(opt *Options) (*Mongo, error) {
 
 	m := &Mongo{}
 
-	dbUri, err := env.GetString("MONGO_URI")
+	dbHost, err := env.GetString("MONGO_HOST")
+	if err != nil {
+		dbHost = "localhost"
+	}
+
+	dbPort, err := env.GetInteger("MONGO_PORT")
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := mongodriver.NewClient(options.Client().ApplyURI(dbUri))
+	mongoAddr := fmt.Sprintf("mongodb://%s:%d", dbHost, dbPort)
+
+	client, err := mongodriver.NewClient(
+		options.Client().ApplyURI(mongoAddr),
+	)
 	if err != nil {
 		return nil, err
 	}

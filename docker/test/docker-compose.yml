@@ -24,8 +24,7 @@ services:
     depends_on:
       - cache
       - db
-    links:
-      - cache
-      - db
-      
+    environment:
+      - REDIS_HOST=cache
+      - MONGO_HOST=db
     

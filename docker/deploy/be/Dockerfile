@@ -20,7 +20,6 @@ RUN apt update && \
 	apt upgrade -y && \
 	apt-get install -y netcat
 
-
 COPY --from=builder /app/build/cmd .
 COPY --from=builder /app/docker/deploy/be/entrypoint.sh .
 

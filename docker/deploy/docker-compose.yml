@@ -18,6 +18,9 @@ services:
     depends_on:
       - db
       - cache
+    environment:
+      - REDIS_HOST=cache
+      - MONGO_HOST=db
 
   proxy:
     build:
