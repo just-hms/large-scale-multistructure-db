@@ -5,10 +5,10 @@ services:
     restart: always
     image : redis
     ports:
-      - "6379:6379"
+      - 127.0.0.1:6379:6379
 
   db: 
     restart: always
     image: mongo
     ports:
-      - "27017:27017"
+      - 127.0.0.1:27017:27017

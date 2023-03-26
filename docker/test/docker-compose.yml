@@ -5,13 +5,13 @@ services:
     restart: always
     image : redis
     ports:
-      - "6379:6379"
+      - 127.0.0.1:6379:6379
 
   db: 
     restart: always
     image: mongo
     ports:
-      - "27017:27017"
+      - 127.0.0.1:27017:27017
 
   backend:
     restart: always
@@ -20,7 +20,7 @@ services:
       dockerfile: ./docker/test/Dockerfile
       context: ../../
     ports:
-      - "127.0.0.1:7000:8080"
+      - 127.0.0.1:7000:8080
     depends_on:
       - cache
       - db

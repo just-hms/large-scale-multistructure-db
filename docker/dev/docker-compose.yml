@@ -4,19 +4,19 @@ services:
   cache:
     image : redis
     ports:
-      - "6379:6379"
+      - 127.0.0.1:6379:6379
 
   db:
     image: mongo
     ports:
-      - "27017"
+      - 127.0.0.1:27017
 
   backend:
     build:
       dockerfile: ./docker/dev/Dockerfile
       context: ../../
     ports:
-      - "127.0.0.1:7000:8080"
+      - 127.0.0.1:7000:8080
     depends_on:
       - db
       - cache
