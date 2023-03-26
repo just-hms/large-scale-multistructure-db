@@ -93,23 +93,14 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 }
 
-type DeleteAppointmentInput struct {
-	AppointmentId string `json:"appointmentId"`
-}
-
 func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 
-	input := DeleteAppointmentInput{}
-	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
+	SHOP_ID := ctx.Param("shopid")
 	ID := ctx.Param("appointmentid")
 
 	err := ur.appoinmentUseCase.Cancel(ctx, &entity.Appointment{
-		BarbershopID: ID,
-		ID:           input.AppointmentId,
+		BarbershopID: SHOP_ID,
+		ID:           ID,
 	})
 
 	if err != nil {
@@ -117,7 +108,7 @@ func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{})
+	ctx.JSON(http.StatusAccepted, gin.H{})
 }
 
 func (ur *AppointmentRoutes) SetHolidays(ctx *gin.Context) {

@@ -30,9 +30,18 @@ func (s *IntegrationSuite) TestBook() {
 		},
 		{
 			name:   "Correctly booked",
-			token:  s.params[USER1_TOKEN],
+			token:  s.params[USER2_TOKEN],
 			ID:     s.params[BARBER1_ID],
 			status: http.StatusCreated,
+			input: controller.BookAppointmentInput{
+				DateTime: time.Now().Add(time.Hour),
+			},
+		},
+		{
+			name:   "Cannot book two appontments",
+			token:  s.params[USER1_TOKEN],
+			ID:     s.params[BARBER1_ID],
+			status: http.StatusUnauthorized,
 			input: controller.BookAppointmentInput{
 				DateTime: time.Now().Add(time.Hour),
 			},
@@ -74,7 +83,7 @@ func (s *IntegrationSuite) TestCancelSelfAppointment() {
 		},
 		{
 			name:   "Correctly deleted",
-			token:  s.params[USER2_TOKEN],
+			token:  s.params[USER1_TOKEN],
 			status: http.StatusAccepted,
 		},
 	}
@@ -102,21 +111,31 @@ func (s *IntegrationSuite) TestCancelSelfAppointment() {
 func (s *IntegrationSuite) TestCancelAppointment() {
 
 	testCases := []struct {
-		name   string
-		token  string
-		status int
-		ID     string
+		name    string
+		token   string
+		status  int
+		ID      string
+		SHOP_ID string
 	}{
 		{
-			name:   "Require Login",
-			status: http.StatusUnauthorized,
-			ID:     s.params[APPOINTMENT1_ID],
+			name:    "Require Login",
+			status:  http.StatusUnauthorized,
+			ID:      s.params[USER1_SHOP1_APPOINTMENT],
+			SHOP_ID: s.params[SHOP1_ID],
 		},
 		{
-			name:   "Correctly deleted",
-			token:  s.params[BARBER2_ID],
-			status: http.StatusAccepted,
-			ID:     s.params[APPOINTMENT1_ID],
+			name:    "Require barber",
+			token:   s.params[USER1_TOKEN],
+			status:  http.StatusUnauthorized,
+			ID:      s.params[USER1_SHOP1_APPOINTMENT],
+			SHOP_ID: s.params[SHOP1_ID],
+		},
+		{
+			name:    "Correctly deleted",
+			token:   s.params[BARBER1_TOKEN],
+			status:  http.StatusAccepted,
+			ID:      s.params[USER1_SHOP1_APPOINTMENT],
+			SHOP_ID: s.params[SHOP1_ID],
 		},
 	}
 
@@ -125,7 +144,7 @@ func (s *IntegrationSuite) TestCancelAppointment() {
 		s.T().Run(tc.name, func(t *testing.T) {
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("DELETE", "/barber_shop/"+tc.ID+"/appointment", nil)
+			req, _ := http.NewRequest("DELETE", "/api/barber_shop/"+tc.SHOP_ID+"/appointment/"+tc.ID, nil)
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 

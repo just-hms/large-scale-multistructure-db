@@ -52,7 +52,7 @@ const (
 	SHOP1_ID
 	SHOP2_ID
 
-	APPOINTMENT1_ID
+	USER1_SHOP1_APPOINTMENT
 	PARAM_LEN
 )
 
@@ -121,14 +121,17 @@ func (s *IntegrationSuite) SetupSuite() {
 		// appointments
 
 		appointments := []*entity.Appointment{
-			{Start: time.Now().Add(time.Hour), UserID: users[1].ID, BarbershopID: shops[1].ID},
+			{
+				Start: time.Now().Add(time.Hour), UserID: s.params[USER1_ID],
+				BarbershopID: s.params[SHOP1_ID],
+			},
 		}
 		appointmentUsecase := ucs[usecase.APPOINTMENT].(*usecase.AppoinmentUseCase)
 		for _, a := range appointments {
 			appointmentUsecase.Book(context.TODO(), a)
 		}
 
-		s.params[APPOINTMENT1_ID] = appointments[0].ID
+		s.params[USER1_SHOP1_APPOINTMENT] = appointments[0].ID
 	}
 
 	// serv the mock server and db
