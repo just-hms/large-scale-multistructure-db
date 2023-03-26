@@ -13,22 +13,15 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
 )
 
-// TODO : fix this to devide the router from the rest, and put it in controllers
-
 func Run() {
-	// Repository
 
-	mongo, err := mongo.New(&mongo.Options{
-		DBName: "barber-deploy",
-	})
-
+	mongo, err := mongo.New(&mongo.Options{DBName: "barber-deploy"})
 	if err != nil {
 		fmt.Printf("mongo-error: %s", err.Error())
 		return
 	}
 
 	redis, err := redis.New()
-
 	if err != nil {
 		fmt.Printf("redis-error: %s", err.Error())
 		return
@@ -42,36 +35,20 @@ func Run() {
 
 	password := auth.NewPasswordAuth()
 
-	userUseCase := usecase.NewUserUseCase(
-		userRepo,
-		password,
-	)
+	ucs := make([]usecase.Usecase, usecase.LEN)
+	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
+	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
+	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(appintmentRepo, slotRepo)
+	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
 
-	barberUseCase := usecase.NewBarberShopUseCase(
-		barberShopRepo,
-		viewShopRepo,
-	)
-
-	appointmentUseCase := usecase.NewAppoinmentUseCase(
-		appintmentRepo,
-		slotRepo,
-	)
-	calendarUseCase := usecase.NewCalendarUseCase(
-		slotRepo,
-	)
-
-	userUseCase.Store(context.TODO(), &entity.User{
+	userRepo.Store(context.TODO(), &entity.User{
 		Email:    "admin@admin.com",
 		Password: "super_secret",
 		Type:     entity.ADMIN,
 	})
 
-	router := controller.Router(
-		userUseCase,
-		barberUseCase,
-		appointmentUseCase,
-		calendarUseCase,
-	)
+	// TODO: get the production env
+	router := controller.Router(ucs, true)
 
 	router.Run()
 }

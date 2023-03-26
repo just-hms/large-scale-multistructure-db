@@ -135,6 +135,7 @@ func (s *IntegrationSuite) TestCancelAppointment() {
 
 			// assert that the response status code is as expected
 			s.Require().Equal(tc.status, w.Code)
+
 		})
 
 	}

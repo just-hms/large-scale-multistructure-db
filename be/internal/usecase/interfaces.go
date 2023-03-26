@@ -9,6 +9,19 @@ import (
 
 //go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test
 
+type Usecase interface{}
+
+const (
+	USER int = iota
+	PASSWORD_AUTH
+	BARBER_SHOP
+	CALENDAR
+	APPOINTMENT
+	HOLIDAY
+	REVIEW
+	LEN
+)
+
 type (
 
 	// INTERFACES
@@ -112,6 +125,4 @@ type (
 		UpVote(ctx context.Context, voterID string, shopID string) error
 		RemoveVote(ctx context.Context, voterID string, shopID string) error
 	}
-
-	Usecase interface{}
 )

@@ -52,8 +52,8 @@ func (s *IntegrationSuite) SetupSuite() {
 		fmt.Printf("redis-error: %s", err.Error())
 		return
 	}
-	// create repos and usecases
 
+	// create repos and usecases
 	userRepo := repo.NewUserRepo(mongo)
 	barberShopRepo := repo.NewBarberShopRepo(mongo)
 	viewShopRepo := repo.NewShopViewRepo(mongo)
@@ -62,23 +62,11 @@ func (s *IntegrationSuite) SetupSuite() {
 
 	password := auth.NewPasswordAuth()
 
-	userUseCase := usecase.NewUserUseCase(
-		userRepo,
-		password,
-	)
-
-	barberUseCase := usecase.NewBarberShopUseCase(
-		barberShopRepo,
-		viewShopRepo,
-	)
-
-	appointmentUseCase := usecase.NewAppoinmentUseCase(
-		appintmentRepo,
-		slotRepo,
-	)
-	calendarUseCase := usecase.NewCalendarUseCase(
-		slotRepo,
-	)
+	ucs := make([]usecase.Usecase, usecase.LEN)
+	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
+	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
+	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(appintmentRepo, slotRepo)
+	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
 
 	// Fill the test DB
 
@@ -188,21 +176,15 @@ func (s *IntegrationSuite) SetupSuite() {
 			BarbershopID: barberShop2.ID,
 		}
 
-		appointmentUseCase.Book(context.TODO(), appointment)
+		err := appintmentRepo.Book(context.TODO(), appointment)
+		s.Require().NoError(err)
 
 		s.params["appointmentID"] = appointment.ID
 	}
 
 	// serv the mock server and db
 	s.params = make(map[string]string)
-
-	s.srv = controller.Router(
-		userUseCase,
-		barberUseCase,
-		appointmentUseCase,
-		calendarUseCase,
-	)
-
+	s.srv = controller.Router(ucs, true)
 	s.mongo = mongo
 }
 

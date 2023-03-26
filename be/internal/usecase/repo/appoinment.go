@@ -7,6 +7,7 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type AppointmentRepo struct {
@@ -22,9 +23,14 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 	filter := bson.M{"_id": appointment.BarbershopID}
 	update := bson.M{"$push": bson.M{"appointments": appointment}}
 
-	_, err := r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
+	res, err := r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
+	}
+
+	if res.ModifiedCount > 0 {
+		appointmentID, _ := res.UpsertedID.(primitive.ObjectID)
+		appointment.ID = appointmentID.Hex()
 	}
 
 	// add the appointment

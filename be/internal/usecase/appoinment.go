@@ -21,7 +21,8 @@ func NewAppoinmentUseCase(r AppointmentRepo, c SlotRepo) *AppoinmentUseCase {
 
 func (uc *AppoinmentUseCase) Book(ctx context.Context, appointment *entity.Appointment) error {
 
-	// TODO check if the hour has meaning
+	// TODO: check if the hour has meaning
+	// TODO: get the user repo and add the current appoinment from there
 	err := uc.repo.Book(ctx, appointment)
 
 	if err != nil {
@@ -35,6 +36,7 @@ func (uc *AppoinmentUseCase) Book(ctx context.Context, appointment *entity.Appoi
 
 func (uc *AppoinmentUseCase) Cancel(ctx context.Context, appointment *entity.Appointment) error {
 
+	// TODO: get the user repo and remove the current appointment from there
 	err := uc.repo.Cancel(ctx, appointment)
 
 	if err != nil {

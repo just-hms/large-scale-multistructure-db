@@ -25,12 +25,11 @@ func CORSAllowAll() gin.HandlerFunc {
 	}
 }
 
-func Router(
-	userUsecase usecase.User,
-	barberShopUsecase usecase.BarberShop,
-	appointmentUsecase usecase.Appointment,
-	calendarUsecase usecase.Calendar,
-) *gin.Engine {
+func Router(ucs []usecase.Usecase, production bool) *gin.Engine {
+
+	if production {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	router := gin.Default()
 	router.Use(CORSAllowAll())
@@ -40,10 +39,18 @@ func Router(
 	api.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, `{"message" : "ok"}`) })
 
 	// create the routes based on the given usecases
-	mr := middleware.NewMiddlewareRoutes(userUsecase)
-	ur := NewUserRoutes(userUsecase)
-	br := NewBarberShopRoutes(barberShopUsecase, calendarUsecase)
-	ar := NewAppointmentRoutes(appointmentUsecase, userUsecase)
+	mr := middleware.NewMiddlewareRoutes(ucs[usecase.USER].(usecase.User))
+	ur := NewUserRoutes(ucs[usecase.USER].(usecase.User))
+
+	br := NewBarberShopRoutes(
+		ucs[usecase.BARBER_SHOP].(usecase.BarberShop),
+		ucs[usecase.CALENDAR].(usecase.Calendar),
+	)
+
+	ar := NewAppointmentRoutes(
+		ucs[usecase.APPOINTMENT].(*usecase.AppoinmentUseCase),
+		ucs[usecase.USER].(*usecase.UserUseCase),
+	)
 
 	// link the path to the routes
 	user := api.Group("/user")
