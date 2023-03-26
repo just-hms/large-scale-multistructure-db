@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 )
@@ -39,15 +38,12 @@ func (uc *AppoinmentUseCase) Cancel(ctx context.Context, appointment *entity.App
 
 	// TODO: get the user repo and remove the current appointment from there
 	err := uc.repo.Cancel(ctx, appointment)
-	fmt.Println(err)
 
 	if err != nil {
 		return err
 	}
 
 	err = uc.cache.Cancel(ctx, appointment)
-
-	fmt.Println(err)
 
 	return err
 }

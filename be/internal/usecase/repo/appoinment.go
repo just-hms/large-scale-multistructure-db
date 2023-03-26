@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
@@ -43,8 +42,6 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 }
 
 func (r *AppointmentRepo) Cancel(ctx context.Context, appointment *entity.Appointment) error {
-	fmt.Println(appointment)
-
 	filter := bson.M{"_id": appointment.BarbershopID}
 	update := bson.M{"$pull": bson.M{"appointments": bson.M{"_id": appointment.ID}}}
 
