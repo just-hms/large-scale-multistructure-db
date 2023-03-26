@@ -41,7 +41,7 @@ func (s *IntegrationSuite) TestBook() {
 			name:   "Cannot book two appontments",
 			token:  s.params[USER1_TOKEN],
 			ID:     s.params[BARBER1_ID],
-			status: http.StatusUnauthorized,
+			status: http.StatusBadRequest,
 			input: controller.BookAppointmentInput{
 				DateTime: time.Now().Add(time.Hour),
 			},
@@ -158,4 +158,39 @@ func (s *IntegrationSuite) TestCancelAppointment() {
 		})
 
 	}
+}
+
+func (s *IntegrationSuite) TestBookAfterCancel() {
+
+	// delete an appointment from USER1
+	req, _ := http.NewRequest("DELETE", "/api/user/self/appointment", nil)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Bearer "+s.params[USER1_TOKEN])
+
+	// serve the request to the test server
+	w := httptest.NewRecorder()
+	s.srv.ServeHTTP(w, req)
+
+	s.Require().Equal(http.StatusAccepted, w.Code)
+
+	// test if now he can book
+
+	BookingJson, _ := json.Marshal(controller.BookAppointmentInput{
+		DateTime: time.Now().Add(time.Hour),
+	})
+
+	// create a request for the register endpoint
+	req, _ = http.NewRequest(
+		"POST", "/api/barber_shop/"+s.params[SHOP2_ID]+"/appointment",
+		bytes.NewBuffer(BookingJson),
+	)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Bearer "+s.params[USER1_TOKEN])
+
+	// serve the request to the test server
+	w = httptest.NewRecorder()
+	s.srv.ServeHTTP(w, req)
+
+	// assert that the response status code is as expected
+	s.Require().Equal(http.StatusCreated, w.Code)
 }

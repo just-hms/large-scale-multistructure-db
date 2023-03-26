@@ -21,12 +21,12 @@ func loadEnv() {
 	}
 	loaded = true
 
-	_, b, _, ok := runtime.Caller(0)
+	_, caller, _, ok := runtime.Caller(0)
 	if !ok {
 		panic("error retrevieng the .env file")
 	}
 
-	envPath := filepath.Join(filepath.Dir(b), "../..", "../.env")
+	envPath := filepath.Join(filepath.Dir(caller), "../..", "../.env")
 
 	err := godotenv.Load(envPath)
 	if err != nil {

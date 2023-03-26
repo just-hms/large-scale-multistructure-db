@@ -82,6 +82,7 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 	err = ur.appoinmentUseCase.Cancel(ctx, &entity.Appointment{
 		BarbershopID: user.CurrentAppointment.BarbershopID,
 		ID:           user.CurrentAppointment.ID,
+		UserID:       user.ID,
 	})
 
 	if err != nil {
