@@ -24,7 +24,7 @@ type IntegrationSuite struct {
 	mongo *mongo.Mongo
 
 	resetDB func()
-	params  map[string]string
+	params  []string
 }
 
 func TestIntegrationSuite(t *testing.T) {
@@ -34,6 +34,27 @@ func TestIntegrationSuite(t *testing.T) {
 func (s *IntegrationSuite) SetupTest() {
 	s.resetDB()
 }
+
+const (
+	USER1_ID int = iota
+	USER2_ID
+	ADMIN_ID
+	BARBER1_ID
+	BARBER2_ID
+
+	USER1_TOKEN
+	USER2_TOKEN
+	ADMIN_TOKEN
+
+	BARBER1_TOKEN
+	BARBER2_TOKEN
+
+	SHOP1_ID
+	SHOP2_ID
+
+	APPOINTMENT1_ID
+	PARAM_LEN
+)
 
 func (s *IntegrationSuite) SetupSuite() {
 
@@ -59,6 +80,8 @@ func (s *IntegrationSuite) SetupSuite() {
 		for _, s := range shops {
 			barberShopUsecase.Store(context.TODO(), s)
 		}
+		s.params[SHOP1_ID] = shops[0].ID
+		s.params[SHOP2_ID] = shops[1].ID
 
 		// create users
 		users := []*entity.User{
@@ -81,20 +104,19 @@ func (s *IntegrationSuite) SetupSuite() {
 			userUsecase.Store(context.TODO(), u)
 		}
 
-		s.params["authID"] = users[0].ID
-		s.params["authToken"], _ = jwt.CreateToken(users[0].ID)
+		s.params[USER1_ID] = users[0].ID
+		s.params[USER1_TOKEN], _ = jwt.CreateToken(users[0].ID)
 
-		s.params["auth2ID"] = users[1].ID
-		s.params["auth2Token"], _ = jwt.CreateToken(users[1].ID)
+		s.params[USER2_ID] = users[1].ID
+		s.params[USER2_TOKEN], _ = jwt.CreateToken(users[1].ID)
 
-		s.params["adminID"] = users[2].ID
-		s.params["adminToken"], _ = jwt.CreateToken(users[2].ID)
+		s.params[ADMIN_ID] = users[2].ID
+		s.params[ADMIN_TOKEN], _ = jwt.CreateToken(users[2].ID)
 
-		s.params["barberShop1ID"] = shops[0].ID
-		s.params["barber1Auth"], _ = jwt.CreateToken(users[3].ID)
-
-		s.params["barberShop2ID"] = shops[1].ID
-		s.params["barber2Auth"], _ = jwt.CreateToken(users[4].ID)
+		s.params[BARBER1_ID] = users[4].ID
+		s.params[BARBER1_TOKEN], _ = jwt.CreateToken(users[4].ID)
+		s.params[BARBER2_ID] = users[5].ID
+		s.params[BARBER2_TOKEN], _ = jwt.CreateToken(users[5].ID)
 
 		// appointments
 
@@ -106,11 +128,11 @@ func (s *IntegrationSuite) SetupSuite() {
 			appointmentUsecase.Book(context.TODO(), a)
 		}
 
-		s.params["appointmentID"] = appointments[0].ID
+		s.params[APPOINTMENT1_ID] = appointments[0].ID
 	}
 
 	// serv the mock server and db
-	s.params = make(map[string]string)
+	s.params = make([]string, PARAM_LEN)
 	s.srv = controller.Router(ucs, true)
 	s.mongo = mongo
 }

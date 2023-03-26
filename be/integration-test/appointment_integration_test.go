@@ -23,15 +23,15 @@ func (s *IntegrationSuite) TestBook() {
 		{
 			name:   "Require Login",
 			status: http.StatusUnauthorized,
-			ID:     s.params["barberShop2ID"],
+			ID:     s.params[SHOP2_ID],
 			input: controller.BookAppointmentInput{
 				DateTime: time.Now().Add(time.Hour),
 			},
 		},
 		{
 			name:   "Correctly booked",
-			token:  s.params["authToken"],
-			ID:     s.params["barberShop2ID"],
+			token:  s.params[USER1_TOKEN],
+			ID:     s.params[BARBER1_ID],
 			status: http.StatusCreated,
 			input: controller.BookAppointmentInput{
 				DateTime: time.Now().Add(time.Hour),
@@ -74,7 +74,7 @@ func (s *IntegrationSuite) TestCancelSelfAppointment() {
 		},
 		{
 			name:   "Correctly deleted",
-			token:  s.params["auth2Token"],
+			token:  s.params[USER2_TOKEN],
 			status: http.StatusAccepted,
 		},
 	}
@@ -110,13 +110,13 @@ func (s *IntegrationSuite) TestCancelAppointment() {
 		{
 			name:   "Require Login",
 			status: http.StatusUnauthorized,
-			ID:     s.params["appointmentID"],
+			ID:     s.params[APPOINTMENT1_ID],
 		},
 		{
 			name:   "Correctly deleted",
-			token:  s.params["barber2Auth"],
+			token:  s.params[BARBER2_ID],
 			status: http.StatusAccepted,
-			ID:     s.params["appointmentID"],
+			ID:     s.params[APPOINTMENT1_ID],
 		},
 	}
 

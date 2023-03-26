@@ -140,12 +140,12 @@ func (s *IntegrationSuite) TestShowSelf() {
 		},
 		{
 			name:   "Correct token",
-			token:  s.params["authToken"],
+			token:  s.params[USER1_TOKEN],
 			status: http.StatusOK,
 		},
 		{
 			name:           "Show barber",
-			token:          s.params["barber1Auth"],
+			token:          s.params[BARBER1_TOKEN],
 			status:         http.StatusOK,
 			barberShopsLen: 1,
 		},
@@ -204,7 +204,7 @@ func (s *IntegrationSuite) TestDeleteSelf() {
 		},
 		{
 			name:   "Correctly deleted",
-			token:  s.params["authToken"],
+			token:  s.params[USER1_TOKEN],
 			status: http.StatusAccepted,
 		},
 	}
@@ -245,19 +245,19 @@ func (s *IntegrationSuite) TestUserShowAll() {
 		},
 		{
 			name:   "Not an admin",
-			token:  s.params["authToken"],
+			token:  s.params[USER1_TOKEN],
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:        "Correctly shown without filter",
-			token:       s.params["adminToken"],
+			token:       s.params[ADMIN_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 3,
 		},
 		{
 			name:        "Correctly shown with filter",
 			filter:      "filter",
-			token:       s.params["adminToken"],
+			token:       s.params[ADMIN_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 1,
 		},
@@ -326,19 +326,19 @@ func (s *IntegrationSuite) TestUserShow() {
 		},
 		{
 			name:   "Not an admin",
-			token:  s.params["authToken"],
+			token:  s.params[USER1_TOKEN],
 			ID:     "genericID",
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:   "Correctly shown user",
-			token:  s.params["adminToken"],
-			ID:     s.params["authID"],
+			token:  s.params[ADMIN_TOKEN],
+			ID:     s.params[USER1_ID],
 			status: http.StatusOK,
 		},
 		{
 			name:   "User not exists",
-			token:  s.params["adminToken"],
+			token:  s.params[ADMIN_TOKEN],
 			ID:     "wrong_ID",
 			status: http.StatusNotFound,
 		},
@@ -400,19 +400,19 @@ func (s *IntegrationSuite) TestUserDelete() {
 		},
 		{
 			name:   "Not an admin",
-			token:  s.params["authToken"],
+			token:  s.params[USER1_TOKEN],
 			ID:     "genericID",
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:   "Correctly deleted user",
-			token:  s.params["adminToken"],
-			ID:     s.params["authID"],
+			token:  s.params[ADMIN_TOKEN],
+			ID:     s.params[USER1_ID],
 			status: http.StatusAccepted,
 		},
 		{
 			name:   "User not exists",
-			token:  s.params["adminToken"],
+			token:  s.params[ADMIN_TOKEN],
 			ID:     "wrong_ID",
 			status: http.StatusNotFound,
 		},
@@ -459,18 +459,18 @@ func (s *IntegrationSuite) TestUserModify() {
 		},
 		{
 			name:   "Not an admin",
-			token:  s.params["authToken"],
+			token:  s.params[USER1_TOKEN],
 			ID:     "genericID",
 			status: http.StatusUnauthorized,
 			input:  controller.ModifyUserInput{},
 		},
 		{
 			name:  "Add a shop",
-			token: s.params["adminToken"],
-			ID:    s.params["authID"],
+			token: s.params[ADMIN_TOKEN],
+			ID:    s.params[USER1_ID],
 			input: controller.ModifyUserInput{
 				BarbershopsID: []string{
-					s.params["barberShop1ID"],
+					s.params[SHOP1_ID],
 				},
 			},
 			barberShopsLen: 1,
@@ -478,8 +478,8 @@ func (s *IntegrationSuite) TestUserModify() {
 		},
 		{
 			name:   "Remove a shop",
-			token:  s.params["adminToken"],
-			ID:     s.params["authID"],
+			token:  s.params[ADMIN_TOKEN],
+			ID:     s.params[USER1_ID],
 			status: http.StatusAccepted,
 			input: controller.ModifyUserInput{
 				BarbershopsID: []string{},

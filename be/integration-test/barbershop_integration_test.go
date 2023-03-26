@@ -33,7 +33,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 		{
 			name:        "All barbershops",
 			status:      http.StatusOK,
-			token:       s.params["authToken"],
+			token:       s.params[USER1_TOKEN],
 			resultCount: 3,
 		},
 		{
@@ -41,21 +41,21 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 			lat:         "1.1",
 			lon:         "1.1",
 			radius:      "1",
-			token:       s.params["authToken"],
+			token:       s.params[USER1_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 0,
 		},
 		{
 			name:           "No barbershop for this name",
 			barberShopName: "not_existing_shop",
-			token:          s.params["authToken"],
+			token:          s.params[USER1_TOKEN],
 			status:         http.StatusOK,
 			resultCount:    0,
 		},
 		{
 			name:           "Two barbershop found for this name",
 			barberShopName: "not_existing_shop",
-			token:          s.params["authToken"],
+			token:          s.params[USER1_TOKEN],
 			status:         http.StatusOK,
 			resultCount:    2,
 		},
@@ -64,7 +64,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 			lat:         "1.1",
 			lon:         "1.1",
 			radius:      "100",
-			token:       s.params["authToken"],
+			token:       s.params[USER1_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 1,
 		},
@@ -134,13 +134,13 @@ func (s *IntegrationSuite) TestBarberShopShow() {
 		},
 		{
 			name:   "Correctly shown Barbershop",
-			token:  s.params["authToken"],
-			ID:     s.params["barberShop1ID"],
+			token:  s.params[USER1_TOKEN],
+			ID:     s.params[SHOP1_ID],
 			status: http.StatusOK,
 		},
 		{
 			name:   "BarberShop doesn't exist",
-			token:  s.params["authToken"],
+			token:  s.params[USER1_TOKEN],
 			ID:     "wrong_ID",
 			status: http.StatusNotFound,
 		},
@@ -203,7 +203,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		},
 		{
 			name:  "Require admin",
-			token: s.params["authToken"],
+			token: s.params[USER1_ID],
 			newBarberShop: &controller.CreateBarbershopInput{
 				Name:            "barberShop7",
 				Latitude:        1,
@@ -214,7 +214,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		},
 		{
 			name:  "Already exists",
-			token: s.params["adminToken"],
+			token: s.params[ADMIN_TOKEN],
 			newBarberShop: &controller.CreateBarbershopInput{
 				Name:            "barberShop1",
 				Latitude:        1,
@@ -225,12 +225,12 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		},
 		{
 			name:   "Invalid input",
-			token:  s.params["adminToken"],
+			token:  s.params[ADMIN_TOKEN],
 			status: http.StatusBadRequest,
 		},
 		{
 			name:  "Correctly Created",
-			token: s.params["adminToken"],
+			token: s.params[ADMIN_TOKEN],
 			newBarberShop: &controller.CreateBarbershopInput{
 				Name:            "barberShop7",
 				Latitude:        1.1,
@@ -277,24 +277,24 @@ func (s *IntegrationSuite) TestBarberShopModifyByID() {
 		},
 		{
 			name:           "Require barber",
-			token:          s.params["authToken"],
+			token:          s.params[USER1_ID],
 			editBarberShop: &controller.ModifyBarberShopInput{Employees: 3},
 			status:         http.StatusUnauthorized,
 			ID:             "genericID",
 		},
 		{
 			name:           "Require to be a barber in that shop",
-			token:          s.params["barber1Auth"],
+			token:          s.params[BARBER1_TOKEN],
 			editBarberShop: &controller.ModifyBarberShopInput{Employees: 1},
 			status:         http.StatusUnauthorized,
-			ID:             s.params["barberShop2ID"],
+			ID:             s.params[SHOP2_ID],
 		},
 		{
 			name:           "Correctly Modified",
-			token:          s.params["barber1Auth"],
+			token:          s.params[BARBER1_TOKEN],
 			editBarberShop: &controller.ModifyBarberShopInput{Employees: 2},
 			status:         http.StatusAccepted,
-			ID:             s.params["barberShop1ID"],
+			ID:             s.params[SHOP1_ID],
 		},
 
 		// TODO: test more bulky editing
@@ -332,18 +332,18 @@ func (s *IntegrationSuite) TestBarberShopDeleteByID() {
 		{
 			name:   "Require Login",
 			status: http.StatusUnauthorized,
-			ID:     s.params["barberShop2ID"],
+			ID:     s.params[SHOP2_ID],
 		},
 		{
 			name:   "Require admin",
-			token:  s.params["authToken"],
-			ID:     s.params["barberShop2ID"],
+			token:  s.params[USER1_TOKEN],
+			ID:     s.params[SHOP2_ID],
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:   "Correctly Eliminated",
-			token:  s.params["adminToken"],
-			ID:     s.params["barberShop2ID"],
+			token:  s.params[ADMIN_TOKEN],
+			ID:     s.params[SHOP2_ID],
 			status: http.StatusAccepted,
 		},
 	}
