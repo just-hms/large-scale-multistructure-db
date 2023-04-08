@@ -21,7 +21,8 @@ import (
 type IntegrationSuite struct {
 	suite.Suite
 	srv   *gin.Engine
-	mongo *mongo.Mongo
+	db    *mongo.Mongo
+	cache *redis.Redis
 
 	resetDB func()
 	params  []string
@@ -69,7 +70,7 @@ func (s *IntegrationSuite) SetupSuite() {
 
 	s.resetDB = func() {
 
-		mongo.DB.Drop(context.TODO())
+		mongo.DB.Drop(context.Background())
 
 		// create barbershops
 		shops := []*entity.BarberShop{
@@ -78,7 +79,7 @@ func (s *IntegrationSuite) SetupSuite() {
 		}
 		barberShopUsecase := ucs[usecase.BARBER_SHOP].(*usecase.BarberShopUseCase)
 		for _, s := range shops {
-			barberShopUsecase.Store(context.TODO(), s)
+			barberShopUsecase.Store(context.Background(), s)
 		}
 		s.params[SHOP1_ID] = shops[0].ID
 		s.params[SHOP2_ID] = shops[1].ID
@@ -101,7 +102,7 @@ func (s *IntegrationSuite) SetupSuite() {
 		}
 		userUsecase := ucs[usecase.USER].(*usecase.UserUseCase)
 		for _, u := range users {
-			userUsecase.Store(context.TODO(), u)
+			userUsecase.Store(context.Background(), u)
 		}
 
 		s.params[USER1_ID] = users[0].ID
@@ -128,7 +129,7 @@ func (s *IntegrationSuite) SetupSuite() {
 		}
 		appointmentUsecase := ucs[usecase.APPOINTMENT].(*usecase.AppoinmentUseCase)
 		for _, a := range appointments {
-			appointmentUsecase.Book(context.TODO(), a)
+			appointmentUsecase.Book(context.Background(), a)
 		}
 
 		s.params[USER1_SHOP1_APPOINTMENT] = appointments[0].ID
@@ -137,7 +138,8 @@ func (s *IntegrationSuite) SetupSuite() {
 	// serv the mock server and db
 	s.params = make([]string, PARAM_LEN)
 	s.srv = controller.Router(ucs, true)
-	s.mongo = mongo
+	s.db = mongo
+	s.cache = redis
 }
 
 func (s *IntegrationSuite) TearDownSuite() {

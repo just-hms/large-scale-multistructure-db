@@ -31,7 +31,7 @@ func Run() {
 
 	userUsecase := ucs[usecase.USER].(usecase.User)
 
-	userUsecase.Store(context.TODO(), &entity.User{
+	userUsecase.Store(context.Background(), &entity.User{
 		Email:    "admin@admin.com",
 		Password: "super_secret",
 		Type:     entity.ADMIN,

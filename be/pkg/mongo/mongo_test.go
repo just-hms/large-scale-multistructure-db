@@ -18,7 +18,7 @@ func TestMongoSetup(t *testing.T) {
 		return
 	}
 
-	if err := mongo.DB.Client().Ping(context.TODO(), nil); err != nil {
+	if err := mongo.DB.Client().Ping(context.Background(), nil); err != nil {
 		t.Errorf("Failed to connect to Mongo: %v", err)
 		return
 	}

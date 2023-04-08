@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // UserRepo represents a repository for User entities.
@@ -69,7 +71,7 @@ func (r *UserRepo) DeleteByID(ctx context.Context, ID string) error {
 func (r *UserRepo) List(ctx context.Context, email string) ([]*entity.User, error) {
 	filter := bson.M{}
 	if email != "" {
-		filter["email"] = email
+		filter["email"] = primitive.Regex{Pattern: email, Options: "i"}
 	}
 
 	cur, err := r.DB.Collection("users").Find(ctx, filter)
@@ -144,6 +146,9 @@ func (r *UserRepo) EditShopsByIDs(ctx context.Context, user *entity.User, IDs []
 // TODO : block an user
 
 func (r *UserRepo) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
+	if user == nil {
+		return errors.New("user does not exists")
+	}
 	update := bson.M{}
 
 	if user.Email != "" {
