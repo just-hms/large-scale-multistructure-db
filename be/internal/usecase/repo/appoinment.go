@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
@@ -53,8 +52,6 @@ func (r *AppointmentRepo) Cancel(ctx context.Context, appointment *entity.Appoin
 	}
 
 	// remove the appoinment from the user
-
-	fmt.Println("diocane", appointment.UserID)
 
 	userFilter := bson.M{"_id": appointment.UserID}
 	userUpdate := bson.M{"$unset": bson.M{"currentAppointment": ""}}

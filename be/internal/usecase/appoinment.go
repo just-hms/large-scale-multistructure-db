@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 )
@@ -29,8 +28,6 @@ func (uc *AppoinmentUseCase) Book(ctx context.Context, appointment *entity.Appoi
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("madonna bestia", us.CurrentAppointment)
 
 	if us.CurrentAppointment != nil {
 		return errors.New("cannot book two appointments")

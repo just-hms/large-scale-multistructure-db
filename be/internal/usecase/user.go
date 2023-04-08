@@ -68,19 +68,6 @@ func (uc *UserUseCase) GetByID(ctx context.Context, ID string) (*entity.User, er
 	return uc.repo.GetByID(ctx, ID)
 }
 
-func (uc *UserUseCase) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
-
-	if _, err := uc.repo.GetByEmail(ctx, user.Email); err == nil {
-		return UserAlreadyExists
-	}
-
-	if user.Password != "" {
-		return fmt.Errorf("The password field cannot be edited here")
-	}
-
-	return uc.repo.ModifyByID(ctx, ID, user)
-}
-
 // TODO: retrieve also the ID and barberShopsIDs
 func (uc *UserUseCase) List(ctx context.Context, email string) ([]*entity.User, error) {
 	return uc.repo.List(ctx, email)
@@ -116,5 +103,34 @@ func (uc *UserUseCase) ResetPassword(ctx context.Context, ID string, password st
 }
 
 func (uc *UserUseCase) EditShopsByIDs(ctx context.Context, ID string, IDs []string) error {
-	return uc.repo.EditShopsByIDs(ctx, ID, IDs)
+
+	user, err := uc.repo.GetByID(ctx, ID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	if user.Type == entity.ADMIN {
+		if len(IDs) > 0 {
+			return errors.New("cannot edit shops if the user is admin")
+		}
+		return nil
+	}
+
+	return uc.repo.EditShopsByIDs(ctx, user, IDs)
+}
+
+func (uc *UserUseCase) ModifyByID(ctx context.Context, ID string, update *entity.User) error {
+	if _, err := uc.repo.GetByEmail(ctx, update.Email); err == nil {
+		return UserAlreadyExists
+	}
+
+	if update.Password != "" {
+		return errors.New("the password field cannot be edited here")
+	}
+
+	if update.Type == entity.ADMIN && len(update.OwnedShops) > 0 {
+		return errors.New("cannot become an admin if you own shops")
+	}
+
+	return uc.repo.ModifyByID(ctx, ID, update)
 }

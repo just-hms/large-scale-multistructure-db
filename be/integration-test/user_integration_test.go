@@ -465,7 +465,7 @@ func (s *IntegrationSuite) TestUserModify() {
 			input:  controller.ModifyUserInput{},
 		},
 		{
-			name:  "Add a shop",
+			name:  "Set a shop",
 			token: s.params[ADMIN_TOKEN],
 			ID:    s.params[USER1_ID],
 			input: controller.ModifyUserInput{
@@ -477,7 +477,20 @@ func (s *IntegrationSuite) TestUserModify() {
 			status:         http.StatusAccepted,
 		},
 		{
-			name:   "Remove a shop",
+			name:  "Set two shops",
+			token: s.params[ADMIN_TOKEN],
+			ID:    s.params[USER1_ID],
+			input: controller.ModifyUserInput{
+				BarbershopsID: []string{
+					s.params[SHOP1_ID],
+					s.params[SHOP2_ID],
+				},
+			},
+			barberShopsLen: 1,
+			status:         http.StatusAccepted,
+		},
+		{
+			name:   "Empty the user shops",
 			token:  s.params[ADMIN_TOKEN],
 			ID:     s.params[USER1_ID],
 			status: http.StatusAccepted,

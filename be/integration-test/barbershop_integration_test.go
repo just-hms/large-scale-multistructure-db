@@ -258,6 +258,8 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 
 			// assert that the response status code is as expected
 			s.Require().Equal(tc.status, w.Code)
+
+			// TODO: do a request to check that the creation went successfully
 		})
 	}
 }

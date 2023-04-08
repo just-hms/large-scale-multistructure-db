@@ -87,7 +87,7 @@ type (
 		ModifyByID(ctx context.Context, ID string, user *entity.User) error
 		GetByEmail(ctx context.Context, email string) (*entity.User, error)
 		List(ctx context.Context, email string) ([]*entity.User, error)
-		EditShopsByIDs(ctx context.Context, ID string, IDs []string) error
+		EditShopsByIDs(ctx context.Context, user *entity.User, IDs []string) error
 	}
 
 	BarberShopRepo interface {
