@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
@@ -16,15 +15,12 @@ import (
 func (s *IntegrationSuite) TestBarberShopFind() {
 
 	testCases := []struct {
-		name           string
-		lat            string
-		lon            string
-		radius         string
-		token          string
-		status         int
-		barberShopName string
-		resultCount    int
-		res            interface{}
+		input       controller.FindBarbershopInput
+		name        string
+		radius      string
+		token       string
+		status      int
+		resultCount int
 	}{
 		{
 			name:   "Unauthorized",
@@ -37,33 +33,42 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 			resultCount: 3,
 		},
 		{
-			name:        "No barbershop near where you are",
-			lat:         "1.1",
-			lon:         "1.1",
-			radius:      "1",
+			name: "No barbershop near where you are",
+			input: controller.FindBarbershopInput{
+				Latitude:  1.1,
+				Longitude: 1.1,
+				Radius:    1,
+			},
 			token:       s.params[USER1_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 0,
 		},
 		{
-			name:           "No barbershop for this name",
-			barberShopName: "not_existing_shop",
-			token:          s.params[USER1_TOKEN],
-			status:         http.StatusOK,
-			resultCount:    0,
+			name: "No barbershop for this name",
+			input: controller.FindBarbershopInput{
+				Name: "not_existing_shop",
+			},
+			token:       s.params[USER1_TOKEN],
+			status:      http.StatusOK,
+			resultCount: 0,
+		},
+		// TODO:FIX THIS
+		{
+			name: "Two barbershop found for this name",
+			input: controller.FindBarbershopInput{
+				Name: "boh",
+			},
+			token:       s.params[USER1_TOKEN],
+			status:      http.StatusOK,
+			resultCount: 2,
 		},
 		{
-			name:           "Two barbershop found for this name",
-			barberShopName: "not_existing_shop",
-			token:          s.params[USER1_TOKEN],
-			status:         http.StatusOK,
-			resultCount:    2,
-		},
-		{
-			name:        "Found 1 barbershop near you",
-			lat:         "1.1",
-			lon:         "1.1",
-			radius:      "100",
+			name: "Found 1 barbershop near you",
+			input: controller.FindBarbershopInput{
+				Latitude:  1.1,
+				Longitude: 1.1,
+				Radius:    100,
+			},
 			token:       s.params[USER1_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 1,
@@ -74,18 +79,11 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 
 		s.T().Run(tc.name, func(t *testing.T) {
 
+			newBarberShopJson, _ := json.Marshal(tc.input)
+
 			// create a request for the self endpoint
 			var req *http.Request
-
-			query := url.Values{
-				"name":   {tc.barberShopName},
-				"lat":    {tc.lat},
-				"lon":    {tc.lon},
-				"radius": {tc.radius},
-			}
-
-			req, _ = http.NewRequest("GET", "/api/barber_shop?"+query.Encode(), nil)
-
+			req, _ = http.NewRequest("POTS", "/api/barber_shop", bytes.NewBuffer(newBarberShopJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 

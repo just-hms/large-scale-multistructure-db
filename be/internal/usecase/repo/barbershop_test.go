@@ -61,32 +61,32 @@ func (s *RepoSuite) TestBarberShopFind() {
 	// Test cases
 	testCases := []struct {
 		name         string
-		lat          string
-		lon          string
+		lat          float64
+		lon          float64
 		nameFilter   string
-		radiusFilter string
+		radiusFilter float64
 		expectedLen  int
 	}{
 		{
 			name:         "find barbershops with name filter",
-			lat:          "10.1234",
-			lon:          "20.5678",
-			radiusFilter: "",
+			lat:          10.1234,
+			lon:          20.5678,
+			radiusFilter: -1,
 			nameFilter:   "brownies",
 			expectedLen:  1,
 		},
 		{
 			name:         "find barbershops within radius",
-			lat:          "10.1234",
-			lon:          "20.5678",
-			radiusFilter: "7",
+			lat:          10.1234,
+			lon:          20.5678,
+			radiusFilter: -1,
 			expectedLen:  1,
 		},
 		{
 			name:         "find barbershops with both radius and name filters",
-			lat:          "10.1234",
-			lon:          "20.5678",
-			radiusFilter: "",
+			lat:          10.1234,
+			lon:          20.5678,
+			radiusFilter: -1,
 			expectedLen:  1,
 		},
 	}
@@ -182,4 +182,8 @@ func (s *RepoSuite) TestBarberShopDeleteByID() {
 			s.Require().Nil(res)
 		})
 	}
+}
+
+func (s *RepoSuite) TestBarberShopModifyByID() {
+	s.Fail("not implemented")
 }

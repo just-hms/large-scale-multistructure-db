@@ -24,14 +24,27 @@ func NewBarberShopRoutes(uc usecase.BarberShop, cl usecase.Calendar) *BarberShop
 	}
 }
 
+type FindBarbershopInput struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Name      string  `json:"name"`
+	Radius    float64 `json:"radius"`
+}
+
 func (br *BarberShopRoutes) Find(ctx *gin.Context) {
+
+	input := FindBarbershopInput{}
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	barbers, err := br.barberShopUseCase.Find(
 		ctx,
-		ctx.Param("lat"),
-		ctx.Param("lon"),
-		ctx.Param("name"),
-		ctx.Param("radius"),
+		input.Latitude,
+		input.Longitude,
+		input.Name,
+		input.Radius,
 	)
 
 	if err != nil {
@@ -44,10 +57,10 @@ func (br *BarberShopRoutes) Find(ctx *gin.Context) {
 
 // TODO add more things
 type CreateBarbershopInput struct {
-	Name            string  `json:"name" binding:"required"`
-	Latitude        float64 `json:"Latitude" binding:"required"`
-	Longitude       float64 `json:"Longitude" binding:"required"`
-	EmployeesNumber int     `json:"employees_number" binding:"required"`
+	Name            string  `json:"name"`
+	Latitude        float64 `json:"Latitude"`
+	Longitude       float64 `json:"Longitude"`
+	EmployeesNumber int     `json:"employees_number"`
 }
 
 func (br *BarberShopRoutes) Create(ctx *gin.Context) {

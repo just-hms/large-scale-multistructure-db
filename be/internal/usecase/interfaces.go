@@ -45,11 +45,11 @@ type (
 	}
 
 	BarberShop interface {
-		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error) // IMPLEMENTED
-		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)                        // IMPLEMENTED
-		Store(ctx context.Context, shop *entity.BarberShop) error                                                   // IMPLEMENTED
-		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error                                   // IMPLEMENTED
-		DeleteByID(ctx context.Context, ID string) error                                                            // IMPLEMENTED
+		Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error) // IMPLEMENTED
+		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)                           // IMPLEMENTED
+		Store(ctx context.Context, shop *entity.BarberShop) error                                                      // IMPLEMENTED
+		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error                                      // IMPLEMENTED
+		DeleteByID(ctx context.Context, ID string) error                                                               // IMPLEMENTED
 	}
 
 	Calendar interface {
@@ -92,7 +92,7 @@ type (
 
 	BarberShopRepo interface {
 		Store(ctx context.Context, shop *entity.BarberShop) error
-		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error)
+		Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error)
 		GetByID(ctx context.Context, ID string) (*entity.BarberShop, error)
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error

@@ -18,7 +18,7 @@ func NewBarberShopUseCase(shopRepo BarberShopRepo, viewRepo ShopViewRepo) *Barbe
 	}
 }
 
-func (uc *BarberShopUseCase) Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error) {
+func (uc *BarberShopUseCase) Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error) {
 	return uc.shopRepo.Find(ctx, lat, lon, name, radius)
 }
 

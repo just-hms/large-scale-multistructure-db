@@ -82,7 +82,7 @@ func Router(ucs []usecase.Usecase, production bool) *gin.Engine {
 	barberShop := api.Group("/barber_shop")
 	barberShop.Use(mr.RequireAuth)
 	{
-		barberShop.GET("", br.Find)
+		barberShop.POST("", br.Find)
 		barberShop.GET("/:shopid", br.Show)
 
 		barberShop.PUT("/:shopid", mr.RequireBarber, br.Modify)

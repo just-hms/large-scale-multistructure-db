@@ -3,14 +3,12 @@ package repo
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BarberShopRepo struct {
@@ -36,31 +34,24 @@ func (r *BarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) err
 	return nil
 }
 
-func (r *BarberShopRepo) Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error) {
+func (r *BarberShopRepo) Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error) {
 
-	// TODO: this isn't very fast and i think is using a square not a radius
-	filter := bson.M{}
-	if radius != "" {
-
-		latFloat, err := strconv.ParseFloat(lat, 64)
-		if err != nil {
-			return nil, err
-		}
-		lonFloat, err := strconv.ParseFloat(lon, 64)
-		if err != nil {
-			return nil, err
-		}
-		radiusFloat, err := strconv.ParseFloat(radius, 64)
-		if err != nil {
-			return nil, err
-		}
-
-		filter["latitude"] = bson.M{"$gt": latFloat - radiusFloat, "$lt": latFloat + radiusFloat}
-		filter["longitude"] = bson.M{"$gt": lonFloat - radiusFloat, "$lt": lonFloat + radiusFloat}
-	}
-
-	if name != "" {
-		filter["name"] = primitive.Regex{Pattern: name, Options: "i"}
+	filter := bson.M{
+		"$geoNear": bson.M{
+			"near": bson.M{
+				"type":        "Point",
+				"coordinates": []float64{lon, lat},
+			},
+			"distanceField": "distance",
+			"maxDistance":   radius,
+			"spherical":     true,
+			"query": bson.M{
+				"Name": bson.M{
+					"$regex":   name,
+					"$options": "i",
+				},
+			},
+		},
 	}
 
 	cur, err := r.DB.Collection("barbershops").Find(ctx, filter)
@@ -73,11 +64,15 @@ func (r *BarberShopRepo) Find(ctx context.Context, lat string, lon string, name 
 	shops := []*entity.BarberShop{}
 
 	for cur.Next(ctx) {
-		var shop entity.BarberShop
-		if err := cur.Decode(&shop); err != nil {
+		var doc struct {
+			Shop     entity.BarberShop `bson:"shop"`
+			Distance float64           `bson:"distance"`
+		}
+
+		if err := cur.Decode(&doc); err != nil {
 			return nil, err
 		}
-		shops = append(shops, &shop)
+		shops = append(shops, &doc.Shop)
 	}
 	return shops, nil
 }
