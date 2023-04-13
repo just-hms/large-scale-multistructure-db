@@ -17,7 +17,7 @@ type RepoSuite struct {
 	resetDB func()
 }
 
-func TestIntegrationSuite(t *testing.T) {
+func TestRepoSuite(t *testing.T) {
 	suite.Run(t, new(RepoSuite))
 }
 

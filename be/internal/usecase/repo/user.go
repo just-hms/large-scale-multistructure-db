@@ -26,11 +26,10 @@ func NewUserRepo(m *mongo.Mongo) *UserRepo {
 // Store inserts a new user into the repository.
 func (r *UserRepo) Store(ctx context.Context, user *entity.User) error {
 
-	user.ID = uuid.NewString()
-
 	if err := r.DB.Collection("users").FindOne(ctx, bson.M{"email": user.Email}).Err(); err == nil {
 		return fmt.Errorf("User already exists")
 	}
+	user.ID = uuid.NewString()
 
 	_, err := r.DB.Collection("users").InsertOne(ctx, user)
 

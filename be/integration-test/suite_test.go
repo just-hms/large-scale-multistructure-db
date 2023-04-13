@@ -29,6 +29,9 @@ type IntegrationSuite struct {
 }
 
 func TestIntegrationSuite(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	suite.Run(t, new(IntegrationSuite))
 }
 

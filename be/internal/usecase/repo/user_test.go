@@ -18,7 +18,7 @@ func (s *RepoSuite) TestUserStore() {
 		{
 			name:      "store new user",
 			user:      &entity.User{Email: "test@example.com", Username: "John Doe"},
-			expectErr: true,
+			expectErr: false,
 		},
 		{
 			name:      "store existing user",
@@ -35,10 +35,10 @@ func (s *RepoSuite) TestUserStore() {
 			err := userRepo.Store(context.Background(), tc.user)
 			if tc.expectErr {
 				s.Require().Error(err)
-				s.Require().Nil(tc.user.ID)
+				s.Require().Empty(tc.user.ID)
 			} else {
 				s.Require().NoError(err)
-				s.Require().NotNil(tc.user.ID)
+				s.Require().NotEmpty(tc.user.ID)
 			}
 		})
 	}
