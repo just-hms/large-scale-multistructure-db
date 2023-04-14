@@ -22,6 +22,11 @@ func NewBarberShopRepo(m *mongo.Mongo) *BarberShopRepo {
 
 func (r *BarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) error {
 
+	// cannot add a barber without a location if there is an index on it
+	if shop.Location == nil {
+		shop.Location = entity.FAKE_LOCATION
+	}
+
 	if err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"name": shop.Name}).Err(); err == nil {
 		return fmt.Errorf("barber shop already exists")
 	}
@@ -98,10 +103,7 @@ func (r *BarberShopRepo) GetByID(ctx context.Context, ID string) (*entity.Barber
 
 func (r *BarberShopRepo) ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error {
 	_, err := r.DB.Collection("barbershops").UpdateOne(ctx, bson.M{"_id": ID}, bson.M{"$set": shop})
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (r *BarberShopRepo) DeleteByID(ctx context.Context, ID string) error {

@@ -205,14 +205,15 @@ func (s *RepoSuite) TestUserGetByEmail() {
 	}
 }
 
-func (s *RepoSuite) TestEditShopsByIDs() {
+func (s *RepoSuite) TestUserEditShopsByIDs() {
 	userRepo := repo.NewUserRepo(s.db)
 	shopRepo := repo.NewBarberShopRepo(s.db)
 
 	shop := &entity.BarberShop{
 		Name: "shop",
 	}
-	shopRepo.Store(context.Background(), shop)
+	err := shopRepo.Store(context.Background(), shop)
+	s.Require().NoError(err)
 
 	user := &entity.User{
 		Username: "barbers",
@@ -248,7 +249,7 @@ func (s *RepoSuite) TestEditShopsByIDs() {
 	}
 }
 
-func (s *RepoSuite) TestModifyByID() {
+func (s *RepoSuite) TestUserModifyByID() {
 	userRepo := repo.NewUserRepo(s.db)
 
 	user := &entity.User{

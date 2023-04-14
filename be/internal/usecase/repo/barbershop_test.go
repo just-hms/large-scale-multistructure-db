@@ -17,12 +17,12 @@ func (s *RepoSuite) TestBarberShopStore() {
 	}{
 		{
 			name:      "store new barbershop",
-			shop:      &entity.BarberShop{Name: "brownies", Location: entity.NewLocation(0, 0)},
+			shop:      &entity.BarberShop{Name: "brownies", Location: entity.FAKE_LOCATION},
 			expectErr: false,
 		},
 		{
 			name:      "store existing barbershop",
-			shop:      &entity.BarberShop{Name: "brownies", Location: entity.NewLocation(0, 0)},
+			shop:      &entity.BarberShop{Name: "brownies", Location: entity.FAKE_LOCATION},
 			expectErr: true,
 		},
 	}
@@ -107,7 +107,7 @@ func (s *RepoSuite) TestBarberShopGetByID() {
 	shopRepo := repo.NewBarberShopRepo(s.db)
 	shop := &entity.BarberShop{
 		Name: "Test Barber Shop", Phone: "555-555-5555",
-		Location: entity.NewLocation(0, 0),
+		Location: entity.FAKE_LOCATION,
 	}
 	shopRepo.Store(context.Background(), shop)
 
@@ -150,8 +150,7 @@ func (s *RepoSuite) TestBarberShopDeleteByID() {
 
 	shopRepo := repo.NewBarberShopRepo(s.db)
 	shop := &entity.BarberShop{
-		Name:     "brownies",
-		Location: entity.NewLocation(0, 0),
+		Name: "brownies",
 	}
 	shopRepo.Store(context.Background(), shop)
 
@@ -182,7 +181,7 @@ func (s *RepoSuite) TestBarberShopDeleteByID() {
 
 			s.Require().NoError(err)
 
-			// check if the user is correctly deleted
+			// check if the barbershop is correctly deleted
 			res, err := shopRepo.GetByID(context.Background(), shop.ID)
 			s.Require().NotNil(err)
 			s.Require().Nil(res)
@@ -191,5 +190,70 @@ func (s *RepoSuite) TestBarberShopDeleteByID() {
 }
 
 func (s *RepoSuite) TestBarberShopModifyByID() {
-	s.Fail("not implemented")
+	barberRepo := repo.NewBarberShopRepo(s.db)
+
+	shop := &entity.BarberShop{
+		Name: "brownies",
+	}
+	barberRepo.Store(context.Background(), shop)
+
+	testCases := []struct {
+		name      string
+		ID        string
+		expectErr bool
+		mods      *entity.BarberShop
+	}{
+		{
+			name:      "edit non-existent barbershop",
+			ID:        "non_existent_shop_id",
+			expectErr: true,
+		},
+		{
+			name:      "edit name",
+			ID:        shop.ID,
+			expectErr: false,
+			mods: &entity.BarberShop{
+				Name: "brownies2.0",
+			},
+		},
+		{
+			name:      "edit location",
+			ID:        shop.ID,
+			expectErr: false,
+			mods: &entity.BarberShop{
+				Location: entity.NewLocation(-2, -3),
+			},
+		},
+		{
+			name:      "edit location",
+			ID:        shop.ID,
+			expectErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.T().Run(tc.name, func(t *testing.T) {
+			err := barberRepo.ModifyByID(context.Background(), tc.ID, tc.mods)
+
+			if tc.expectErr {
+				s.Require().Error(err)
+				return
+			}
+
+			modifiedShop, err := barberRepo.GetByID(context.Background(), shop.ID)
+			s.Require().NoError(err)
+
+			if tc.mods.Name != "" {
+				s.Require().Equal(tc.mods.Name, modifiedShop.Name)
+			} else {
+				s.Require().NotEqual(tc.mods.Name, modifiedShop.Name)
+			}
+
+			if tc.mods.Location != nil {
+				s.Require().Equal(tc.mods.Location, modifiedShop.Location)
+			} else {
+				s.Require().NotEqual(tc.mods.Location, modifiedShop.Location)
+			}
+		})
+	}
 }

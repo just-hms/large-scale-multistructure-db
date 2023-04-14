@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -146,8 +145,9 @@ func (r *UserRepo) EditShopsByIDs(ctx context.Context, user *entity.User, IDs []
 
 func (r *UserRepo) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
 	if user == nil {
-		return errors.New("user does not exists")
+		return nil
 	}
+
 	update := bson.M{}
 
 	if user.Email != "" {

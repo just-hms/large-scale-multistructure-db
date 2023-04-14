@@ -4,7 +4,7 @@ type BarberShop struct {
 	ID       string `bson:"_id"`
 	Name     string
 	Rating   float64
-	Location Location `json:"location" bson:"location"`
+	Location *Location `json:"location" bson:"location"`
 
 	Address   string
 	ImageLink string
