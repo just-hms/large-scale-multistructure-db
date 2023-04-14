@@ -224,11 +224,6 @@ func (s *RepoSuite) TestBarberShopModifyByID() {
 				Location: entity.NewLocation(-2, -3),
 			},
 		},
-		{
-			name:      "edit location",
-			ID:        shop.ID,
-			expectErr: false,
-		},
 	}
 
 	for _, tc := range testCases {

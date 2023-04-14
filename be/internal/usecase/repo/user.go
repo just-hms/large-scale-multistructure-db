@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -144,21 +145,23 @@ func (r *UserRepo) EditShopsByIDs(ctx context.Context, user *entity.User, IDs []
 // TODO : block an user
 
 func (r *UserRepo) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
-	if user == nil {
-		return nil
-	}
 
 	update := bson.M{}
 
-	if user.Email != "" {
-		update["email"] = user.Email
+	if user != nil {
+		if user.Email != "" {
+			update["email"] = user.Email
+		}
+
+		if user.Password != "" {
+			update["password"] = user.Password
+		}
 	}
 
-	if user.Password != "" {
-		update["password"] = user.Password
+	res, err := r.DB.Collection("users").UpdateOne(ctx, bson.M{"_id": ID}, bson.M{"$set": update})
+
+	if res.MatchedCount == 0 {
+		return errors.New("barberShop not found")
 	}
-
-	_, err := r.DB.Collection("users").UpdateOne(ctx, bson.M{"_id": ID}, bson.M{"$set": update})
-
 	return err
 }
