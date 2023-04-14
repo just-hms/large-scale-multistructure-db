@@ -184,14 +184,14 @@ func (s *IntegrationSuite) TestBarberShopShow() {
 func (s *IntegrationSuite) TestBarberShopStore() {
 
 	testCases := []struct {
-		name          string
-		token         string
-		newBarberShop *controller.CreateBarbershopInput
-		status        int
+		name   string
+		token  string
+		input  *controller.CreateBarbershopInput
+		status int
 	}{
 		{
 			name: "Require login",
-			newBarberShop: &controller.CreateBarbershopInput{
+			input: &controller.CreateBarbershopInput{
 				Name:            "barberShop7",
 				Latitude:        1,
 				Longitude:       1,
@@ -202,7 +202,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		{
 			name:  "Require admin",
 			token: s.params[USER1_ID],
-			newBarberShop: &controller.CreateBarbershopInput{
+			input: &controller.CreateBarbershopInput{
 				Name:            "barberShop7",
 				Latitude:        1,
 				Longitude:       1,
@@ -213,7 +213,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		{
 			name:  "Already exists",
 			token: s.params[ADMIN_TOKEN],
-			newBarberShop: &controller.CreateBarbershopInput{
+			input: &controller.CreateBarbershopInput{
 				Name:            "barberShop1",
 				Latitude:        1,
 				Longitude:       1,
@@ -229,7 +229,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		{
 			name:  "Correctly Created",
 			token: s.params[ADMIN_TOKEN],
-			newBarberShop: &controller.CreateBarbershopInput{
+			input: &controller.CreateBarbershopInput{
 				Name:            "barberShop7",
 				Latitude:        1.1,
 				Longitude:       1,
@@ -243,7 +243,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 
 		s.T().Run(tc.name, func(t *testing.T) {
 
-			newBarberShopJson, _ := json.Marshal(tc.newBarberShop)
+			newBarberShopJson, _ := json.Marshal(tc.input)
 
 			// create a request for the register endpoint
 			req, _ := http.NewRequest("POST", "/api/admin/barber_shop", bytes.NewBuffer(newBarberShopJson))
@@ -263,38 +263,38 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 }
 func (s *IntegrationSuite) TestBarberShopModifyByID() {
 	testCases := []struct {
-		name           string
-		token          string
-		ID             string
-		editBarberShop *controller.ModifyBarberShopInput
-		status         int
+		name   string
+		token  string
+		ID     string
+		input  *controller.ModifyBarberShopInput
+		status int
 	}{
 		{
-			name:           "Require login",
-			editBarberShop: &controller.ModifyBarberShopInput{Employees: 2},
-			ID:             "genericID",
-			status:         http.StatusUnauthorized,
+			name:   "Require login",
+			input:  &controller.ModifyBarberShopInput{Employees: 2},
+			ID:     "genericID",
+			status: http.StatusUnauthorized,
 		},
 		{
-			name:           "Require barber",
-			token:          s.params[USER1_ID],
-			editBarberShop: &controller.ModifyBarberShopInput{Employees: 3},
-			status:         http.StatusUnauthorized,
-			ID:             "genericID",
+			name:   "Require barber",
+			token:  s.params[USER1_ID],
+			input:  &controller.ModifyBarberShopInput{Employees: 3},
+			status: http.StatusUnauthorized,
+			ID:     "genericID",
 		},
 		{
-			name:           "Require to be a barber in that shop",
-			token:          s.params[BARBER1_TOKEN],
-			editBarberShop: &controller.ModifyBarberShopInput{Employees: 1},
-			status:         http.StatusUnauthorized,
-			ID:             s.params[SHOP2_ID],
+			name:   "Require to be a barber in that shop",
+			token:  s.params[BARBER1_TOKEN],
+			input:  &controller.ModifyBarberShopInput{Employees: 1},
+			status: http.StatusUnauthorized,
+			ID:     s.params[SHOP2_ID],
 		},
 		{
-			name:           "Correctly Modified",
-			token:          s.params[BARBER1_TOKEN],
-			editBarberShop: &controller.ModifyBarberShopInput{Employees: 2},
-			status:         http.StatusAccepted,
-			ID:             s.params[SHOP1_ID],
+			name:   "Correctly Modified",
+			token:  s.params[BARBER1_TOKEN],
+			input:  &controller.ModifyBarberShopInput{Employees: 2},
+			status: http.StatusAccepted,
+			ID:     s.params[SHOP1_ID],
 		},
 
 		// TODO: test more bulky editing
@@ -304,7 +304,7 @@ func (s *IntegrationSuite) TestBarberShopModifyByID() {
 
 		s.T().Run(tc.name, func(t *testing.T) {
 
-			editBarberShopJson, _ := json.Marshal(tc.editBarberShop)
+			editBarberShopJson, _ := json.Marshal(tc.input)
 
 			// create a request for the register endpoint
 			req, _ := http.NewRequest("PUT", "/api/barber_shop/"+tc.ID, bytes.NewBuffer(editBarberShopJson))

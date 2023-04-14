@@ -17,12 +17,12 @@ func (s *RepoSuite) TestBarberShopStore() {
 	}{
 		{
 			name:      "store new barbershop",
-			shop:      &entity.BarberShop{Name: "brownies"},
+			shop:      &entity.BarberShop{Name: "brownies", Location: entity.NewLocation(0, 0)},
 			expectErr: false,
 		},
 		{
 			name:      "store existing barbershop",
-			shop:      &entity.BarberShop{Name: "brownies"},
+			shop:      &entity.BarberShop{Name: "brownies", Location: entity.NewLocation(0, 0)},
 			expectErr: true,
 		},
 	}
@@ -48,9 +48,9 @@ func (s *RepoSuite) TestBarberShopFind() {
 	shopRepo := repo.NewBarberShopRepo(s.db)
 
 	shops := []*entity.BarberShop{
-		{Name: "brownies", Latitude: "10.1234", Longitude: "20.5678"},
-		{Name: "haircut place", Latitude: "11.1234", Longitude: "22.5678"},
-		{Name: "cut and shave", Latitude: "12.1234", Longitude: "24.5678"},
+		{Name: "hair brownies", Location: entity.NewLocation(14.1234, 24.5678)},
+		{Name: "haircut place", Location: entity.NewLocation(11.1234, 22.5678)},
+		{Name: "cut and shave", Location: entity.NewLocation(11.1334, 22.5679)},
 	}
 
 	for _, shop := range shops {
@@ -68,25 +68,27 @@ func (s *RepoSuite) TestBarberShopFind() {
 		expectedLen  int
 	}{
 		{
-			name:         "find barbershops with name filter",
-			lat:          10.1234,
-			lon:          20.5678,
-			radiusFilter: -1,
-			nameFilter:   "brownies",
-			expectedLen:  1,
+			name:        "find all",
+			expectedLen: 3,
+		},
+		{
+			name:        "find barbershops with name filter",
+			nameFilter:  "hair",
+			expectedLen: 2,
 		},
 		{
 			name:         "find barbershops within radius",
-			lat:          10.1234,
-			lon:          20.5678,
-			radiusFilter: -1,
+			lat:          14.1234,
+			lon:          24.5678,
+			radiusFilter: 1000,
 			expectedLen:  1,
 		},
 		{
 			name:         "find barbershops with both radius and name filters",
-			lat:          10.1234,
-			lon:          20.5678,
-			radiusFilter: -1,
+			nameFilter:   "hair",
+			lat:          11.1234,
+			lon:          22.5678,
+			radiusFilter: 100000,
 			expectedLen:  1,
 		},
 	}
@@ -103,7 +105,10 @@ func (s *RepoSuite) TestBarberShopFind() {
 func (s *RepoSuite) TestBarberShopGetByID() {
 
 	shopRepo := repo.NewBarberShopRepo(s.db)
-	shop := &entity.BarberShop{Name: "Test Barber Shop", Phone: "555-555-5555"}
+	shop := &entity.BarberShop{
+		Name: "Test Barber Shop", Phone: "555-555-5555",
+		Location: entity.NewLocation(0, 0),
+	}
 	shopRepo.Store(context.Background(), shop)
 
 	testCases := []struct {
@@ -145,7 +150,8 @@ func (s *RepoSuite) TestBarberShopDeleteByID() {
 
 	shopRepo := repo.NewBarberShopRepo(s.db)
 	shop := &entity.BarberShop{
-		Name: "brownies",
+		Name:     "brownies",
+		Location: entity.NewLocation(0, 0),
 	}
 	shopRepo.Store(context.Background(), shop)
 

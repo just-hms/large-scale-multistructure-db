@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
@@ -58,8 +57,8 @@ func (br *BarberShopRoutes) Find(ctx *gin.Context) {
 // TODO add more things
 type CreateBarbershopInput struct {
 	Name            string  `json:"name"`
-	Latitude        float64 `json:"Latitude"`
-	Longitude       float64 `json:"Longitude"`
+	Latitude        float64 `json:"latitude"`
+	Longitude       float64 `json:"longitude"`
 	EmployeesNumber int     `json:"employees_number"`
 }
 
@@ -73,8 +72,7 @@ func (br *BarberShopRoutes) Create(ctx *gin.Context) {
 
 	err := br.barberShopUseCase.Store(ctx, &entity.BarberShop{
 		Name:      input.Name,
-		Latitude:  fmt.Sprintf("%f", input.Latitude),
-		Longitude: fmt.Sprintf("%f", input.Longitude),
+		Location:  entity.NewLocation(input.Latitude, input.Longitude),
 		Employees: input.EmployeesNumber,
 	})
 
@@ -112,8 +110,8 @@ func (br *BarberShopRoutes) Show(ctx *gin.Context) {
 
 type ModifyBarberShopInput struct {
 	Name      string  `json:"name"`
-	Lat       float64 `json:"Latitude"`
-	Lon       float64 `json:"Longitude"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
 	Employees int     `json:"employees"`
 }
 
@@ -129,8 +127,7 @@ func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
 
 	err := br.barberShopUseCase.ModifyByID(ctx, ID, &entity.BarberShop{
 		Name:      input.Name,
-		Latitude:  fmt.Sprintf("%f", input.Lat),
-		Longitude: fmt.Sprintf("%f", input.Lon),
+		Location:  entity.NewLocation(input.Latitude, input.Longitude),
 		Employees: input.Employees,
 	})
 

@@ -242,6 +242,7 @@ func (s *RepoSuite) TestEditShopsByIDs() {
 			s.Require().NoError(err)
 
 			modifiedUser, err := userRepo.GetByID(context.Background(), user.ID)
+			s.Require().NoError(err)
 			s.Require().Equal(len(modifiedUser.OwnedShops), len(tc.baberbshopIDs))
 		})
 	}
@@ -295,6 +296,7 @@ func (s *RepoSuite) TestModifyByID() {
 			}
 
 			modifiedUser, err := userRepo.GetByID(context.Background(), user.ID)
+			s.Require().NoError(err)
 
 			if tc.mods.Email != "" {
 				s.Require().Equal(tc.mods.Email, modifiedUser.Email)

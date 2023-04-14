@@ -27,14 +27,14 @@ func NewUserRepo(m *mongo.Mongo) *UserRepo {
 func (r *UserRepo) Store(ctx context.Context, user *entity.User) error {
 
 	if err := r.DB.Collection("users").FindOne(ctx, bson.M{"email": user.Email}).Err(); err == nil {
-		return fmt.Errorf("User already exists")
+		return fmt.Errorf("user already exists")
 	}
 	user.ID = uuid.NewString()
 
 	_, err := r.DB.Collection("users").InsertOne(ctx, user)
 
 	if err != nil {
-		return fmt.Errorf("Error inserting the user")
+		return fmt.Errorf("error inserting the user")
 	}
 
 	return nil
@@ -48,7 +48,7 @@ func (r *UserRepo) GetByID(ctx context.Context, ID string) (*entity.User, error)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, fmt.Errorf("User not found")
+			return nil, fmt.Errorf("user not found")
 		}
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (r *UserRepo) DeleteByID(ctx context.Context, ID string) error {
 		return err
 	}
 	if res.DeletedCount == 0 {
-		return fmt.Errorf("User not found")
+		return fmt.Errorf("user not found")
 	}
 	return nil
 }
@@ -98,7 +98,7 @@ func (r *UserRepo) GetByEmail(ctx context.Context, email string) (*entity.User, 
 	err := r.DB.Collection("users").FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, fmt.Errorf("User not found")
+			return nil, fmt.Errorf("user not found")
 		}
 		return nil, err
 	}

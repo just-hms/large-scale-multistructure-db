@@ -77,8 +77,8 @@ func (s *IntegrationSuite) SetupSuite() {
 
 		// create barbershops
 		shops := []*entity.BarberShop{
-			{Name: "barberShop1", Employees: 2, Latitude: "1", Longitude: "1"},
-			{Name: "barberShop2", Employees: 2, Latitude: "1", Longitude: "2"},
+			{Name: "barberShop1", Employees: 2, Location: entity.NewLocation(1, 1)},
+			{Name: "barberShop2", Employees: 2, Location: entity.NewLocation(1, 2)},
 		}
 		barberShopUsecase := ucs[usecase.BARBER_SHOP].(*usecase.BarberShopUseCase)
 		for _, s := range shops {

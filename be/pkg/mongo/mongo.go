@@ -7,8 +7,10 @@ import (
 
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
+	"go.mongodb.org/mongo-driver/mongo"
 	mongodriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 // check this
@@ -20,7 +22,7 @@ type Options struct {
 
 type Mongo struct {
 	DB  *mongodriver.Database
-	sex mongodriver.Session
+	ses mongodriver.Session
 }
 
 // get url and options as param
@@ -62,14 +64,17 @@ func New(opt *Options) (*Mongo, error) {
 	return m, nil
 }
 
-func (m *Mongo) Record() {
-	m.sex, _ = m.DB.Client().StartSession(&options.SessionOptions{
-		CausalConsistency: &options.DefaultCausalConsistency,
-	})
-	m.sex.StartTransaction()
-}
+// TODO: make this more general
+func (m *Mongo) CreateIndex(ctx context.Context) error {
+	indexOpts := options.CreateIndexes().SetMaxTime(time.Second * 10)
 
-func (m *Mongo) RollBack(ctx context.Context) {
-	m.sex.AbortTransaction(ctx)
-	m.sex.EndSession(ctx)
+	// Index to location 2dsphere type.
+	pointIndexModel := mongo.IndexModel{
+		Options: options.Index().SetBackground(true),
+		Keys:    bsonx.MDoc{"location": bsonx.String("2dsphere")},
+	}
+
+	pointIndexes := m.DB.Collection("barbershops").Indexes()
+	_, err := pointIndexes.CreateOne(ctx, pointIndexModel, indexOpts)
+	return err
 }

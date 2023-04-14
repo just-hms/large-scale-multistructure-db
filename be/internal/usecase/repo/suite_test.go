@@ -34,6 +34,8 @@ func (s *RepoSuite) SetupSuite() {
 	s.cache = redis
 	s.resetDB = func() {
 		mongo.DB.Drop(context.Background())
+		// TODO: move this somewhere else
+		mongo.CreateIndex(context.Background())
 	}
 }
 

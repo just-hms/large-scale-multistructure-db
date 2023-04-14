@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BarberShopRepo struct {
@@ -22,36 +23,42 @@ func NewBarberShopRepo(m *mongo.Mongo) *BarberShopRepo {
 func (r *BarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) error {
 
 	if err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"name": shop.Name}).Err(); err == nil {
-		return fmt.Errorf("Barber shop already exists")
+		return fmt.Errorf("barber shop already exists")
 	}
 
 	shop.ID = uuid.NewString()
 
 	_, err := r.DB.Collection("barbershops").InsertOne(ctx, shop)
 	if err != nil {
-		return fmt.Errorf("Error inserting the barber shop")
+		return fmt.Errorf("error inserting the barber shop: %s", err.Error())
 	}
 	return nil
 }
 
 func (r *BarberShopRepo) Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error) {
 
-	filter := bson.M{
-		"$geoNear": bson.M{
-			"near": bson.M{
-				"type":        "Point",
-				"coordinates": []float64{lon, lat},
-			},
-			"distanceField": "distance",
-			"maxDistance":   radius,
-			"spherical":     true,
-			"query": bson.M{
-				"Name": bson.M{
-					"$regex":   name,
-					"$options": "i",
+	filter := bson.D{}
+
+	if radius != 0 {
+		filter = append(
+			filter,
+			bson.E{
+				Key: "location",
+				Value: bson.D{
+					{Key: "$near", Value: bson.D{
+						{Key: "$geometry", Value: entity.NewLocation(lat, lon)},
+						{Key: "$maxDistance", Value: radius},
+					}},
 				},
 			},
-		},
+		)
+	}
+
+	if name != "" {
+		filter = append(
+			filter,
+			bson.E{Key: "name", Value: primitive.Regex{Pattern: name, Options: "i"}},
+		)
 	}
 
 	cur, err := r.DB.Collection("barbershops").Find(ctx, filter)
@@ -64,15 +71,12 @@ func (r *BarberShopRepo) Find(ctx context.Context, lat float64, lon float64, nam
 	shops := []*entity.BarberShop{}
 
 	for cur.Next(ctx) {
-		var doc struct {
-			Shop     entity.BarberShop `bson:"shop"`
-			Distance float64           `bson:"distance"`
-		}
+		var shop entity.BarberShop
 
-		if err := cur.Decode(&doc); err != nil {
+		if err := cur.Decode(&shop); err != nil {
 			return nil, err
 		}
-		shops = append(shops, &doc.Shop)
+		shops = append(shops, &shop)
 	}
 	return shops, nil
 }
@@ -85,7 +89,7 @@ func (r *BarberShopRepo) GetByID(ctx context.Context, ID string) (*entity.Barber
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, fmt.Errorf("User not found")
+			return nil, fmt.Errorf("user not found")
 		}
 		return nil, err
 	}
@@ -107,7 +111,7 @@ func (r *BarberShopRepo) DeleteByID(ctx context.Context, ID string) error {
 		return err
 	}
 	if res.DeletedCount == 0 {
-		return fmt.Errorf("User not found")
+		return fmt.Errorf("user not found")
 	}
 	return nil
 }
