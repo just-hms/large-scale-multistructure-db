@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"testing"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -40,7 +39,7 @@ func (s *IntegrationSuite) TestLogin() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			loginUserJson, _ := json.Marshal(tc.loginUser)
 
@@ -108,7 +107,7 @@ func (s *IntegrationSuite) TestRegister() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			loginUserJson, _ := json.Marshal(tc.creationUser)
 
 			// create a request for the register endpoint
@@ -153,7 +152,7 @@ func (s *IntegrationSuite) TestShowSelf() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			// create a request for the self endpoint
 			req, _ := http.NewRequest("GET", "/api/user/self", nil)
@@ -211,7 +210,7 @@ func (s *IntegrationSuite) TestDeleteSelf() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			// create a request for the self endpoint
 			req, _ := http.NewRequest("DELETE", "/api/user/self", nil)
@@ -265,7 +264,7 @@ func (s *IntegrationSuite) TestUserShowAll() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			// create a request for the self endpoint
 			var req *http.Request
@@ -346,7 +345,7 @@ func (s *IntegrationSuite) TestUserShow() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			// create a request for the self endpoint
 			var req *http.Request
@@ -420,7 +419,7 @@ func (s *IntegrationSuite) TestUserDelete() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			// create a request for the self endpoint
 			var req *http.Request
@@ -503,7 +502,7 @@ func (s *IntegrationSuite) TestUserModify() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			modifyUserJson, _ := json.Marshal(tc.input)
 

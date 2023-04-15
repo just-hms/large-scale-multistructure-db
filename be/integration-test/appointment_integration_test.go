@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
@@ -50,7 +49,7 @@ func (s *IntegrationSuite) TestBook() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			BookingJson, _ := json.Marshal(tc.input)
 
@@ -90,7 +89,7 @@ func (s *IntegrationSuite) TestCancelSelfAppointment() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			// create a request for the register endpoint
 			req, _ := http.NewRequest("DELETE", "/api/user/self/appointment", nil)
@@ -141,7 +140,7 @@ func (s *IntegrationSuite) TestCancelAppointment() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			// create a request for the register endpoint
 			req, _ := http.NewRequest("DELETE", "/api/barber_shop/"+tc.SHOP_ID+"/appointment/"+tc.ID, nil)

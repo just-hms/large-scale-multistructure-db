@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -77,7 +76,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			newBarberShopJson, _ := json.Marshal(tc.input)
 
@@ -146,7 +145,7 @@ func (s *IntegrationSuite) TestBarberShopShow() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			// create a request for the self endpoint
 			var req *http.Request
@@ -241,7 +240,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			newBarberShopJson, _ := json.Marshal(tc.input)
 
@@ -302,7 +301,7 @@ func (s *IntegrationSuite) TestBarberShopModifyByID() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			editBarberShopJson, _ := json.Marshal(tc.input)
 
@@ -350,7 +349,7 @@ func (s *IntegrationSuite) TestBarberShopDeleteByID() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 
 			// create a request for the register endpoint
 			req, _ := http.NewRequest("DELETE", "/api/admin/barber_shop/"+tc.ID, nil)

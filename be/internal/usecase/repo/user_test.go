@@ -2,7 +2,6 @@ package repo_test
 
 import (
 	"context"
-	"testing"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
@@ -31,7 +30,7 @@ func (s *RepoSuite) TestUserStore() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			err := userRepo.Store(context.Background(), tc.user)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -70,7 +69,7 @@ func (s *RepoSuite) TestUserGetByID() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			res, err := userRepo.GetByID(context.Background(), tc.ID)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -110,7 +109,7 @@ func (s *RepoSuite) TestUserDeleteByID() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			err := userRepo.DeleteByID(context.Background(), tc.ID)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -160,7 +159,7 @@ func (s *RepoSuite) TestUserList() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			users, err := userRepo.List(context.Background(), tc.email)
 			s.Require().NoError(err)
 			s.Require().Len(users, tc.expectLen)
@@ -194,7 +193,7 @@ func (s *RepoSuite) TestUserGetByEmail() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			_, err := userRepo.GetByEmail(context.Background(), tc.email)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -238,7 +237,7 @@ func (s *RepoSuite) TestUserEditShopsByIDs() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			err := userRepo.EditShopsByIDs(context.Background(), tc.user, tc.baberbshopIDs)
 			s.Require().NoError(err)
 
@@ -288,7 +287,7 @@ func (s *RepoSuite) TestUserModifyByID() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			err := userRepo.ModifyByID(context.Background(), tc.ID, tc.mods)
 
 			if tc.expectErr {

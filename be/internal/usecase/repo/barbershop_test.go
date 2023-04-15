@@ -2,7 +2,6 @@ package repo_test
 
 import (
 	"context"
-	"testing"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
@@ -31,7 +30,7 @@ func (s *RepoSuite) TestBarberShopStore() {
 
 	for _, tc := range testCases {
 
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			err := shopRepo.Store(context.Background(), tc.shop)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -94,7 +93,7 @@ func (s *RepoSuite) TestBarberShopFind() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			shops, err := shopRepo.Find(context.Background(), tc.lat, tc.lon, tc.nameFilter, tc.radiusFilter)
 			s.Require().NoError(err)
 			s.Require().Len(shops, tc.expectedLen)
@@ -129,7 +128,7 @@ func (s *RepoSuite) TestBarberShopGetByID() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			barber, err := shopRepo.GetByID(context.Background(), tc.ID)
 
 			if tc.expectErr {
@@ -172,7 +171,7 @@ func (s *RepoSuite) TestBarberShopDeleteByID() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			err := shopRepo.DeleteByID(context.Background(), tc.ID)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -227,7 +226,7 @@ func (s *RepoSuite) TestBarberShopModifyByID() {
 	}
 
 	for _, tc := range testCases {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			err := barberRepo.ModifyByID(context.Background(), tc.ID, tc.mods)
 
 			if tc.expectErr {
