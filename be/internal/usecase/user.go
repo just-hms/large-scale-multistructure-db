@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
@@ -15,7 +14,7 @@ type UserUseCase struct {
 	password PasswordAuth
 }
 
-var UserAlreadyExists = errors.New("Email already exists")
+var ErrUserAlreadyExists = errors.New("email already exists")
 
 // New -.
 func NewUserUseCase(r UserRepo, p PasswordAuth) *UserUseCase {
@@ -30,7 +29,7 @@ func NewUserUseCase(r UserRepo, p PasswordAuth) *UserUseCase {
 func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) error {
 
 	if _, err := uc.repo.GetByEmail(ctx, user.Email); err == nil {
-		return UserAlreadyExists
+		return ErrUserAlreadyExists
 	}
 
 	hashedPassword, err := uc.password.HashAndSalt(user.Password)
@@ -53,7 +52,7 @@ func (uc *UserUseCase) Login(ctx context.Context, loginUser *entity.User) (*enti
 	}
 
 	if !uc.password.Verify(user.Password, loginUser.Password) {
-		return nil, fmt.Errorf("Wrong password")
+		return nil, errors.New("wrong password")
 	}
 
 	return user, nil
@@ -121,7 +120,7 @@ func (uc *UserUseCase) EditShopsByIDs(ctx context.Context, ID string, IDs []stri
 
 func (uc *UserUseCase) ModifyByID(ctx context.Context, ID string, update *entity.User) error {
 	if _, err := uc.repo.GetByEmail(ctx, update.Email); err == nil {
-		return UserAlreadyExists
+		return ErrUserAlreadyExists
 	}
 
 	if update.Password != "" {

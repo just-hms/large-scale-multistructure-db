@@ -17,7 +17,6 @@ func NewCalendarUseCase(r SlotRepo) *CalendarUseCase {
 }
 
 func (uc *CalendarUseCase) GetByBarberShopID(ctx context.Context, ID string) (*entity.Calendar, error) {
-
 	slots, err := uc.repo.GetByBarberShopID(ctx, ID)
 
 	if err != nil {
@@ -27,5 +26,4 @@ func (uc *CalendarUseCase) GetByBarberShopID(ctx context.Context, ID string) (*e
 	return &entity.Calendar{
 		Slots: slots,
 	}, nil
-
 }

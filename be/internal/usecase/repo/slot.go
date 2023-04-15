@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -51,7 +52,11 @@ func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]*entity.
 // add entry if not exists
 func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment) error {
 
-	slot, err := r.getByDateAndShop(appointment.BarbershopID, appointment.Start)
+	if appointment.BarbershopID == "" {
+		return errors.New("barberShopID not specified")
+	}
+
+	slot, err := r.get(appointment.BarbershopID, appointment.Start)
 
 	if err != nil {
 		slot = &entity.Slot{
@@ -63,43 +68,42 @@ func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment) er
 		slot.BookedAppoIntments += 1
 	}
 
-	return r.setByDateAndShop(appointment.BarbershopID, appointment.Start, slot)
+	return r.set(appointment.BarbershopID, appointment.Start, slot)
 }
 
 func (r *SlotRepo) Cancel(ctx context.Context, appointment *entity.Appointment) error {
 
-	slot, err := r.getByDateAndShop(appointment.BarbershopID, appointment.Start)
+	slot, err := r.get(appointment.BarbershopID, appointment.Start)
 
-	// TODO i don't like this
 	if err != nil {
-		return nil
+		return errors.New("the slot does not exists")
 	}
 
 	if slot.BookedAppoIntments > 0 {
 		slot.BookedAppoIntments -= 1
 	}
 
-	return r.setByDateAndShop(appointment.BarbershopID, appointment.Start, slot)
+	return r.set(appointment.BarbershopID, appointment.Start, slot)
 }
 
 func (r *SlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error {
 
-	slot, err := r.getByDateAndShop(shopID, date)
+	slot, err := r.get(shopID, date)
 
 	newSlot := &entity.Slot{
 		Start:                date,
 		UnavailableEmployees: unavailableEmployees,
 	}
-	if err != nil {
+	if err == nil {
 		newSlot.BookedAppoIntments = slot.BookedAppoIntments
 	}
 
-	return r.setByDateAndShop(shopID, date, newSlot)
+	return r.set(shopID, date, newSlot)
 }
 
-func (r *SlotRepo) getByDateAndShop(barberShopID string, date time.Time) (*entity.Slot, error) {
+func (r *SlotRepo) get(barberShopID string, date time.Time) (*entity.Slot, error) {
 
-	key := fmt.Sprintf("barbershop:%s:slots:%s", barberShopID, date)
+	key := key(barberShopID, date)
 
 	data, err := r.Client.Get(key).Result()
 
@@ -115,14 +119,14 @@ func (r *SlotRepo) getByDateAndShop(barberShopID string, date time.Time) (*entit
 	return slot, nil
 }
 
-func (r *SlotRepo) setByDateAndShop(barberShopID string, date time.Time, slot *entity.Slot) error {
+func (r *SlotRepo) set(barberShopID string, date time.Time, slot *entity.Slot) error {
 
-	key := fmt.Sprintf("barbershop:%s:slots:%s", barberShopID, date)
+	key := key(barberShopID, date)
 
 	// TODO fix expiration date based on the booked time
 
 	if slot.Start.Before(time.Now()) {
-		return fmt.Errorf("cannot create a slot prior to now")
+		return errors.New("cannot create a slot prior to now")
 	}
 
 	// TODO fix this so it expires the next day, or at least all at the same time
@@ -136,4 +140,9 @@ func (r *SlotRepo) setByDateAndShop(barberShopID string, date time.Time, slot *e
 	err = r.Client.Set(key, bytes, time.Second*seconds).Err()
 
 	return err
+}
+
+func key(barberShopID string, date time.Time) string {
+	key := fmt.Sprintf("barbershop:%s:slots:%d", barberShopID, date.UnixNano())
+	return key
 }

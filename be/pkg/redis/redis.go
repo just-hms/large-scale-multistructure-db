@@ -37,3 +37,8 @@ func New() (*Redis, error) {
 		}),
 	}, nil
 }
+
+func (r *Redis) Clear() error {
+	_, err := r.Client.FlushDB().Result()
+	return err
+}

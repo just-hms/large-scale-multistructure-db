@@ -7,7 +7,6 @@ import (
 
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	mongodriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -21,8 +20,7 @@ type Options struct {
 }
 
 type Mongo struct {
-	DB  *mongodriver.Database
-	ses mongodriver.Session
+	DB *mongodriver.Database
 }
 
 // get url and options as param
@@ -69,8 +67,7 @@ func (m *Mongo) CreateIndex(ctx context.Context) error {
 	indexOpts := options.CreateIndexes().SetMaxTime(time.Second * 10)
 
 	// Index to location 2dsphere type.
-	pointIndexModel := mongo.IndexModel{
-		Options: options.Index().SetBackground(true),
+	pointIndexModel := mongodriver.IndexModel{
 		Keys:    bsonx.MDoc{"location": bsonx.String("2dsphere")},
 	}
 

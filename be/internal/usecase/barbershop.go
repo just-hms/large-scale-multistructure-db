@@ -48,6 +48,11 @@ func (uc *BarberShopUseCase) GetByID(ctx context.Context, viewerID string, ID st
 func (uc *BarberShopUseCase) Store(ctx context.Context, shop *entity.BarberShop) error {
 	return uc.shopRepo.Store(ctx, shop)
 }
+
+// TODO
+// - add check for not enough workes in the calendar
+// - unavailableEmployees cannot be higher then the actual employes
+
 func (uc *BarberShopUseCase) ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error {
 	return uc.shopRepo.ModifyByID(ctx, ID, shop)
 }

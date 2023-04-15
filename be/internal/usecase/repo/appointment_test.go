@@ -83,5 +83,4 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
 	s.Require().Len(shop.Appointments, 0)
-
 }
