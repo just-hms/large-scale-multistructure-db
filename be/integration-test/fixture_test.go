@@ -26,10 +26,10 @@ const (
 	SHOP1_ID
 	SHOP2_ID
 
-	USER1_SHOP1_APPOINTMENT
+	USER1_SHOP1_APPOINTMENT_ID
 )
 
-func InitFixture(ucs map[byte]usecase.Usecase) map[byte]string {
+func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 
 	fixture := map[byte]string{}
 
@@ -38,9 +38,12 @@ func InitFixture(ucs map[byte]usecase.Usecase) map[byte]string {
 		{Name: "barberShop1", Employees: 2, Location: entity.NewLocation(1, 1)},
 		{Name: "barberShop2", Employees: 2, Location: entity.NewLocation(1, 2)},
 	}
-	barberShopUsecase := ucs[usecase.BARBER_SHOP].(*usecase.BarberShopUseCase)
+	barberShopUsecase := ucs[usecase.BARBER_SHOP].(usecase.BarberShop)
 	for _, s := range shops {
-		barberShopUsecase.Store(context.Background(), s)
+		err := barberShopUsecase.Store(context.Background(), s)
+		if err != nil {
+			return nil, err
+		}
 	}
 	fixture[SHOP1_ID] = shops[0].ID
 	fixture[SHOP2_ID] = shops[1].ID
@@ -61,9 +64,12 @@ func InitFixture(ucs map[byte]usecase.Usecase) map[byte]string {
 			OwnedShops: []*entity.BarberShop{{Name: shops[1].Name, ID: shops[1].ID}},
 		},
 	}
-	userUsecase := ucs[usecase.USER].(*usecase.UserUseCase)
+	userUsecase := ucs[usecase.USER].(usecase.User)
 	for _, u := range users {
-		userUsecase.Store(context.Background(), u)
+		err := userUsecase.Store(context.Background(), u)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	fixture[USER1_ID] = users[0].ID
@@ -84,16 +90,19 @@ func InitFixture(ucs map[byte]usecase.Usecase) map[byte]string {
 
 	appointments := []*entity.Appointment{
 		{
-			Start: time.Now().Add(time.Hour), UserID: fixture[USER1_ID],
+			Start: time.Now().Add(time.Hour * 2), UserID: fixture[USER1_ID],
 			BarbershopID: fixture[SHOP1_ID],
 		},
 	}
-	appointmentUsecase := ucs[usecase.APPOINTMENT].(*usecase.AppoinmentUseCase)
+	appointmentUsecase := ucs[usecase.APPOINTMENT].(usecase.Appointment)
 	for _, a := range appointments {
-		appointmentUsecase.Book(context.Background(), a)
+		err := appointmentUsecase.Book(context.Background(), a)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	fixture[USER1_SHOP1_APPOINTMENT] = appointments[0].ID
+	fixture[USER1_SHOP1_APPOINTMENT_ID] = appointments[0].ID
 
-	return fixture
+	return fixture, nil
 }

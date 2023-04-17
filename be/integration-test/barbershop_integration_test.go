@@ -51,7 +51,6 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 			status:      http.StatusOK,
 			resultCount: 0,
 		},
-		// TODO:FIX THIS
 		{
 			name: "Two barbershop found for this name",
 			input: controller.FindBarbershopInput{
@@ -82,7 +81,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 
 			// create a request for the self endpoint
 			var req *http.Request
-			req, _ = http.NewRequest("POTS", "/api/barber_shop", bytes.NewBuffer(newBarberShopJson))
+			req, _ = http.NewRequest("POST", "/api/barber_shop", bytes.NewBuffer(newBarberShopJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -255,8 +254,6 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 
 			// assert that the response status code is as expected
 			s.Require().Equal(tc.status, w.Code)
-
-			// TODO: do a request to check that the creation went successfully
 		})
 	}
 }

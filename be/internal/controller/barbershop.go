@@ -56,7 +56,7 @@ func (br *BarberShopRoutes) Find(ctx *gin.Context) {
 
 // TODO add more things
 type CreateBarbershopInput struct {
-	Name            string  `json:"name"`
+	Name            string  `json:"name" binding:"required"`
 	Latitude        float64 `json:"latitude"`
 	Longitude       float64 `json:"longitude"`
 	EmployeesNumber int     `json:"employees_number"`

@@ -10,10 +10,10 @@ import (
 )
 
 type HolidayRoutes struct {
-	holidayUseCase usecase.HolidayUseCase
+	holidayUseCase usecase.Holiday
 }
 
-func NewHolidayRoutes(uc usecase.HolidayUseCase) *HolidayRoutes {
+func NewHolidayRoutes(uc usecase.Holiday) *HolidayRoutes {
 	return &HolidayRoutes{
 		holidayUseCase: uc,
 	}

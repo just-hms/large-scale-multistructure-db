@@ -3,6 +3,8 @@ package integration_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"time"
@@ -119,21 +121,21 @@ func (s *IntegrationSuite) TestCancelAppointment() {
 		{
 			name:    "Require Login",
 			status:  http.StatusUnauthorized,
-			ID:      s.fixture[USER1_SHOP1_APPOINTMENT],
+			ID:      s.fixture[USER1_SHOP1_APPOINTMENT_ID],
 			SHOP_ID: s.fixture[SHOP1_ID],
 		},
 		{
 			name:    "Require barber",
 			token:   s.fixture[USER1_TOKEN],
 			status:  http.StatusUnauthorized,
-			ID:      s.fixture[USER1_SHOP1_APPOINTMENT],
+			ID:      s.fixture[USER1_SHOP1_APPOINTMENT_ID],
 			SHOP_ID: s.fixture[SHOP1_ID],
 		},
 		{
 			name:    "Correctly deleted",
 			token:   s.fixture[BARBER1_TOKEN],
 			status:  http.StatusAccepted,
-			ID:      s.fixture[USER1_SHOP1_APPOINTMENT],
+			ID:      s.fixture[USER1_SHOP1_APPOINTMENT_ID],
 			SHOP_ID: s.fixture[SHOP1_ID],
 		},
 	}
@@ -169,6 +171,9 @@ func (s *IntegrationSuite) TestBookAfterCancel() {
 	// serve the request to the test server
 	w := httptest.NewRecorder()
 	s.srv.ServeHTTP(w, req)
+
+	body, _ := io.ReadAll(w.Body)
+	fmt.Println(string(body))
 
 	s.Require().Equal(http.StatusAccepted, w.Code)
 

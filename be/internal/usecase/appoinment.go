@@ -7,22 +7,22 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 )
 
-type AppoinmentUseCase struct {
+type AppointmentUseCase struct {
 	appointmentRepo AppointmentRepo
 	userRepo        UserRepo
 	cache           SlotRepo
 }
 
 // New -.
-func NewAppoinmentUseCase(r AppointmentRepo, c SlotRepo, u UserRepo) *AppoinmentUseCase {
-	return &AppoinmentUseCase{
+func NewAppoinmentUseCase(r AppointmentRepo, c SlotRepo, u UserRepo) *AppointmentUseCase {
+	return &AppointmentUseCase{
 		appointmentRepo: r,
 		cache:           c,
 		userRepo:        u,
 	}
 }
 
-func (uc *AppoinmentUseCase) Book(ctx context.Context, appointment *entity.Appointment) error {
+func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appointment) error {
 
 	us, err := uc.userRepo.GetByID(ctx, appointment.UserID)
 	if err != nil {
@@ -42,7 +42,16 @@ func (uc *AppoinmentUseCase) Book(ctx context.Context, appointment *entity.Appoi
 	return err
 }
 
-func (uc *AppoinmentUseCase) Cancel(ctx context.Context, appointment *entity.Appointment) error {
+// TODO:
+// - get the appointment from the userID?
+// - get the appointment from the ID?
+// - add the logit to retrieve information if not all data is provided
+
+func (uc *AppointmentUseCase) Cancel(ctx context.Context, appointment *entity.Appointment) error {
+	if appointment.UserID == "" {
+		// TODO add something like this
+		appointment.UserID = ""
+	}
 	err := uc.appointmentRepo.Cancel(ctx, appointment)
 	if err != nil {
 		return err

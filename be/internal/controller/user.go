@@ -21,7 +21,7 @@ func NewUserRoutes(uc usecase.User) *UserRoutes {
 }
 
 type LoginInput struct {
-	Email    string `json:"email" binding:"required,email"`
+	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 

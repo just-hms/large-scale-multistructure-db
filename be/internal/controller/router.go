@@ -48,8 +48,12 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 	)
 
 	ar := NewAppointmentRoutes(
-		ucs[usecase.APPOINTMENT].(*usecase.AppoinmentUseCase),
-		ucs[usecase.USER].(*usecase.UserUseCase),
+		ucs[usecase.APPOINTMENT].(usecase.Appointment),
+		ucs[usecase.USER].(usecase.User),
+	)
+
+	hr := NewHolidayRoutes(
+		ucs[usecase.APPOINTMENT].(usecase.Holiday),
 	)
 
 	// link the path to the routes
@@ -76,7 +80,7 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		admin.POST("/barber_shop", br.Create)
 		admin.DELETE("/barber_shop/:shopid", br.Delete)
 
-		admin.DELETE("/barber_shop/:shopid/holidays", ar.SetHolidays)
+		admin.DELETE("/barber_shop/:shopid/holidays", hr.Set)
 	}
 
 	barberShop := api.Group("/barber_shop")

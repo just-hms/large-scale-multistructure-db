@@ -55,7 +55,8 @@ func (s *IntegrationSuite) SetupSuite() {
 		err = mongo.CreateIndex(context.Background())
 		s.Require().NoError(err)
 
-		s.fixture = InitFixture(ucs)
+		s.fixture, err = InitFixture(ucs)
+		s.Require().NoError(err)
 	}
 
 	// serv the mock server and db

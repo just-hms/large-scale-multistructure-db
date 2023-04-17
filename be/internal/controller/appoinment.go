@@ -79,11 +79,7 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 		return
 	}
 
-	err = ur.appoinmentUseCase.Cancel(ctx, &entity.Appointment{
-		BarbershopID: user.CurrentAppointment.BarbershopID,
-		ID:           user.CurrentAppointment.ID,
-		UserID:       user.ID,
-	})
+	err = ur.appoinmentUseCase.Cancel(ctx, user.CurrentAppointment)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -110,8 +106,4 @@ func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusAccepted, gin.H{})
-}
-
-func (ur *AppointmentRoutes) SetHolidays(ctx *gin.Context) {
-
 }
