@@ -26,6 +26,7 @@ func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]*entity.
 
 	keys, err := r.Client.Keys(key).Result()
 
+	// TODO: add an ordered index??
 	sort.Slice(keys, func(i, j int) bool {
 		return keys[i] < keys[j]
 	})
