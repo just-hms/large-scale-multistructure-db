@@ -139,12 +139,12 @@ func (s *IntegrationSuite) TestShowSelf() {
 		},
 		{
 			name:   "Correct token",
-			token:  s.params[USER1_TOKEN],
+			token:  s.fixture[USER1_TOKEN],
 			status: http.StatusOK,
 		},
 		{
 			name:           "Show barber",
-			token:          s.params[BARBER1_TOKEN],
+			token:          s.fixture[BARBER1_TOKEN],
 			status:         http.StatusOK,
 			barberShopsLen: 1,
 		},
@@ -203,7 +203,7 @@ func (s *IntegrationSuite) TestDeleteSelf() {
 		},
 		{
 			name:   "Correctly deleted",
-			token:  s.params[USER1_TOKEN],
+			token:  s.fixture[USER1_TOKEN],
 			status: http.StatusAccepted,
 		},
 	}
@@ -244,19 +244,19 @@ func (s *IntegrationSuite) TestUserShowAll() {
 		},
 		{
 			name:   "Not an admin",
-			token:  s.params[USER1_TOKEN],
+			token:  s.fixture[USER1_TOKEN],
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:        "Correctly shown without filter",
-			token:       s.params[ADMIN_TOKEN],
+			token:       s.fixture[ADMIN_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 3,
 		},
 		{
 			name:        "Correctly shown with filter",
 			filter:      "filter",
-			token:       s.params[ADMIN_TOKEN],
+			token:       s.fixture[ADMIN_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 1,
 		},
@@ -325,19 +325,19 @@ func (s *IntegrationSuite) TestUserShow() {
 		},
 		{
 			name:   "Not an admin",
-			token:  s.params[USER1_TOKEN],
+			token:  s.fixture[USER1_TOKEN],
 			ID:     "genericID",
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:   "Correctly shown user",
-			token:  s.params[ADMIN_TOKEN],
-			ID:     s.params[USER1_ID],
+			token:  s.fixture[ADMIN_TOKEN],
+			ID:     s.fixture[USER1_ID],
 			status: http.StatusOK,
 		},
 		{
 			name:   "User not exists",
-			token:  s.params[ADMIN_TOKEN],
+			token:  s.fixture[ADMIN_TOKEN],
 			ID:     "wrong_ID",
 			status: http.StatusNotFound,
 		},
@@ -399,19 +399,19 @@ func (s *IntegrationSuite) TestUserDelete() {
 		},
 		{
 			name:   "Not an admin",
-			token:  s.params[USER1_TOKEN],
+			token:  s.fixture[USER1_TOKEN],
 			ID:     "genericID",
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:   "Correctly deleted user",
-			token:  s.params[ADMIN_TOKEN],
-			ID:     s.params[USER1_ID],
+			token:  s.fixture[ADMIN_TOKEN],
+			ID:     s.fixture[USER1_ID],
 			status: http.StatusAccepted,
 		},
 		{
 			name:   "User not exists",
-			token:  s.params[ADMIN_TOKEN],
+			token:  s.fixture[ADMIN_TOKEN],
 			ID:     "wrong_ID",
 			status: http.StatusNotFound,
 		},
@@ -458,18 +458,18 @@ func (s *IntegrationSuite) TestUserModify() {
 		},
 		{
 			name:   "Not an admin",
-			token:  s.params[USER1_TOKEN],
+			token:  s.fixture[USER1_TOKEN],
 			ID:     "genericID",
 			status: http.StatusUnauthorized,
 			input:  controller.ModifyUserInput{},
 		},
 		{
 			name:  "Set a shop",
-			token: s.params[ADMIN_TOKEN],
-			ID:    s.params[USER1_ID],
+			token: s.fixture[ADMIN_TOKEN],
+			ID:    s.fixture[USER1_ID],
 			input: controller.ModifyUserInput{
 				BarbershopsID: []string{
-					s.params[SHOP1_ID],
+					s.fixture[SHOP1_ID],
 				},
 			},
 			barberShopsLen: 1,
@@ -477,12 +477,12 @@ func (s *IntegrationSuite) TestUserModify() {
 		},
 		{
 			name:  "Set two shops",
-			token: s.params[ADMIN_TOKEN],
-			ID:    s.params[USER1_ID],
+			token: s.fixture[ADMIN_TOKEN],
+			ID:    s.fixture[USER1_ID],
 			input: controller.ModifyUserInput{
 				BarbershopsID: []string{
-					s.params[SHOP1_ID],
-					s.params[SHOP2_ID],
+					s.fixture[SHOP1_ID],
+					s.fixture[SHOP2_ID],
 				},
 			},
 			barberShopsLen: 1,
@@ -490,8 +490,8 @@ func (s *IntegrationSuite) TestUserModify() {
 		},
 		{
 			name:   "Empty the user shops",
-			token:  s.params[ADMIN_TOKEN],
-			ID:     s.params[USER1_ID],
+			token:  s.fixture[ADMIN_TOKEN],
+			ID:     s.fixture[USER1_ID],
 			status: http.StatusAccepted,
 			input: controller.ModifyUserInput{
 				BarbershopsID: []string{},

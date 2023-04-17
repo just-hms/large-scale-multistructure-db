@@ -43,7 +43,7 @@ func Run() {
 	router.Run()
 }
 
-func BuildRequirements(m *mongo.Mongo, r *redis.Redis) []usecase.Usecase {
+func BuildRequirements(m *mongo.Mongo, r *redis.Redis) map[byte]usecase.Usecase {
 
 	userRepo := repo.NewUserRepo(m)
 	barberShopRepo := repo.NewBarberShopRepo(m)
@@ -53,7 +53,7 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis) []usecase.Usecase {
 
 	password := auth.NewPasswordAuth()
 
-	ucs := make([]usecase.Usecase, usecase.LEN)
+	ucs := map[byte]usecase.Usecase{}
 	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
 	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
 	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(appintmentRepo, slotRepo, userRepo)

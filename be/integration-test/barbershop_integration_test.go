@@ -28,7 +28,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 		{
 			name:        "All barbershops",
 			status:      http.StatusOK,
-			token:       s.params[USER1_TOKEN],
+			token:       s.fixture[USER1_TOKEN],
 			resultCount: 3,
 		},
 		{
@@ -38,7 +38,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 				Longitude: 1.1,
 				Radius:    1,
 			},
-			token:       s.params[USER1_TOKEN],
+			token:       s.fixture[USER1_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 0,
 		},
@@ -47,7 +47,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 			input: controller.FindBarbershopInput{
 				Name: "not_existing_shop",
 			},
-			token:       s.params[USER1_TOKEN],
+			token:       s.fixture[USER1_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 0,
 		},
@@ -57,7 +57,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 			input: controller.FindBarbershopInput{
 				Name: "boh",
 			},
-			token:       s.params[USER1_TOKEN],
+			token:       s.fixture[USER1_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 2,
 		},
@@ -68,7 +68,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 				Longitude: 1.1,
 				Radius:    100,
 			},
-			token:       s.params[USER1_TOKEN],
+			token:       s.fixture[USER1_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 1,
 		},
@@ -131,13 +131,13 @@ func (s *IntegrationSuite) TestBarberShopShow() {
 		},
 		{
 			name:   "Correctly shown Barbershop",
-			token:  s.params[USER1_TOKEN],
-			ID:     s.params[SHOP1_ID],
+			token:  s.fixture[USER1_TOKEN],
+			ID:     s.fixture[SHOP1_ID],
 			status: http.StatusOK,
 		},
 		{
 			name:   "BarberShop doesn't exist",
-			token:  s.params[USER1_TOKEN],
+			token:  s.fixture[USER1_TOKEN],
 			ID:     "wrong_ID",
 			status: http.StatusNotFound,
 		},
@@ -200,7 +200,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		},
 		{
 			name:  "Require admin",
-			token: s.params[USER1_ID],
+			token: s.fixture[USER1_ID],
 			input: &controller.CreateBarbershopInput{
 				Name:            "barberShop7",
 				Latitude:        1,
@@ -211,7 +211,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		},
 		{
 			name:  "Already exists",
-			token: s.params[ADMIN_TOKEN],
+			token: s.fixture[ADMIN_TOKEN],
 			input: &controller.CreateBarbershopInput{
 				Name:            "barberShop1",
 				Latitude:        1,
@@ -222,12 +222,12 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		},
 		{
 			name:   "Invalid input",
-			token:  s.params[ADMIN_TOKEN],
+			token:  s.fixture[ADMIN_TOKEN],
 			status: http.StatusBadRequest,
 		},
 		{
 			name:  "Correctly Created",
-			token: s.params[ADMIN_TOKEN],
+			token: s.fixture[ADMIN_TOKEN],
 			input: &controller.CreateBarbershopInput{
 				Name:            "barberShop7",
 				Latitude:        1.1,
@@ -276,24 +276,24 @@ func (s *IntegrationSuite) TestBarberShopModifyByID() {
 		},
 		{
 			name:   "Require barber",
-			token:  s.params[USER1_ID],
+			token:  s.fixture[USER1_ID],
 			input:  &controller.ModifyBarberShopInput{Employees: 3},
 			status: http.StatusUnauthorized,
 			ID:     "genericID",
 		},
 		{
 			name:   "Require to be a barber in that shop",
-			token:  s.params[BARBER1_TOKEN],
+			token:  s.fixture[BARBER1_TOKEN],
 			input:  &controller.ModifyBarberShopInput{Employees: 1},
 			status: http.StatusUnauthorized,
-			ID:     s.params[SHOP2_ID],
+			ID:     s.fixture[SHOP2_ID],
 		},
 		{
 			name:   "Correctly Modified",
-			token:  s.params[BARBER1_TOKEN],
+			token:  s.fixture[BARBER1_TOKEN],
 			input:  &controller.ModifyBarberShopInput{Employees: 2},
 			status: http.StatusAccepted,
-			ID:     s.params[SHOP1_ID],
+			ID:     s.fixture[SHOP1_ID],
 		},
 
 		// TODO: test more bulky editing
@@ -331,18 +331,18 @@ func (s *IntegrationSuite) TestBarberShopDeleteByID() {
 		{
 			name:   "Require Login",
 			status: http.StatusUnauthorized,
-			ID:     s.params[SHOP2_ID],
+			ID:     s.fixture[SHOP2_ID],
 		},
 		{
 			name:   "Require admin",
-			token:  s.params[USER1_TOKEN],
-			ID:     s.params[SHOP2_ID],
+			token:  s.fixture[USER1_TOKEN],
+			ID:     s.fixture[SHOP2_ID],
 			status: http.StatusUnauthorized,
 		},
 		{
 			name:   "Correctly Eliminated",
-			token:  s.params[ADMIN_TOKEN],
-			ID:     s.params[SHOP2_ID],
+			token:  s.fixture[ADMIN_TOKEN],
+			ID:     s.fixture[SHOP2_ID],
 			status: http.StatusAccepted,
 		},
 	}

@@ -22,15 +22,15 @@ func (s *IntegrationSuite) TestBook() {
 		{
 			name:   "Require Login",
 			status: http.StatusUnauthorized,
-			ID:     s.params[SHOP2_ID],
+			ID:     s.fixture[SHOP2_ID],
 			input: controller.BookAppointmentInput{
 				DateTime: time.Now().Add(time.Hour),
 			},
 		},
 		{
 			name:   "Correctly booked",
-			token:  s.params[USER2_TOKEN],
-			ID:     s.params[BARBER1_ID],
+			token:  s.fixture[USER2_TOKEN],
+			ID:     s.fixture[BARBER1_ID],
 			status: http.StatusCreated,
 			input: controller.BookAppointmentInput{
 				DateTime: time.Now().Add(time.Hour),
@@ -38,8 +38,8 @@ func (s *IntegrationSuite) TestBook() {
 		},
 		{
 			name:   "Cannot book two appontments",
-			token:  s.params[USER1_TOKEN],
-			ID:     s.params[BARBER1_ID],
+			token:  s.fixture[USER1_TOKEN],
+			ID:     s.fixture[BARBER1_ID],
 			status: http.StatusBadRequest,
 			input: controller.BookAppointmentInput{
 				DateTime: time.Now().Add(time.Hour),
@@ -51,10 +51,10 @@ func (s *IntegrationSuite) TestBook() {
 
 		s.Run(tc.name, func() {
 
-			BookingJson, _ := json.Marshal(tc.input)
+			bookingJson, _ := json.Marshal(tc.input)
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("POST", "/api/barber_shop/"+tc.ID+"/appointment", bytes.NewBuffer(BookingJson))
+			req, _ := http.NewRequest("POST", "/api/barber_shop/"+tc.ID+"/appointment", bytes.NewBuffer(bookingJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -82,7 +82,7 @@ func (s *IntegrationSuite) TestCancelSelfAppointment() {
 		},
 		{
 			name:   "Correctly deleted",
-			token:  s.params[USER1_TOKEN],
+			token:  s.fixture[USER1_TOKEN],
 			status: http.StatusAccepted,
 		},
 	}
@@ -119,22 +119,22 @@ func (s *IntegrationSuite) TestCancelAppointment() {
 		{
 			name:    "Require Login",
 			status:  http.StatusUnauthorized,
-			ID:      s.params[USER1_SHOP1_APPOINTMENT],
-			SHOP_ID: s.params[SHOP1_ID],
+			ID:      s.fixture[USER1_SHOP1_APPOINTMENT],
+			SHOP_ID: s.fixture[SHOP1_ID],
 		},
 		{
 			name:    "Require barber",
-			token:   s.params[USER1_TOKEN],
+			token:   s.fixture[USER1_TOKEN],
 			status:  http.StatusUnauthorized,
-			ID:      s.params[USER1_SHOP1_APPOINTMENT],
-			SHOP_ID: s.params[SHOP1_ID],
+			ID:      s.fixture[USER1_SHOP1_APPOINTMENT],
+			SHOP_ID: s.fixture[SHOP1_ID],
 		},
 		{
 			name:    "Correctly deleted",
-			token:   s.params[BARBER1_TOKEN],
+			token:   s.fixture[BARBER1_TOKEN],
 			status:  http.StatusAccepted,
-			ID:      s.params[USER1_SHOP1_APPOINTMENT],
-			SHOP_ID: s.params[SHOP1_ID],
+			ID:      s.fixture[USER1_SHOP1_APPOINTMENT],
+			SHOP_ID: s.fixture[SHOP1_ID],
 		},
 	}
 
@@ -164,7 +164,7 @@ func (s *IntegrationSuite) TestBookAfterCancel() {
 	// delete an appointment from USER1
 	req, _ := http.NewRequest("DELETE", "/api/user/self/appointment", nil)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+s.params[USER1_TOKEN])
+	req.Header.Add("Authorization", "Bearer "+s.fixture[USER1_TOKEN])
 
 	// serve the request to the test server
 	w := httptest.NewRecorder()
@@ -180,11 +180,11 @@ func (s *IntegrationSuite) TestBookAfterCancel() {
 
 	// create a request for the register endpoint
 	req, _ = http.NewRequest(
-		"POST", "/api/barber_shop/"+s.params[SHOP2_ID]+"/appointment",
+		"POST", "/api/barber_shop/"+s.fixture[SHOP2_ID]+"/appointment",
 		bytes.NewBuffer(BookingJson),
 	)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+s.params[USER1_TOKEN])
+	req.Header.Add("Authorization", "Bearer "+s.fixture[USER1_TOKEN])
 
 	// serve the request to the test server
 	w = httptest.NewRecorder()

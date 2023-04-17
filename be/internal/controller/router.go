@@ -25,7 +25,7 @@ func CORSAllowAll() gin.HandlerFunc {
 	}
 }
 
-func Router(ucs []usecase.Usecase, production bool) *gin.Engine {
+func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 
 	if production {
 		gin.SetMode(gin.ReleaseMode)
@@ -55,10 +55,10 @@ func Router(ucs []usecase.Usecase, production bool) *gin.Engine {
 	// link the path to the routes
 	user := api.Group("/user")
 	{
-		user.POST("", ur.Register)                                         // TESTED
-		user.POST("/login", ur.Login)                                      // TESTED
-		user.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)      // TESTED
-		user.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete) // TESTED
+		user.POST("", ur.Register)
+		user.POST("/login", ur.Login)
+		user.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)
+		user.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete)
 		user.POST("/lost_password", ur.LostPassword)
 		user.POST("/reset_password", ur.ResetPassword)
 
@@ -68,9 +68,9 @@ func Router(ucs []usecase.Usecase, production bool) *gin.Engine {
 	admin := api.Group("/admin")
 	admin.Use(mr.RequireAdmin)
 	{
-		admin.GET("/user", ur.ShowAll)       // TESTED
-		admin.GET("/user/:id", ur.Show)      // TESTED
-		admin.DELETE("/user/:id", ur.Delete) // TESTED
+		admin.GET("/user", ur.ShowAll)
+		admin.GET("/user/:id", ur.Show)
+		admin.DELETE("/user/:id", ur.Delete)
 		admin.PUT("/user/:id", ur.Modify)
 
 		admin.POST("/barber_shop", br.Create)
