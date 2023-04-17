@@ -35,8 +35,8 @@ func (s *RepoSuite) TestSlotGetByBarberShopID() {
 	s.Require().NoError(err)
 	s.Require().Len(slots, 2)
 
-	s.Require().Equal(slots[0].BookedAppoIntments, 2)
-	s.Require().Equal(slots[1].BookedAppoIntments, 1)
+	s.Require().Equal(2, slots[0].BookedAppoIntments)
+	s.Require().Equal(1, slots[1].BookedAppoIntments)
 }
 
 func (s *RepoSuite) TestSlotBook() {

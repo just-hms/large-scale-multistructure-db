@@ -39,6 +39,6 @@ func New() (*Redis, error) {
 }
 
 func (r *Redis) Clear() error {
-	_, err := r.Client.FlushDB().Result()
+	_, err := r.Client.FlushAllAsync().Result()
 	return err
 }

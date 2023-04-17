@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -24,6 +25,10 @@ func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]*entity.
 	key := fmt.Sprintf("barbershop:%s:slots:*", ID)
 
 	keys, err := r.Client.Keys(key).Result()
+
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i] < keys[j]
+	})
 
 	if err != nil {
 		return nil, err
@@ -104,7 +109,6 @@ func (r *SlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time
 func (r *SlotRepo) get(barberShopID string, date time.Time) (*entity.Slot, error) {
 
 	key := key(barberShopID, date)
-
 	data, err := r.Client.Get(key).Result()
 
 	if err != nil {
@@ -123,21 +127,18 @@ func (r *SlotRepo) set(barberShopID string, date time.Time, slot *entity.Slot) e
 
 	key := key(barberShopID, date)
 
-	// TODO fix expiration date based on the booked time
-
 	if slot.Start.Before(time.Now()) {
 		return errors.New("cannot create a slot prior to now")
 	}
 
-	// TODO fix this so it expires the next day, or at least all at the same time
-	seconds := time.Until(slot.Start)
-	bytes, err := json.Marshal(slot)
+	expTime := time.Until(slot.Start.Add(time.Hour * 24))
+	content, err := json.Marshal(slot)
 
 	if err != nil {
 		return err
 	}
 
-	err = r.Client.Set(key, bytes, time.Second*seconds).Err()
+	err = r.Client.Set(key, content, expTime).Err()
 
 	return err
 }
