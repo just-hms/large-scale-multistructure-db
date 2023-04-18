@@ -104,7 +104,7 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 	shops := []*entity.BarberShop{
 		{Name: "barberShop1", Employees: 2, Location: entity.NewLocation(1, 1)},
 		{Name: "barberShop2", Employees: 2, Location: entity.NewLocation(1, 2)},
-		{Name: "newShop", Employees: 0, Location: entity.NewLocation(1, 2)},
+		{Name: "empty", Employees: 0, Location: entity.NewLocation(1, 2)},
 	}
 	barberShopUsecase := ucs[usecase.BARBER_SHOP].(usecase.BarberShop)
 	for _, s := range shops {
@@ -163,7 +163,8 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 
 	appointments := []*entity.Appointment{
 		{
-			Start: time.Now().Add(time.Hour * 2), UserID: fixture[USER1_ID],
+			Start:        time.Now().Add(time.Hour * 2),
+			UserID:       fixture[USER1_ID],
 			BarbershopID: fixture[SHOP1_ID],
 		},
 	}
@@ -173,6 +174,9 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		app, _ := appointmentUsecase.GetByIDs(context.Background(), fixture[SHOP1_ID], a.ID)
+		fmt.Println("kek", app)
 	}
 
 	fixture[USER1_SHOP1_APPOINTMENT_ID] = appointments[0].ID

@@ -10,7 +10,8 @@ import (
 
 func (s *RepoSuite) TestAppointmentBook() {
 
-	user := &entity.User{Username: "giovanni"}
+	user := &entity.User{Email: "giovanni"}
+	user2 := &entity.User{Email: "banana"}
 	shop := &entity.BarberShop{Name: "brownies"}
 
 	userRepo := repo.NewUserRepo(s.db)
@@ -18,31 +19,60 @@ func (s *RepoSuite) TestAppointmentBook() {
 
 	err := userRepo.Store(context.Background(), user)
 	s.Require().NoError(err)
+	err = userRepo.Store(context.Background(), user2)
+	s.Require().NoError(err)
 
 	err = shopRepo.Store(context.Background(), shop)
 	s.Require().NoError(err)
 
-	appointment := &entity.Appointment{
-		Start:        time.Now().Add(1 * time.Hour),
-		UserID:       user.ID,
-		BarbershopID: shop.ID,
+	testCases := []struct {
+		name        string
+		input       *entity.Appointment
+		expectedErr bool
+	}{
+		{
+			name:        "Correctly inserted",
+			expectedErr: false,
+			input: &entity.Appointment{
+				Start:        time.Now().Add(1 * time.Hour),
+				UserID:       user.ID,
+				BarbershopID: shop.ID,
+			},
+		},
+		{
+			name:        "The shop does not exists",
+			expectedErr: true,
+			input: &entity.Appointment{
+				Start:        time.Now().Add(1 * time.Hour),
+				UserID:       user2.ID,
+				BarbershopID: "fake_id",
+			},
+		},
 	}
 
 	appointmentRepo := repo.NewAppointmentRepo(s.db)
+	for _, tc := range testCases {
 
-	err = appointmentRepo.Book(context.Background(), appointment)
-	s.Require().NoError(err)
-	// check that the appointment was correctly created
+		s.Run(tc.name, func() {
+			err = appointmentRepo.Book(context.Background(), tc.input)
+			if tc.expectedErr {
+				s.Require().Error(err)
+				return
+			}
 
-	// in the user collection
-	user, err = userRepo.GetByID(context.Background(), user.ID)
-	s.Require().NoError(err)
-	s.Require().NotNil(user.CurrentAppointment)
+			s.Require().NoError(err)
+			// check that the appointment was correctly created
 
-	// in the barbershop collection
-	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
-	s.Require().NoError(err)
-	s.Require().Len(shop.Appointments, 1)
+			user, err = userRepo.GetByID(context.Background(), user.ID)
+			s.Require().NoError(err)
+			// in the user collection
+			s.Require().NotNil(user.CurrentAppointment)
+			// in the barbershop collection
+			shop, err = shopRepo.GetByID(context.Background(), shop.ID)
+			s.Require().NoError(err)
+			s.Require().Len(shop.Appointments, 1)
+		})
+	}
 
 }
 

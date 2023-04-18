@@ -79,8 +79,6 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 
 		admin.POST("/barber_shop", br.Create)
 		admin.DELETE("/barber_shop/:shopid", br.Delete)
-
-		admin.DELETE("/barber_shop/:shopid/holidays", hr.Set)
 	}
 
 	barberShop := api.Group("/barber_shop")
@@ -95,6 +93,7 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		barberShop.POST("/:shopid/appointment", ar.Book)
 
 		barberShop.GET("/:shopid/calendar", br.Calendar)
+		admin.POST("/:shopid/holiday", hr.Set)
 	}
 
 	return router

@@ -97,6 +97,7 @@ type (
 	SlotRepo interface {
 		GetByBarberShopID(ctx context.Context, ID string) ([]*entity.Slot, error)
 		Book(ctx context.Context, appointment *entity.Appointment) error
+		Get(ctx context.Context, shopID string, date time.Time) (*entity.Slot, error)
 		Cancel(ctx context.Context, appointment *entity.Appointment) error
 		SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error
 	}

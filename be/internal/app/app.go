@@ -56,7 +56,13 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis) map[byte]usecase.Usecase 
 	ucs := map[byte]usecase.Usecase{}
 	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
 	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
-	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(appintmentRepo, slotRepo, userRepo)
+	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(
+		appintmentRepo,
+		slotRepo,
+		userRepo,
+		barberShopRepo,
+	)
+
 	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
 	ucs[usecase.HOLIDAY] = usecase.NewHolidayUseCase(slotRepo)
 

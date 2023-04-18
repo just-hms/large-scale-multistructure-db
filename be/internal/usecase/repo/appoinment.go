@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type AppointmentRepo struct {
@@ -21,13 +21,21 @@ func NewAppointmentRepo(m *mongo.Mongo) *AppointmentRepo {
 
 func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointment) error {
 
-	appointment.ID = primitive.NewObjectID().Hex()
+	err := r.DB.Collection("barbershops").
+		FindOne(ctx, bson.M{"_id": appointment.BarbershopID}).Err()
+
+	if err != nil {
+		return errors.New("the specified shop does not exists")
+	}
+
+	appointment.ID = uuid.NewString()
 
 	filter := bson.M{"_id": appointment.BarbershopID}
 	update := bson.M{"$push": bson.M{"appointments": appointment}}
 
-	_, err := r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
+	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
 	if err != nil {
+		appointment.ID = ""
 		return err
 	}
 
@@ -43,6 +51,9 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 }
 
 func (r *AppointmentRepo) Cancel(ctx context.Context, appointment *entity.Appointment) error {
+	if appointment == nil {
+		return errors.New("you must provide an appointment")
+	}
 	filter := bson.M{"_id": appointment.BarbershopID}
 	update := bson.M{"$pull": bson.M{"appointments": bson.M{"_id": appointment.ID}}}
 

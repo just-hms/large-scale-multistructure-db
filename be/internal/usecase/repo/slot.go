@@ -77,6 +77,21 @@ func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment) er
 	return r.set(appointment.BarbershopID, appointment.Start, slot)
 }
 
+// TODO:
+//   - add check to distinguish between errors
+
+func (r *SlotRepo) Get(ctx context.Context, shopID string, date time.Time) (*entity.Slot, error) {
+	slot, err := r.get(shopID, date)
+	if err != nil {
+		return &entity.Slot{
+			Start:                date,
+			BookedAppoIntments:   0,
+			UnavailableEmployees: 0,
+		}, nil
+	}
+	return slot, nil
+}
+
 func (r *SlotRepo) Cancel(ctx context.Context, appointment *entity.Appointment) error {
 
 	slot, err := r.get(appointment.BarbershopID, appointment.Start)
@@ -100,6 +115,7 @@ func (r *SlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time
 		Start:                date,
 		UnavailableEmployees: unavailableEmployees,
 	}
+
 	if err == nil {
 		newSlot.BookedAppoIntments = slot.BookedAppoIntments
 	}

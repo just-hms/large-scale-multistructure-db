@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -80,8 +79,6 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println(user.CurrentAppointment)
-
 	err = ur.appoinmentUseCase.Cancel(ctx, user.CurrentAppointment)
 
 	if err != nil {
@@ -94,9 +91,6 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 }
 
 func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
-
-	// TODO:
-	//	- maybe get the user????
 
 	appointment, err := ur.appoinmentUseCase.GetByIDs(
 		ctx,

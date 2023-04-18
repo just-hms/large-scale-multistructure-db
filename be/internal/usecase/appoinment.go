@@ -10,15 +10,17 @@ import (
 type AppointmentUseCase struct {
 	appointmentRepo AppointmentRepo
 	userRepo        UserRepo
+	shopRepo        BarberShopRepo
 	cache           SlotRepo
 }
 
 // New -.
-func NewAppoinmentUseCase(r AppointmentRepo, c SlotRepo, u UserRepo) *AppointmentUseCase {
+func NewAppoinmentUseCase(r AppointmentRepo, c SlotRepo, u UserRepo, s BarberShopRepo) *AppointmentUseCase {
 	return &AppointmentUseCase{
 		appointmentRepo: r,
 		cache:           c,
 		userRepo:        u,
+		shopRepo:        s,
 	}
 }
 
@@ -33,17 +35,27 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 		return errors.New("cannot book two appointments")
 	}
 
-	// TODO
-	// 	- check that there is enough space in the calendar
-	// 	- cannot book in the past??
-	//	- if one operation fails, they both need to fail
-
-	err = uc.appointmentRepo.Book(ctx, appointment)
+	shop, err := uc.shopRepo.GetByID(ctx, appointment.BarbershopID)
 	if err != nil {
 		return err
 	}
 
+	minus := 0
+	slot, err := uc.cache.Get(ctx, appointment.BarbershopID, appointment.Start)
+	if err == nil {
+		minus = slot.BookedAppoIntments + slot.UnavailableEmployees
+	}
+
+	if shop.Employees-minus <= 0 {
+		return errors.New("cannot book because this slot is full")
+	}
+
 	err = uc.cache.Book(ctx, appointment)
+	if err != nil {
+		return err
+	}
+
+	err = uc.appointmentRepo.Book(ctx, appointment)
 	return err
 }
 

@@ -29,6 +29,7 @@ func (r *UserRepo) Store(ctx context.Context, user *entity.User) error {
 	if err := r.DB.Collection("users").FindOne(ctx, bson.M{"email": user.Email}).Err(); err == nil {
 		return fmt.Errorf("user already exists")
 	}
+
 	user.ID = uuid.NewString()
 
 	_, err := r.DB.Collection("users").InsertOne(ctx, user)

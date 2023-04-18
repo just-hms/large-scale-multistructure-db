@@ -33,9 +33,9 @@ func (r *BarberShopRepo) Store(ctx context.Context, shop *entity.BarberShop) err
 	}
 
 	shop.ID = uuid.NewString()
-
 	_, err := r.DB.Collection("barbershops").InsertOne(ctx, shop)
 	if err != nil {
+		shop.ID = ""
 		return fmt.Errorf("error inserting the barber shop: %s", err.Error())
 	}
 	return nil

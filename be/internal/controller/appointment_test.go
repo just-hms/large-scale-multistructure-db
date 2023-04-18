@@ -65,6 +65,15 @@ func (s *ControllerSuite) TestBook() {
 				DateTime: time.Now().Add(time.Hour),
 			},
 		},
+		{
+			name:   "Cannot book the shop does not exists",
+			token:  s.fixture[USER3_TOKEN],
+			ID:     "fakeID",
+			status: http.StatusBadRequest,
+			input: controller.BookAppointmentInput{
+				DateTime: time.Now().Add(time.Hour),
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -119,6 +128,9 @@ func (s *ControllerSuite) TestCancelSelfAppointment() {
 			// serve the request to the test server
 			w := httptest.NewRecorder()
 			s.srv.ServeHTTP(w, req)
+
+			body, _ := io.ReadAll(w.Body)
+			fmt.Println(string(body))
 
 			// assert that the response status code is as expected
 			s.Require().Equal(tc.status, w.Code)
