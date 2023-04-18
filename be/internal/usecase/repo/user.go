@@ -106,10 +106,13 @@ func (r *UserRepo) GetByEmail(ctx context.Context, email string) (*entity.User, 
 	return user, nil
 }
 
-// TODO: set the user type based on the number of shops
 func (r *UserRepo) EditShopsByIDs(ctx context.Context, user *entity.User, IDs []string) error {
 
 	ownedShops := []*entity.BarberShop{}
+
+	// TODO:
+	//	- this is slow af
+	//	- maybe receieve all the data in the modify user request
 
 	for _, barbershopID := range IDs {
 
@@ -138,12 +141,8 @@ func (r *UserRepo) EditShopsByIDs(ctx context.Context, user *entity.User, IDs []
 	update := bson.M{"$set": bson.M{"ownedShops": ownedShops, "type": userType}}
 
 	_, err := r.DB.Collection("users").UpdateOne(ctx, filter, update)
-
 	return err
 }
-
-// TODO : make the user an admin
-// TODO : block an user
 
 func (r *UserRepo) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
 
@@ -156,6 +155,10 @@ func (r *UserRepo) ModifyByID(ctx context.Context, ID string, user *entity.User)
 
 		if user.Password != "" {
 			update["password"] = user.Password
+		}
+
+		if user.Type != "" {
+			update["type"] = user.Type
 		}
 	}
 

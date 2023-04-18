@@ -3,8 +3,11 @@ package controller
 import (
 	"net/http"
 
+	_ "github.com/just-hms/large-scale-multistructure-db/be/apidocs"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +28,21 @@ func CORSAllowAll() gin.HandlerFunc {
 	}
 }
 
+// @title Gin Swagger Example API
+// @version 1.0
+// @description This is a sample server server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:7000
+// @BasePath /api/
+// @schemes http
 func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 
 	if production {
@@ -36,7 +54,13 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 
 	api := router.Group("/api")
 
-	api.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, `{"message" : "ok"}`) })
+	// TODO:
+	//	- show this only in dev??
+
+	url := ginSwagger.URL("/api/swagger/doc.json")
+	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+
+	api.GET("/health", Health)
 
 	// create the routes based on the given usecases
 	mr := middleware.NewMiddlewareRoutes(ucs[usecase.USER].(usecase.User))
@@ -96,4 +120,16 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 	}
 
 	return router
+}
+
+// HealthCheck godoc
+// @Summary Show the status of server.
+// @Description get the status of server.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /health [get]
+func Health(c *gin.Context) {
+	c.JSON(http.StatusOK, `{"message" : "ok"}`)
 }

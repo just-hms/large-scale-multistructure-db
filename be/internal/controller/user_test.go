@@ -3,6 +3,7 @@ package controller_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -336,6 +337,12 @@ func (s *ControllerSuite) TestUserShow() {
 			status: http.StatusOK,
 		},
 		{
+			name:   "Correctly shown barber",
+			token:  s.fixture[ADMIN_TOKEN],
+			ID:     s.fixture[BARBER1_ID],
+			status: http.StatusOK,
+		},
+		{
 			name:   "User not exists",
 			token:  s.fixture[ADMIN_TOKEN],
 			ID:     "wrong_ID",
@@ -362,7 +369,7 @@ func (s *ControllerSuite) TestUserShow() {
 			s.Require().Equal(tc.status, w.Code)
 
 			// check for user len if the request was accepted
-			if w.Code == http.StatusAccepted {
+			if w.Code == http.StatusOK {
 
 				body, err := io.ReadAll(w.Body)
 
@@ -376,6 +383,10 @@ func (s *ControllerSuite) TestUserShow() {
 				var res response
 				err = json.Unmarshal(body, &res)
 				s.Require().Nil(err)
+
+				if res.User.Type == entity.BARBER {
+					s.Require().True(len(res.User.OwnedShops) > 0)
+				}
 
 			}
 		})
@@ -524,26 +535,24 @@ func (s *ControllerSuite) TestUserModify() {
 
 				req, _ = http.NewRequest("GET", "/api/admin/user/"+tc.ID, nil)
 				req.Header.Set("Content-Type", "application/json")
-				req.Header.Add("Authorization", "Bearer "+tc.token)
+				req.Header.Add("Authorization", "Bearer "+s.fixture[ADMIN_TOKEN])
 
 				w2 := httptest.NewRecorder()
 				s.srv.ServeHTTP(w2, req)
+				s.Require().Equal(w2.Code, http.StatusOK)
 
-				body, err := io.ReadAll(w.Body)
-
-				// require no error in reading the response
+				body, err := io.ReadAll(w2.Body)
 				s.Require().Nil(err)
 
-				type response struct {
+				var res struct {
 					User entity.User `json:"user"`
 				}
 
-				var res response
 				err = json.Unmarshal(body, &res)
 				s.Require().Nil(err)
 
+				fmt.Println("kek", res.User)
 				s.Require().Len(res.User.OwnedShops, tc.barberShopsLen)
-
 			}
 
 		})

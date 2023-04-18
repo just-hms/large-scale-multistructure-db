@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -30,7 +29,6 @@ func (uc *HolidayUseCase) Set(ctx context.Context, shopID string, date time.Time
 		return errors.New("cannot set an holiday in the past")
 	}
 
-	fmt.Println("kek", uc.shop)
 	shop, err := uc.shop.GetByID(ctx, shopID)
 
 	if err != nil {

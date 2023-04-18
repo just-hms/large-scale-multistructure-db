@@ -3,8 +3,6 @@ package controller_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"time"
@@ -129,9 +127,6 @@ func (s *ControllerSuite) TestCancelSelfAppointment() {
 			w := httptest.NewRecorder()
 			s.srv.ServeHTTP(w, req)
 
-			body, _ := io.ReadAll(w.Body)
-			fmt.Println(string(body))
-
 			// assert that the response status code is as expected
 			s.Require().Equal(tc.status, w.Code)
 		})
@@ -201,10 +196,6 @@ func (s *ControllerSuite) TestBookAfterCancel() {
 	// serve the request to the test server
 	w := httptest.NewRecorder()
 	s.srv.ServeHTTP(w, req)
-
-	body, err := io.ReadAll(w.Body)
-	s.Require().NoError(err)
-	fmt.Println(string(body))
 
 	s.Require().Equal(http.StatusAccepted, w.Code)
 

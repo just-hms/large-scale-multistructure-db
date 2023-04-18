@@ -292,8 +292,6 @@ func (s *ControllerSuite) TestBarberShopModifyByID() {
 			status: http.StatusAccepted,
 			ID:     s.fixture[SHOP1_ID],
 		},
-
-		// TODO: test more bulky editing
 	}
 
 	for _, tc := range testCases {

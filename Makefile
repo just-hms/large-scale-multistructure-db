@@ -15,3 +15,6 @@ down:
 	docker compose -f ./docker/test/docker-compose.yml down 
 	docker compose -f ./docker/infrastructure/docker-compose.yml down 
 
+doc:
+	swag init -g be/internal/controller/router.go --output be/apidocs/
+

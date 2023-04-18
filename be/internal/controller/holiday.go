@@ -24,9 +24,6 @@ type SetHolidaysInput struct {
 	UnavailableEmployees int       `json:"unavailableEmployees"`
 }
 
-// TODO:
-//   - maybe get a list of dates
-
 func (r *HolidayRoutes) Set(ctx *gin.Context) {
 	ID := ctx.Param("shopid")
 

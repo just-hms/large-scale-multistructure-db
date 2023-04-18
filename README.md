@@ -5,6 +5,22 @@
 - `docker`
 - `docker compose` plugin
 
+## deploy
+
+```shell
+make deploy
+```
+
+## dev
+
+```shell
+sudo make dev
+
+# get the doc in json and html :)
+curl http://localhost:8080/api/swagger/doc.json
+curl http://localhost:7000/api/swagger/index.html
+```
+
 ## test
 
 ### docker
@@ -21,6 +37,9 @@ sudo make down
 sudo make infrastructure
 go test ./...
 ```
+
+
+
 
 ## google docs
 

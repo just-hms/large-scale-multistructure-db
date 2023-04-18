@@ -77,9 +77,6 @@ func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment) er
 	return r.set(appointment.BarbershopID, appointment.Start, slot)
 }
 
-// TODO:
-//   - add check to distinguish between errors
-
 func (r *SlotRepo) Get(ctx context.Context, shopID string, date time.Time) (*entity.Slot, error) {
 	slot, err := r.get(shopID, date)
 	if err != nil {

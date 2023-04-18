@@ -215,7 +215,7 @@ func (s *RepoSuite) TestUserEditShopsByIDs() {
 	s.Require().NoError(err)
 
 	user := &entity.User{
-		Username: "barbers",
+		Username: "barber",
 	}
 	userRepo.Store(context.Background(), user)
 
