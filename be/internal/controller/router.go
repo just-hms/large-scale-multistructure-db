@@ -53,7 +53,7 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 	)
 
 	hr := NewHolidayRoutes(
-		ucs[usecase.APPOINTMENT].(usecase.Holiday),
+		ucs[usecase.HOLIDAY].(usecase.Holiday),
 	)
 
 	// link the path to the routes
