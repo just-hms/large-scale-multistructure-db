@@ -76,12 +76,14 @@ func (s *ControllerSuite) TearDownSuite() {
 const (
 	USER1_ID byte = iota
 	USER2_ID
+	USER3_ID
 	ADMIN_ID
 	BARBER1_ID
 	BARBER2_ID
 
 	USER1_TOKEN
 	USER2_TOKEN
+	USER3_TOKEN
 	ADMIN_TOKEN
 
 	BARBER1_TOKEN
@@ -89,6 +91,7 @@ const (
 
 	SHOP1_ID
 	SHOP2_ID
+	EMPTY_SHOP
 
 	USER1_SHOP1_APPOINTMENT_ID
 )
@@ -101,16 +104,17 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 	shops := []*entity.BarberShop{
 		{Name: "barberShop1", Employees: 2, Location: entity.NewLocation(1, 1)},
 		{Name: "barberShop2", Employees: 2, Location: entity.NewLocation(1, 2)},
+		{Name: "newShop", Employees: 0, Location: entity.NewLocation(1, 2)},
 	}
 	barberShopUsecase := ucs[usecase.BARBER_SHOP].(usecase.BarberShop)
 	for _, s := range shops {
-		err := barberShopUsecase.Store(context.Background(), s)
-		if err != nil {
+		if err := barberShopUsecase.Store(context.Background(), s); err != nil {
 			return nil, err
 		}
 	}
 	fixture[SHOP1_ID] = shops[0].ID
 	fixture[SHOP2_ID] = shops[1].ID
+	fixture[EMPTY_SHOP] = shops[2].ID
 
 	// create users
 	users := []*entity.User{
@@ -125,13 +129,15 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 		},
 		{
 			Email: "barber2@example.com", Password: "password", Type: entity.BARBER,
-			OwnedShops: []*entity.BarberShop{{Name: shops[1].Name, ID: shops[1].ID}},
+			OwnedShops: []*entity.BarberShop{
+				{Name: shops[1].Name, ID: shops[1].ID},
+				{Name: shops[2].Name, ID: shops[2].ID},
+			},
 		},
 	}
 	userUsecase := ucs[usecase.USER].(usecase.User)
 	for _, u := range users {
-		err := userUsecase.Store(context.Background(), u)
-		if err != nil {
+		if err := userUsecase.Store(context.Background(), u); err != nil {
 			return nil, err
 		}
 	}
@@ -144,6 +150,9 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 
 	fixture[ADMIN_ID] = users[2].ID
 	fixture[ADMIN_TOKEN], _ = jwt.CreateToken(users[2].ID)
+
+	fixture[USER3_ID] = users[3].ID
+	fixture[USER3_TOKEN], _ = jwt.CreateToken(users[3].ID)
 
 	fixture[BARBER1_ID] = users[4].ID
 	fixture[BARBER1_TOKEN], _ = jwt.CreateToken(users[4].ID)

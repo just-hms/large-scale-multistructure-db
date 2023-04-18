@@ -2,6 +2,7 @@ package repo_test
 
 import (
 	"context"
+	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
@@ -22,6 +23,7 @@ func (s *RepoSuite) TestAppointmentBook() {
 	s.Require().NoError(err)
 
 	appointment := &entity.Appointment{
+		Start:        time.Now().Add(1 * time.Hour),
 		UserID:       user.ID,
 		BarbershopID: shop.ID,
 	}
@@ -30,7 +32,6 @@ func (s *RepoSuite) TestAppointmentBook() {
 
 	err = appointmentRepo.Book(context.Background(), appointment)
 	s.Require().NoError(err)
-
 	// check that the appointment was correctly created
 
 	// in the user collection

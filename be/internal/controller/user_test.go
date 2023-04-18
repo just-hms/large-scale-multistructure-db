@@ -485,7 +485,7 @@ func (s *ControllerSuite) TestUserModify() {
 					s.fixture[SHOP2_ID],
 				},
 			},
-			barberShopsLen: 1,
+			barberShopsLen: 2,
 			status:         http.StatusAccepted,
 		},
 		{

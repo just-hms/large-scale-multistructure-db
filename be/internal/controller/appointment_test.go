@@ -30,9 +30,18 @@ func (s *ControllerSuite) TestBook() {
 			},
 		},
 		{
+			name:   "Cannot book the shop does not exists",
+			token:  s.fixture[USER2_TOKEN],
+			ID:     "fake_shop",
+			status: http.StatusBadRequest,
+			input: controller.BookAppointmentInput{
+				DateTime: time.Now().Add(time.Hour),
+			},
+		},
+		{
 			name:   "Correctly booked",
 			token:  s.fixture[USER2_TOKEN],
-			ID:     s.fixture[BARBER1_ID],
+			ID:     s.fixture[SHOP1_ID],
 			status: http.StatusCreated,
 			input: controller.BookAppointmentInput{
 				DateTime: time.Now().Add(time.Hour),
@@ -41,7 +50,16 @@ func (s *ControllerSuite) TestBook() {
 		{
 			name:   "Cannot book two appontments",
 			token:  s.fixture[USER1_TOKEN],
-			ID:     s.fixture[BARBER1_ID],
+			ID:     s.fixture[SHOP1_ID],
+			status: http.StatusBadRequest,
+			input: controller.BookAppointmentInput{
+				DateTime: time.Now().Add(time.Hour),
+			},
+		},
+		{
+			name:   "Cannot book the shop has no available places",
+			token:  s.fixture[USER3_TOKEN],
+			ID:     s.fixture[EMPTY_SHOP],
 			status: http.StatusBadRequest,
 			input: controller.BookAppointmentInput{
 				DateTime: time.Now().Add(time.Hour),

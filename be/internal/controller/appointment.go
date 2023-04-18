@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -78,6 +79,8 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
+
+	fmt.Println(user.CurrentAppointment)
 
 	err = ur.appoinmentUseCase.Cancel(ctx, user.CurrentAppointment)
 

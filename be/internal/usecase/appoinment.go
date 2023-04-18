@@ -33,6 +33,11 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 		return errors.New("cannot book two appointments")
 	}
 
+	// TODO
+	// 	- check that there is enough space in the calendar
+	// 	- cannot book in the past??
+	//	- if one operation fails, they both need to fail
+
 	err = uc.appointmentRepo.Book(ctx, appointment)
 	if err != nil {
 		return err

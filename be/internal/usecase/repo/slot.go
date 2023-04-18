@@ -145,6 +145,6 @@ func (r *SlotRepo) set(barberShopID string, date time.Time, slot *entity.Slot) e
 }
 
 func key(barberShopID string, date time.Time) string {
-	key := fmt.Sprintf("barbershop:%s:slots:%d", barberShopID, date.UnixNano())
+	key := fmt.Sprintf("barbershop:%s:slots:%d", barberShopID, date.Unix())
 	return key
 }
