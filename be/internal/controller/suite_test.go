@@ -28,7 +28,7 @@ type ControllerSuite struct {
 	fixture map[byte]string
 }
 
-func TestIntegrationSuite(t *testing.T) {
+func TestControllerSuite(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
