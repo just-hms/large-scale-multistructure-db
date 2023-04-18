@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
@@ -57,4 +58,25 @@ func (r *AppointmentRepo) Cancel(ctx context.Context, appointment *entity.Appoin
 	userUpdate := bson.M{"$unset": bson.M{"currentAppointment": ""}}
 	_, err = r.DB.Collection("users").UpdateOne(ctx, userFilter, userUpdate)
 	return err
+}
+
+func (r *AppointmentRepo) GetByIDs(ctx context.Context, shopID, ID string) (*entity.Appointment, error) {
+	filter := bson.M{"_id": shopID, "appointments._id": ID}
+
+	var barbershop entity.BarberShop
+	err := r.DB.Collection("barbershops").FindOne(ctx, filter).Decode(&barbershop)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("appointment not found")
+		}
+		return nil, err
+	}
+
+	for _, appointment := range barbershop.Appointments {
+		if appointment.ID == ID {
+			return appointment, nil
+		}
+	}
+
+	return nil, errors.New("appointment not found")
 }

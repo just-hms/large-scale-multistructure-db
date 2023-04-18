@@ -48,6 +48,7 @@ type (
 	Appointment interface {
 		Book(ctx context.Context, appointment *entity.Appointment) error
 		Cancel(ctx context.Context, appointment *entity.Appointment) error
+		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
 	}
 
 	Holiday interface {
@@ -107,6 +108,7 @@ type (
 	AppointmentRepo interface {
 		Book(ctx context.Context, appointment *entity.Appointment) error
 		Cancel(ctx context.Context, appointment *entity.Appointment) error
+		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
 	}
 
 	ReviewRepo interface {

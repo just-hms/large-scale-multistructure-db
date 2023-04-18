@@ -1,4 +1,4 @@
-package integration_test
+package controller_test
 
 import (
 	"bytes"
@@ -13,7 +13,7 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 )
 
-func (s *IntegrationSuite) TestLogin() {
+func (s *ControllerSuite) TestLogin() {
 
 	testCases := []struct {
 		name      string
@@ -81,7 +81,7 @@ func (s *IntegrationSuite) TestLogin() {
 	}
 }
 
-func (s *IntegrationSuite) TestRegister() {
+func (s *ControllerSuite) TestRegister() {
 
 	testCases := []struct {
 		name         string
@@ -124,7 +124,7 @@ func (s *IntegrationSuite) TestRegister() {
 	}
 }
 
-func (s *IntegrationSuite) TestShowSelf() {
+func (s *ControllerSuite) TestShowSelf() {
 
 	testCases := []struct {
 		name           string
@@ -189,7 +189,7 @@ func (s *IntegrationSuite) TestShowSelf() {
 	}
 }
 
-func (s *IntegrationSuite) TestDeleteSelf() {
+func (s *ControllerSuite) TestDeleteSelf() {
 
 	testCases := []struct {
 		name   string
@@ -228,7 +228,7 @@ func (s *IntegrationSuite) TestDeleteSelf() {
 	}
 }
 
-func (s *IntegrationSuite) TestUserShowAll() {
+func (s *ControllerSuite) TestUserShowAll() {
 
 	testCases := []struct {
 		name        string
@@ -309,7 +309,7 @@ func (s *IntegrationSuite) TestUserShowAll() {
 	}
 }
 
-func (s *IntegrationSuite) TestUserShow() {
+func (s *ControllerSuite) TestUserShow() {
 
 	testCases := []struct {
 		name   string
@@ -383,7 +383,7 @@ func (s *IntegrationSuite) TestUserShow() {
 	}
 }
 
-func (s *IntegrationSuite) TestUserDelete() {
+func (s *ControllerSuite) TestUserDelete() {
 
 	testCases := []struct {
 		name   string
@@ -439,7 +439,7 @@ func (s *IntegrationSuite) TestUserDelete() {
 	}
 }
 
-func (s *IntegrationSuite) TestUserModify() {
+func (s *ControllerSuite) TestUserModify() {
 
 	testCases := []struct {
 		name           string

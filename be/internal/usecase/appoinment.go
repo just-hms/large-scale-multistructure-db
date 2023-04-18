@@ -42,20 +42,15 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 	return err
 }
 
-// TODO:
-// - get the appointment from the userID?
-// - get the appointment from the ID?
-// - add the logit to retrieve information if not all data is provided
-
 func (uc *AppointmentUseCase) Cancel(ctx context.Context, appointment *entity.Appointment) error {
-	if appointment.UserID == "" {
-		// TODO add something like this
-		appointment.UserID = ""
-	}
 	err := uc.appointmentRepo.Cancel(ctx, appointment)
 	if err != nil {
 		return err
 	}
 
 	return uc.cache.Cancel(ctx, appointment)
+}
+
+func (uc *AppointmentUseCase) GetByIDs(ctx context.Context, shopID, ID string) (*entity.Appointment, error) {
+	return uc.appointmentRepo.GetByIDs(ctx, shopID, ID)
 }

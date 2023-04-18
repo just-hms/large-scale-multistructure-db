@@ -84,3 +84,31 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	s.Require().NoError(err)
 	s.Require().Len(shop.Appointments, 0)
 }
+
+func (s *RepoSuite) TestAppointmentGetByIDs() {
+	user := &entity.User{Username: "giovanni"}
+	shop := &entity.BarberShop{Name: "brownies"}
+
+	userRepo := repo.NewUserRepo(s.db)
+	shopRepo := repo.NewBarberShopRepo(s.db)
+
+	err := userRepo.Store(context.Background(), user)
+	s.Require().NoError(err)
+
+	err = shopRepo.Store(context.Background(), shop)
+	s.Require().NoError(err)
+
+	appointment := &entity.Appointment{
+		UserID:       user.ID,
+		BarbershopID: shop.ID,
+	}
+
+	appointmentRepo := repo.NewAppointmentRepo(s.db)
+
+	err = appointmentRepo.Book(context.Background(), appointment)
+	s.Require().NoError(err)
+
+	res, err := appointmentRepo.GetByIDs(context.Background(), shop.ID, appointment.ID)
+	s.Require().NoError(err)
+	s.Require().Equal(appointment, res)
+}

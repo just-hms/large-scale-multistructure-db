@@ -92,13 +92,21 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 
-	SHOP_ID := ctx.Param("shopid")
-	ID := ctx.Param("appointmentid")
+	// TODO:
+	//	- maybe get the user????
 
-	err := ur.appoinmentUseCase.Cancel(ctx, &entity.Appointment{
-		BarbershopID: SHOP_ID,
-		ID:           ID,
-	})
+	appointment, err := ur.appoinmentUseCase.GetByIDs(
+		ctx,
+		ctx.Param("shopid"),
+		ctx.Param("appointmentid"),
+	)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = ur.appoinmentUseCase.Cancel(ctx, appointment)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -1,4 +1,4 @@
-package integration_test
+package controller_test
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 )
 
-func (s *IntegrationSuite) TestBook() {
+func (s *ControllerSuite) TestBook() {
 
 	testCases := []struct {
 		name   string
@@ -71,7 +71,7 @@ func (s *IntegrationSuite) TestBook() {
 	}
 }
 
-func (s *IntegrationSuite) TestCancelSelfAppointment() {
+func (s *ControllerSuite) TestCancelSelfAppointment() {
 
 	testCases := []struct {
 		name   string
@@ -109,7 +109,7 @@ func (s *IntegrationSuite) TestCancelSelfAppointment() {
 	}
 }
 
-func (s *IntegrationSuite) TestCancelAppointment() {
+func (s *ControllerSuite) TestCancelAppointment() {
 
 	testCases := []struct {
 		name    string
@@ -161,7 +161,7 @@ func (s *IntegrationSuite) TestCancelAppointment() {
 	}
 }
 
-func (s *IntegrationSuite) TestBookAfterCancel() {
+func (s *ControllerSuite) TestBookAfterCancel() {
 
 	// delete an appointment from USER1
 	req, _ := http.NewRequest("DELETE", "/api/user/self/appointment", nil)
@@ -172,22 +172,25 @@ func (s *IntegrationSuite) TestBookAfterCancel() {
 	w := httptest.NewRecorder()
 	s.srv.ServeHTTP(w, req)
 
-	body, _ := io.ReadAll(w.Body)
+	body, err := io.ReadAll(w.Body)
+	s.Require().NoError(err)
 	fmt.Println(string(body))
 
 	s.Require().Equal(http.StatusAccepted, w.Code)
 
 	// test if now he can book
 
-	BookingJson, _ := json.Marshal(controller.BookAppointmentInput{
+	BookingJson, err := json.Marshal(controller.BookAppointmentInput{
 		DateTime: time.Now().Add(time.Hour),
 	})
+	s.Require().NoError(err)
 
 	// create a request for the register endpoint
-	req, _ = http.NewRequest(
+	req, err = http.NewRequest(
 		"POST", "/api/barber_shop/"+s.fixture[SHOP2_ID]+"/appointment",
 		bytes.NewBuffer(BookingJson),
 	)
+	s.Require().NoError(err)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Add("Authorization", "Bearer "+s.fixture[USER1_TOKEN])
 

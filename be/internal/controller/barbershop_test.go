@@ -1,4 +1,4 @@
-package integration_test
+package controller_test
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 )
 
-func (s *IntegrationSuite) TestBarberShopFind() {
+func (s *ControllerSuite) TestBarberShopFind() {
 
 	testCases := []struct {
 		input       controller.FindBarbershopInput
@@ -115,7 +115,7 @@ func (s *IntegrationSuite) TestBarberShopFind() {
 
 	}
 }
-func (s *IntegrationSuite) TestBarberShopShow() {
+func (s *ControllerSuite) TestBarberShopShow() {
 	testCases := []struct {
 		name   string
 		token  string
@@ -179,7 +179,7 @@ func (s *IntegrationSuite) TestBarberShopShow() {
 		})
 	}
 }
-func (s *IntegrationSuite) TestBarberShopStore() {
+func (s *ControllerSuite) TestBarberShopStore() {
 
 	testCases := []struct {
 		name   string
@@ -257,7 +257,7 @@ func (s *IntegrationSuite) TestBarberShopStore() {
 		})
 	}
 }
-func (s *IntegrationSuite) TestBarberShopModifyByID() {
+func (s *ControllerSuite) TestBarberShopModifyByID() {
 	testCases := []struct {
 		name   string
 		token  string
@@ -317,7 +317,7 @@ func (s *IntegrationSuite) TestBarberShopModifyByID() {
 
 	}
 }
-func (s *IntegrationSuite) TestBarberShopDeleteByID() {
+func (s *ControllerSuite) TestBarberShopDeleteByID() {
 
 	testCases := []struct {
 		name   string

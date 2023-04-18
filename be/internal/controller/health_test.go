@@ -1,11 +1,11 @@
-package integration_test
+package controller_test
 
 import (
 	"net/http"
 	"net/http/httptest"
 )
 
-func (s *IntegrationSuite) TestHealth() {
+func (s *ControllerSuite) TestHealth() {
 
 	req, _ := http.NewRequest("GET", "/api/health", nil)
 
