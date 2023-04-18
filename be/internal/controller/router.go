@@ -123,13 +123,13 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 }
 
 // HealthCheck godoc
-// @Summary Show the status of server.
-// @Description get the status of server.
+// @Summary Show the status of the server
+// @Description Get the status of the server
 // @Tags root
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Router /health [get]
 func Health(c *gin.Context) {
-	c.JSON(http.StatusOK, `{"message" : "ok"}`)
+	c.JSON(http.StatusOK, map[string]string{"message": "ok"})
 }

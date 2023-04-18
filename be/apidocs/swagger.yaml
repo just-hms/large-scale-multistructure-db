@@ -1,4 +1,10 @@
 basePath: /api/
+definitions:
+  controller.BookAppointmentInput:
+    properties:
+      dateTime:
+        type: string
+    type: object
 host: localhost:7000
 info:
   contact:
@@ -13,11 +19,111 @@ info:
   title: Gin Swagger Example API
   version: "1.0"
 paths:
+  /appointments/self:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the appointment of the current user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Deletes the current user's appointment
+      tags:
+      - appointments
+  /barbershops/{shopid}/appointments:
+    post:
+      consumes:
+      - application/json
+      description: Books a new appointment for the current user.
+      parameters:
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: The appointment details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.BookAppointmentInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Book a new appointment
+      tags:
+      - appointments
+  /barbershops/{shopid}/appointments/{appointmentid}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an appointment at a specific barbershop
+      parameters:
+      - description: ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: ID of the appointment
+        in: path
+        name: appointmentid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Deletes an appointment
+      tags:
+      - appointments
   /health:
     get:
       consumes:
       - '*/*'
-      description: get the status of server.
+      description: Get the status of the server
       produces:
       - application/json
       responses:
@@ -26,7 +132,7 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Show the status of server.
+      summary: Show the status of the server
       tags:
       - root
 schemes:

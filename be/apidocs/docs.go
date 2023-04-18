@@ -25,9 +25,162 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/appointments/self": {
+            "delete": {
+                "description": "Deletes the appointment of the current user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Deletes the current user's appointment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/barbershops/{shopid}/appointments": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Books a new appointment for the current user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Book a new appointment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The appointment details",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.BookAppointmentInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/barbershops/{shopid}/appointments/{appointmentid}": {
+            "delete": {
+                "description": "Deletes an appointment at a specific barbershop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Deletes an appointment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the appointment",
+                        "name": "appointmentid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
-                "description": "get the status of server.",
+                "description": "Get the status of the server",
                 "consumes": [
                     "*/*"
                 ],
@@ -37,7 +190,7 @@ const docTemplate = `{
                 "tags": [
                     "root"
                 ],
-                "summary": "Show the status of server.",
+                "summary": "Show the status of the server",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -46,6 +199,16 @@ const docTemplate = `{
                             "additionalProperties": true
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controller.BookAppointmentInput": {
+            "type": "object",
+            "properties": {
+                "dateTime": {
+                    "type": "string"
                 }
             }
         }

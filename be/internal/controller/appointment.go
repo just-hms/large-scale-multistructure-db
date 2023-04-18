@@ -28,6 +28,19 @@ type BookAppointmentInput struct {
 	DateTime time.Time `json:"dateTime"`
 }
 
+// Book handles a POST request to book a new appointment.
+// @Summary Book a new appointment
+// @Description Books a new appointment for the current user.
+// @Tags appointments
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param shopid path string true "The ID of the barbershop"
+// @Param input body BookAppointmentInput true "The appointment details"
+// @Success 201 {object} string ""
+// @Failure 400 {object} string "Bad request"
+// @Failure 401 {object} string "Unauthorized"
+// @Router /barbershops/{shopid}/appointments [post]
 func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 
 	input := BookAppointmentInput{}
@@ -58,9 +71,18 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{})
-
 }
 
+// @Summary Deletes the current user's appointment
+// @Description Deletes the appointment of the current user
+// @Tags appointments
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 202 {object}  string ""
+// @Failure 400 {object}  string "Bad Request"
+// @Failure 401 {object}  string "Unauthorized"
+// @Router /appointments/self [delete]
 func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 	token := middleware.ExtractTokenFromRequest(ctx)
@@ -89,6 +111,17 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 }
 
+// @Summary Deletes an appointment
+// @Description Deletes an appointment at a specific barbershop
+// @Tags appointments
+// @Accept json
+// @Produce json
+// @Param shopid path string true "ID of the barbershop"
+// @Param appointmentid path string true "ID of the appointment"
+// @Success 202 {object} string ""
+// @Failure 400 {object} string "Bad Request"
+// @Failure 401 {object}  string "Unauthorized"
+// @Router /barbershops/{shopid}/appointments/{appointmentid} [delete]
 func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 
 	appointment, err := ur.appoinmentUseCase.GetByIDs(
