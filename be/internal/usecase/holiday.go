@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -12,9 +13,10 @@ type HolidayUseCase struct {
 }
 
 // New -.
-func NewHolidayUseCase(c SlotRepo) *HolidayUseCase {
+func NewHolidayUseCase(c SlotRepo, s BarberShopRepo) *HolidayUseCase {
 	return &HolidayUseCase{
 		cache: c,
+		shop:  s,
 	}
 }
 
@@ -27,7 +29,10 @@ func (uc *HolidayUseCase) Set(ctx context.Context, shopID string, date time.Time
 	if date.Before(time.Now()) {
 		return errors.New("cannot set an holiday in the past")
 	}
+
+	fmt.Println("kek", uc.shop)
 	shop, err := uc.shop.GetByID(ctx, shopID)
+
 	if err != nil {
 		return errors.New("the specified shop does not exists")
 	}

@@ -174,9 +174,6 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 		if err != nil {
 			return nil, err
 		}
-
-		app, _ := appointmentUsecase.GetByIDs(context.Background(), fixture[SHOP1_ID], a.ID)
-		fmt.Println("kek", app)
 	}
 
 	fixture[USER1_SHOP1_APPOINTMENT_ID] = appointments[0].ID

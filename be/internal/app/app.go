@@ -64,7 +64,7 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis) map[byte]usecase.Usecase 
 	)
 
 	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
-	ucs[usecase.HOLIDAY] = usecase.NewHolidayUseCase(slotRepo)
+	ucs[usecase.HOLIDAY] = usecase.NewHolidayUseCase(slotRepo, barberShopRepo)
 
 	return ucs
 }

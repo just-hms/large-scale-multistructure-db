@@ -28,7 +28,7 @@ type SetHolidaysInput struct {
 //   - maybe get a list of dates
 
 func (r *HolidayRoutes) Set(ctx *gin.Context) {
-	ID := ctx.Param("id")
+	ID := ctx.Param("shopid")
 
 	input := SetHolidaysInput{}
 	if err := ctx.ShouldBindJSON(&input); err != nil {

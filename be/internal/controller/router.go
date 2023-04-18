@@ -56,7 +56,6 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		ucs[usecase.HOLIDAY].(usecase.Holiday),
 	)
 
-	// link the path to the routes
 	user := api.Group("/user")
 	{
 		user.POST("", ur.Register)
@@ -67,18 +66,6 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		user.POST("/reset_password", ur.ResetPassword)
 
 		user.DELETE("/self/appointment", mr.RequireAuth, ar.DeleteSelfAppointment)
-	}
-
-	admin := api.Group("/admin")
-	admin.Use(mr.RequireAdmin)
-	{
-		admin.GET("/user", ur.ShowAll)
-		admin.GET("/user/:id", ur.Show)
-		admin.DELETE("/user/:id", ur.Delete)
-		admin.PUT("/user/:id", ur.Modify)
-
-		admin.POST("/barber_shop", br.Create)
-		admin.DELETE("/barber_shop/:shopid", br.Delete)
 	}
 
 	barberShop := api.Group("/barber_shop")
@@ -93,7 +80,19 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		barberShop.POST("/:shopid/appointment", ar.Book)
 
 		barberShop.GET("/:shopid/calendar", br.Calendar)
-		admin.POST("/:shopid/holiday", hr.Set)
+		barberShop.POST("/:shopid/holiday", mr.RequireBarber, hr.Set)
+	}
+
+	admin := api.Group("/admin")
+	admin.Use(mr.RequireAdmin)
+	{
+		admin.GET("/user", ur.ShowAll)
+		admin.GET("/user/:id", ur.Show)
+		admin.DELETE("/user/:id", ur.Delete)
+		admin.PUT("/user/:id", ur.Modify)
+
+		admin.POST("/barber_shop", br.Create)
+		admin.DELETE("/barber_shop/:shopid", br.Delete)
 	}
 
 	return router

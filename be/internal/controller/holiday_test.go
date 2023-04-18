@@ -43,18 +43,8 @@ func (s *ControllerSuite) TestHolidaySet() {
 			},
 		},
 		{
-			name:   "Cannot set an holiday if overbooked",
-			status: http.StatusBadRequest,
-			token:  s.fixture[BARBER2_TOKEN],
-			ID:     s.fixture[EMPTY_SHOP],
-			input: &controller.SetHolidaysInput{
-				Date:                 fakeTime,
-				UnavailableEmployees: 1,
-			},
-		},
-		{
 			name:   "Correctly set",
-			token:  s.fixture[USER2_TOKEN],
+			token:  s.fixture[BARBER2_TOKEN],
 			ID:     s.fixture[SHOP2_ID],
 			status: http.StatusAccepted,
 			input: &controller.SetHolidaysInput{
@@ -64,12 +54,22 @@ func (s *ControllerSuite) TestHolidaySet() {
 		},
 		{
 			name:   "Correctly unset",
-			token:  s.fixture[USER2_TOKEN],
-			ID:     s.fixture[SHOP1_ID],
+			token:  s.fixture[BARBER2_TOKEN],
+			ID:     s.fixture[SHOP2_ID],
 			status: http.StatusAccepted,
 			input: &controller.SetHolidaysInput{
 				Date:                 fakeTime,
 				UnavailableEmployees: 2,
+			},
+		},
+		{
+			name:   "Cannot set an holiday if overbooked",
+			status: http.StatusBadRequest,
+			token:  s.fixture[BARBER2_TOKEN],
+			ID:     s.fixture[EMPTY_SHOP],
+			input: &controller.SetHolidaysInput{
+				Date:                 fakeTime,
+				UnavailableEmployees: 1,
 			},
 		},
 	}
