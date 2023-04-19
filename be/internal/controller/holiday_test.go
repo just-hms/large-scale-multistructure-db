@@ -81,7 +81,7 @@ func (s *ControllerSuite) TestHolidaySet() {
 			holidayJSON, _ := json.Marshal(tc.input)
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("POST", "/api/barber_shop/"+tc.ID+"/holiday", bytes.NewBuffer(holidayJSON))
+			req, _ := http.NewRequest("POST", "/api/barbershop/"+tc.ID+"/holiday", bytes.NewBuffer(holidayJSON))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 

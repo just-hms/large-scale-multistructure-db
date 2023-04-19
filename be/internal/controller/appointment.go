@@ -31,7 +31,7 @@ type BookAppointmentInput struct {
 // Book handles a POST request to book a new appointment.
 // @Summary Book a new appointment
 // @Description Books a new appointment for the current user.
-// @Tags appointments
+// @Tags appointment
 // @Accept json
 // @Produce json
 // @Security ApiKeyAuth
@@ -40,7 +40,7 @@ type BookAppointmentInput struct {
 // @Success 201 {object} string ""
 // @Failure 400 {object} string "Bad request"
 // @Failure 401 {object} string "Unauthorized"
-// @Router /barbershops/{shopid}/appointments [post]
+// @Router /barbershop/{shopid}/appointment [post]
 func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 
 	input := BookAppointmentInput{}
@@ -75,14 +75,14 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 
 // @Summary Deletes the current user's appointment
 // @Description Deletes the appointment of the current user
-// @Tags appointments
+// @Tags appointment
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Bearer token"
 // @Success 202 {object}  string ""
 // @Failure 400 {object}  string "Bad Request"
 // @Failure 401 {object}  string "Unauthorized"
-// @Router /appointments/self [delete]
+// @Router /user/self/appointment [delete]
 func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 	token := middleware.ExtractTokenFromRequest(ctx)
@@ -113,7 +113,7 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 // @Summary Deletes an appointment
 // @Description Deletes an appointment at a specific barbershop
-// @Tags appointments
+// @Tags appointment
 // @Accept json
 // @Produce json
 // @Param shopid path string true "ID of the barbershop"
@@ -121,7 +121,7 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 // @Success 202 {object} string ""
 // @Failure 400 {object} string "Bad Request"
 // @Failure 401 {object}  string "Unauthorized"
-// @Router /barbershops/{shopid}/appointments/{appointmentid} [delete]
+// @Router /barbershop/{shopid}/appointment/{appointmentid} [delete]
 func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 
 	appointment, err := ur.appoinmentUseCase.GetByIDs(

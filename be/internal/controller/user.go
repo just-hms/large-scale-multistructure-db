@@ -25,6 +25,20 @@ type LoginInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// Login logs in a user and returns a JWT token.
+// It expects a JSON payload containing the user's email and password.
+// It returns a JWT token that can be used for subsequent authenticated requests.
+//
+// @Summary Logs in a user and returns a JWT token
+// @Description Logs in a user with the provided email and password and returns a JWT token for subsequent authenticated requests
+// @Tags Auth
+// @Accept  json
+// @Produce  json
+// @Param input body LoginInput true "User email and password"
+// @Success 200 {string} map[string]string {"token" : "token"}
+// @Failure 400 {object} string	"Bad request"
+// @Failure 401 {object} string	"Unauthorized"
+// @Router /user/login [post]
 func (ur *UserRoutes) Login(ctx *gin.Context) {
 
 	input := LoginInput{}
@@ -59,6 +73,17 @@ type RegisterInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// Register creates a new user with the given email and password
+// @Summary Create new user
+// @Description Create new user with the provided email and password
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param input body RegisterInput true "User credentials"
+// @Success 201 {string} string ""
+// @Failure 401 {object} string	"Unauthorized"
+// @Failure 400 {object} string	"Bad request"
+// @Router /user [post]
 func (ur *UserRoutes) Register(ctx *gin.Context) {
 
 	input := RegisterInput{}
@@ -81,6 +106,18 @@ func (ur *UserRoutes) Register(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{})
 }
 
+// Show Shows the user informations
+// @Summary Show user information by ID
+// @Description Get user information by ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} map[string]entity.User
+// @Failure 401 {object} string	"Unauthorized"
+// @Failure 404 {object} map[string]string
+// @Router /user/self [get]
+// @Router /admin/user/{id} [get]
 func (ur *UserRoutes) Show(ctx *gin.Context) {
 
 	ID := ctx.Param("id")
@@ -93,9 +130,19 @@ func (ur *UserRoutes) Show(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"user": user})
-
 }
 
+// ShowAll Shows the list of all users
+// @Summary Show list of users
+// @Description Get a list of users filtered by email
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param email query string false "Email filter"
+// @Success 200 {object} map[string][]entity.User
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} string	"Unauthorized"
+// @Router /admin/user [get]
 func (ur *UserRoutes) ShowAll(ctx *gin.Context) {
 
 	email := ctx.Query("email")
@@ -110,6 +157,18 @@ func (ur *UserRoutes) ShowAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"users": users})
 }
 
+// Delete deletes a user with the given ID.
+// It accepts a path parameter "id" to specify the ID of the user to be deleted.
+// @Summary Delete user by ID
+// @Description Delete a user by ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 202 {object} string ""
+// @Failure 401 {object} string	"Unauthorized"
+// @Failure 404 {object} map[string]string
+// @Router /admin/user/{id} [delete]
 func (ur *UserRoutes) Delete(ctx *gin.Context) {
 	ID := ctx.Param("id")
 
@@ -126,6 +185,19 @@ type ModifyUserInput struct {
 	BarbershopsID []string `json:"barbershopsId"`
 }
 
+// Modify modifies a user with the given ID by updating their email and barbershop associations.
+// The "email" field specifies the updated email address of the user.
+// The "barbershopsId" field specifies an array of barbershop IDs to associate the user with.
+// @Summary Modify user by ID
+// @Description Modify a user by ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Param input body ModifyUserInput true "Modify user input"
+// @Success 202 {object} string ""
+// @Failure 400 {object} map[string]string
+// @Router /admin/user/{id} [put]
 func (ur *UserRoutes) Modify(ctx *gin.Context) {
 	input := ModifyUserInput{}
 
@@ -150,14 +222,26 @@ func (ur *UserRoutes) Modify(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusAccepted, gin.H{"message": "user modified"})
-
+	ctx.JSON(http.StatusAccepted, gin.H{})
 }
 
 type LostPasswordInput struct {
 	Email string `json:"email" binding:"required"`
 }
 
+// LostPassword generates a password reset token for the user with the given email address and sends it to them via email.
+// It accepts a JSON payload in the request body with the field "email", which specifies the email address of the user to reset the password for.
+// If successful, it returns a JSON response with the password reset token.
+// @Summary Request password reset
+// @Description Generate a password reset token and send it to the user's email address
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param input body LostPasswordInput true "Lost password input"
+// @Success 202 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /user/lostpassword [post]
 func (ur *UserRoutes) LostPassword(ctx *gin.Context) {
 	input := LostPasswordInput{}
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -172,7 +256,7 @@ func (ur *UserRoutes) LostPassword(ctx *gin.Context) {
 		return
 	}
 
-	// THIS IS A POC YOU SHOULD RETUNR 200 AND SEND THE E-MAIL WITH THE TOKEN HERE
+	// THIS IS A POC YOU SHOULD RETURN 200 AND SEND THE E-MAIL WITH THE TOKEN HERE
 
 	ctx.JSON(http.StatusAccepted, gin.H{"resetToken": resetToken})
 }
@@ -181,9 +265,20 @@ type ResetPasswordInput struct {
 	Password string `json:"newpassword" binding:"required"`
 }
 
+// ResetPassword resets the password for a user given a reset token
+// @Summary Reset user password
+// @Description Reset password for a user given a reset token
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param reset_token path string true "Reset token"
+// @Param newpassword body string true "New password"
+// @Success 202 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /user/resetpassword/{resettoken} [post]
 func (ur *UserRoutes) ResetPassword(ctx *gin.Context) {
 
-	token := ctx.Param("reset_token")
+	token := ctx.Param("resettoken")
 	userID, err := jwt.ExtractTokenID(token)
 
 	if err != nil {
@@ -201,8 +296,6 @@ func (ur *UserRoutes) ResetPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	// THIS IS A POC YOU SHOULD RETUNR 200 AND SEND THE E-MAIL WITH THE TOKEN HERE
 
 	ctx.JSON(http.StatusAccepted, gin.H{"message": "password correctly resetted"})
 }

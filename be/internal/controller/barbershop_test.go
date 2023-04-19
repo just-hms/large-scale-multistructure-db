@@ -81,7 +81,7 @@ func (s *ControllerSuite) TestBarberShopFind() {
 
 			// create a request for the self endpoint
 			var req *http.Request
-			req, _ = http.NewRequest("POST", "/api/barber_shop", bytes.NewBuffer(newBarberShopJson))
+			req, _ = http.NewRequest("POST", "/api/barbershop", bytes.NewBuffer(newBarberShopJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -115,6 +115,10 @@ func (s *ControllerSuite) TestBarberShopFind() {
 
 	}
 }
+
+// TODO:
+// - check that the appointments are returned
+
 func (s *ControllerSuite) TestBarberShopShow() {
 	testCases := []struct {
 		name   string
@@ -149,7 +153,7 @@ func (s *ControllerSuite) TestBarberShopShow() {
 			// create a request for the self endpoint
 			var req *http.Request
 
-			req, _ = http.NewRequest("GET", "/api/barber_shop/"+tc.ID, nil)
+			req, _ = http.NewRequest("GET", "/api/barbershop/"+tc.ID, nil)
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -244,7 +248,7 @@ func (s *ControllerSuite) TestBarberShopStore() {
 			newBarberShopJson, _ := json.Marshal(tc.input)
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("POST", "/api/admin/barber_shop", bytes.NewBuffer(newBarberShopJson))
+			req, _ := http.NewRequest("POST", "/api/admin/barbershop", bytes.NewBuffer(newBarberShopJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -301,7 +305,7 @@ func (s *ControllerSuite) TestBarberShopModifyByID() {
 			editBarberShopJson, _ := json.Marshal(tc.input)
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("PUT", "/api/barber_shop/"+tc.ID, bytes.NewBuffer(editBarberShopJson))
+			req, _ := http.NewRequest("PUT", "/api/barbershop/"+tc.ID, bytes.NewBuffer(editBarberShopJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -347,7 +351,7 @@ func (s *ControllerSuite) TestBarberShopDeleteByID() {
 		s.Run(tc.name, func() {
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("DELETE", "/api/admin/barber_shop/"+tc.ID, nil)
+			req, _ := http.NewRequest("DELETE", "/api/admin/barbershop/"+tc.ID, nil)
 
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)

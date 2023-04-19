@@ -54,9 +54,6 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 
 	api := router.Group("/api")
 
-	// TODO:
-	//	- show this only in dev??
-
 	url := ginSwagger.URL("/api/swagger/doc.json")
 	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
@@ -86,13 +83,13 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		user.POST("/login", ur.Login)
 		user.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)
 		user.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete)
-		user.POST("/lost_password", ur.LostPassword)
-		user.POST("/reset_password", ur.ResetPassword)
+		user.POST("/lostpassword", ur.LostPassword)
+		user.POST("/resetpassword/resettoken", ur.ResetPassword)
 
 		user.DELETE("/self/appointment", mr.RequireAuth, ar.DeleteSelfAppointment)
 	}
 
-	barberShop := api.Group("/barber_shop")
+	barberShop := api.Group("/barbershop")
 	barberShop.Use(mr.RequireAuth)
 	{
 		barberShop.POST("", br.Find)
@@ -115,8 +112,8 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		admin.DELETE("/user/:id", ur.Delete)
 		admin.PUT("/user/:id", ur.Modify)
 
-		admin.POST("/barber_shop", br.Create)
-		admin.DELETE("/barber_shop/:shopid", br.Delete)
+		admin.POST("/barbershop", br.Create)
+		admin.DELETE("/barbershop/:shopid", br.Delete)
 	}
 
 	return router

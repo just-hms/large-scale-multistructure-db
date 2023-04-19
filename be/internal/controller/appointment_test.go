@@ -81,7 +81,7 @@ func (s *ControllerSuite) TestBook() {
 			bookingJson, _ := json.Marshal(tc.input)
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("POST", "/api/barber_shop/"+tc.ID+"/appointment", bytes.NewBuffer(bookingJson))
+			req, _ := http.NewRequest("POST", "/api/barbershop/"+tc.ID+"/appointment", bytes.NewBuffer(bookingJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -170,7 +170,7 @@ func (s *ControllerSuite) TestCancelAppointment() {
 		s.Run(tc.name, func() {
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("DELETE", "/api/barber_shop/"+tc.SHOP_ID+"/appointment/"+tc.ID, nil)
+			req, _ := http.NewRequest("DELETE", "/api/barbershop/"+tc.SHOP_ID+"/appointment/"+tc.ID, nil)
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
@@ -208,7 +208,7 @@ func (s *ControllerSuite) TestBookAfterCancel() {
 
 	// create a request for the register endpoint
 	req, err = http.NewRequest(
-		"POST", "/api/barber_shop/"+s.fixture[SHOP2_ID]+"/appointment",
+		"POST", "/api/barbershop/"+s.fixture[SHOP2_ID]+"/appointment",
 		bytes.NewBuffer(BookingJson),
 	)
 	s.Require().NoError(err)

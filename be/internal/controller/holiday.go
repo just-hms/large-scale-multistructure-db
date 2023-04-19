@@ -24,6 +24,18 @@ type SetHolidaysInput struct {
 	UnavailableEmployees int       `json:"unavailableEmployees"`
 }
 
+// Set holiday for a given Barber Shop
+// @Summary Set holiday
+// @Description Set holiday for a given Barber Shop
+// @Tags Holiday
+// @Param shopid path string true "Barber Shop ID"
+// @Param input body SetHolidaysInput true "Set Holidays Input"
+// @Accept json
+// @Produce json
+// @Success 202 {object} string ""
+// @Failure 400 {object} string "Bad request"
+// @Failure 401 {object} string "Unauthorized"
+// @Router /barbershop/{shopid}/holiday [post]
 func (r *HolidayRoutes) Set(ctx *gin.Context) {
 	ID := ctx.Param("shopid")
 
