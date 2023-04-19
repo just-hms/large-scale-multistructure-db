@@ -213,7 +213,7 @@ paths:
             type: string
       summary: Create a new barbershop
       tags:
-      - barbershop
+      - Barbershop
   /admin/barbershop/{shopid}:
     delete:
       consumes:
@@ -240,7 +240,7 @@ paths:
       - ApiKeyAuth: []
       summary: Delete a barbershop by ID
       tags:
-      - barbershop
+      - Barbershop
     put:
       consumes:
       - application/json
@@ -276,7 +276,7 @@ paths:
       - ApiKeyAuth: []
       summary: Modify details of a barbershop
       tags:
-      - barbershop
+      - Barbershop
   /admin/user:
     get:
       consumes:
@@ -440,7 +440,7 @@ paths:
             type: string
       summary: Find barbershops within a certain radius
       tags:
-      - barbershop
+      - Barbershop
   /barbershop/{shopid}:
     get:
       consumes:
@@ -473,7 +473,7 @@ paths:
       - ApiKeyAuth: []
       summary: Retrieve details of a barbershop
       tags:
-      - barbershop
+      - Barbershop
   /barbershop/{shopid}/appointment:
     post:
       consumes:
@@ -510,7 +510,7 @@ paths:
       - ApiKeyAuth: []
       summary: Book a new appointment
       tags:
-      - appointment
+      - Appointment
   /barbershop/{shopid}/appointment/{appointmentid}:
     delete:
       consumes:
@@ -544,7 +544,7 @@ paths:
             type: string
       summary: Deletes an appointment
       tags:
-      - appointment
+      - Appointment
   /barbershop/{shopid}/calendar:
     get:
       consumes:
@@ -579,7 +579,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get the calendar for a barbershop by ID
       tags:
-      - barbershop
+      - Barbershop
   /barbershop/{shopid}/holiday:
     post:
       consumes:
@@ -630,7 +630,7 @@ paths:
             type: object
       summary: Show the status of the server
       tags:
-      - root
+      - Root
   /user:
     post:
       consumes:
@@ -825,7 +825,7 @@ paths:
             type: string
       summary: Deletes the current user's appointment
       tags:
-      - appointment
+      - Appointment
 schemes:
 - http
 swagger: "2.0"

@@ -35,7 +35,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "barbershop"
+                    "Barbershop"
                 ],
                 "summary": "Create a new barbershop",
                 "parameters": [
@@ -86,7 +86,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "barbershop"
+                    "Barbershop"
                 ],
                 "summary": "Modify details of a barbershop",
                 "parameters": [
@@ -142,7 +142,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "barbershop"
+                    "Barbershop"
                 ],
                 "summary": "Delete a barbershop by ID",
                 "parameters": [
@@ -375,7 +375,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "barbershop"
+                    "Barbershop"
                 ],
                 "summary": "Find barbershops within a certain radius",
                 "parameters": [
@@ -432,7 +432,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "barbershop"
+                    "Barbershop"
                 ],
                 "summary": "Retrieve details of a barbershop",
                 "parameters": [
@@ -484,7 +484,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "appointment"
+                    "Appointment"
                 ],
                 "summary": "Book a new appointment",
                 "parameters": [
@@ -537,7 +537,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "appointment"
+                    "Appointment"
                 ],
                 "summary": "Deletes an appointment",
                 "parameters": [
@@ -593,7 +593,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "barbershop"
+                    "Barbershop"
                 ],
                 "summary": "Get the calendar for a barbershop by ID",
                 "parameters": [
@@ -696,7 +696,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "Root"
                 ],
                 "summary": "Show the status of the server",
                 "responses": {
@@ -970,7 +970,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "appointment"
+                    "Appointment"
                 ],
                 "summary": "Deletes the current user's appointment",
                 "parameters": [

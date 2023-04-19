@@ -122,7 +122,7 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 // HealthCheck godoc
 // @Summary Show the status of the server
 // @Description Get the status of the server
-// @Tags root
+// @Tags Root
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}

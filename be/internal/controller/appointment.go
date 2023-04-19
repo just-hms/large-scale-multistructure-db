@@ -31,7 +31,7 @@ type BookAppointmentInput struct {
 // Book handles a POST request to book a new appointment.
 // @Summary Book a new appointment
 // @Description Books a new appointment for the current user.
-// @Tags appointment
+// @Tags Appointment
 // @Accept json
 // @Produce json
 // @Security ApiKeyAuth
@@ -75,7 +75,7 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 
 // @Summary Deletes the current user's appointment
 // @Description Deletes the appointment of the current user
-// @Tags appointment
+// @Tags Appointment
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Bearer token"
@@ -113,7 +113,7 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 // @Summary Deletes an appointment
 // @Description Deletes an appointment at a specific barbershop
-// @Tags appointment
+// @Tags Appointment
 // @Accept json
 // @Produce json
 // @Param shopid path string true "ID of the barbershop"
