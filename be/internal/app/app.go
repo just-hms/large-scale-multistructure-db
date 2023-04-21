@@ -10,43 +10,61 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/auth"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
 )
 
-// TODO : fix this to devide the router from the rest, and put it in controllers
-
 func Run() {
-	// Repository
 
-	mongo, err := mongo.New(&mongo.Options{
-		DBName: "barber-deploy",
-	})
-
+	mongo, err := mongo.New(&mongo.Options{DBName: "barber-deploy"})
 	if err != nil {
 		fmt.Printf("mongo-error: %s", err.Error())
 		return
 	}
 
-	userUsecase := usecase.NewUserUseCase(
-		repo.NewUserRepo(mongo),
-		auth.NewPasswordAuth(),
-	)
-
-	usecases := []usecase.Usecase{
-		userUsecase,
-		usecase.NewBarberShopUseCase(
-			repo.NewBarberShopRepo(mongo),
-			repo.NewShopViewRepo(mongo),
-		),
+	redis, err := redis.New()
+	if err != nil {
+		fmt.Printf("redis-error: %s", err.Error())
+		return
 	}
 
-	userUsecase.Store(context.TODO(), &entity.User{
+	ucs := BuildRequirements(mongo, redis)
+
+	userUsecase := ucs[usecase.USER].(usecase.User)
+
+	userUsecase.Store(context.Background(), &entity.User{
 		Email:    "admin@admin.com",
 		Password: "super_secret",
+		Type:     entity.ADMIN,
 	})
 
-	// TODO create an account admin
-
-	router := controller.Router(usecases)
+	// TODO: get the production env
+	router := controller.Router(ucs, true)
 
 	router.Run()
+}
+
+func BuildRequirements(m *mongo.Mongo, r *redis.Redis) map[byte]usecase.Usecase {
+
+	userRepo := repo.NewUserRepo(m)
+	barberShopRepo := repo.NewBarberShopRepo(m)
+	viewShopRepo := repo.NewShopViewRepo(m)
+	appintmentRepo := repo.NewAppointmentRepo(m)
+	slotRepo := repo.NewSlotRepo(r)
+
+	password := auth.NewPasswordAuth()
+
+	ucs := map[byte]usecase.Usecase{}
+	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
+	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
+	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(
+		appintmentRepo,
+		slotRepo,
+		userRepo,
+		barberShopRepo,
+	)
+
+	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
+	ucs[usecase.HOLIDAY] = usecase.NewHolidayUseCase(slotRepo, barberShopRepo)
+
+	return ucs
 }

@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
@@ -15,7 +14,7 @@ type UserUseCase struct {
 	password PasswordAuth
 }
 
-var UserAlreadyExists = errors.New("Email already exists")
+var ErrUserAlreadyExists = errors.New("email already exists")
 
 // New -.
 func NewUserUseCase(r UserRepo, p PasswordAuth) *UserUseCase {
@@ -30,7 +29,7 @@ func NewUserUseCase(r UserRepo, p PasswordAuth) *UserUseCase {
 func (uc *UserUseCase) Store(ctx context.Context, user *entity.User) error {
 
 	if _, err := uc.repo.GetByEmail(ctx, user.Email); err == nil {
-		return UserAlreadyExists
+		return ErrUserAlreadyExists
 	}
 
 	hashedPassword, err := uc.password.HashAndSalt(user.Password)
@@ -53,7 +52,7 @@ func (uc *UserUseCase) Login(ctx context.Context, loginUser *entity.User) (*enti
 	}
 
 	if !uc.password.Verify(user.Password, loginUser.Password) {
-		return nil, fmt.Errorf("Wrong password")
+		return nil, errors.New("wrong password")
 	}
 
 	return user, nil
@@ -66,19 +65,6 @@ func (uc *UserUseCase) DeleteByID(ctx context.Context, ID string) error {
 // TODO: retrieve also the ID and barberShopsIDs
 func (uc *UserUseCase) GetByID(ctx context.Context, ID string) (*entity.User, error) {
 	return uc.repo.GetByID(ctx, ID)
-}
-
-func (uc *UserUseCase) ModifyByID(ctx context.Context, ID string, user *entity.User) error {
-
-	if _, err := uc.repo.GetByEmail(ctx, user.Email); err == nil {
-		return UserAlreadyExists
-	}
-
-	if user.Password != "" {
-		return fmt.Errorf("The password field cannot be edited here")
-	}
-
-	return uc.repo.ModifyByID(ctx, ID, user)
 }
 
 // TODO: retrieve also the ID and barberShopsIDs
@@ -113,4 +99,37 @@ func (uc *UserUseCase) ResetPassword(ctx context.Context, ID string, password st
 	return uc.repo.ModifyByID(ctx, ID, &entity.User{
 		Password: hashed,
 	})
+}
+
+func (uc *UserUseCase) EditShopsByIDs(ctx context.Context, ID string, IDs []string) error {
+
+	user, err := uc.repo.GetByID(ctx, ID)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	if user.Type == entity.ADMIN {
+		if len(IDs) > 0 {
+			return errors.New("cannot edit shops if the user is admin")
+		}
+		return nil
+	}
+
+	return uc.repo.EditShopsByIDs(ctx, user, IDs)
+}
+
+func (uc *UserUseCase) ModifyByID(ctx context.Context, ID string, update *entity.User) error {
+	if _, err := uc.repo.GetByEmail(ctx, update.Email); err == nil {
+		return ErrUserAlreadyExists
+	}
+
+	if update.Password != "" {
+		return errors.New("the password field cannot be edited here")
+	}
+
+	if update.Type == entity.ADMIN && len(update.OwnedShops) > 0 {
+		return errors.New("cannot become an admin if you own shops")
+	}
+
+	return uc.repo.ModifyByID(ctx, ID, update)
 }

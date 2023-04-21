@@ -1,4 +1,4 @@
-FROM golang:1.19.3 as builder
+FROM golang:1.20.2 as builder
 WORKDIR /app
 
 RUN apt update && \
@@ -19,7 +19,6 @@ WORKDIR /app
 RUN apt update && \
 	apt upgrade -y && \
 	apt-get install -y netcat
-
 
 COPY --from=builder /app/build/cmd .
 COPY --from=builder /app/docker/deploy/be/entrypoint.sh .

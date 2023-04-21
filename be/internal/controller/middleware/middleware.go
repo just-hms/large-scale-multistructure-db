@@ -109,15 +109,14 @@ func (mr *MiddlewareRoutes) RequireBarber(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 	}
 
-	// TODO: check this, mostly for appointments
-
-	barberShopID := ctx.Param("id")
+	barberShopID := ctx.Param("shopid")
 
 	if barberShopID == "" {
-		ctx.Next()
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
+	// check if the barber is in ones that the barber owns
 	for _, b := range user.OwnedShops {
 		if b.ID == barberShopID {
 			ctx.Next()

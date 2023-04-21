@@ -10,9 +10,9 @@ type User struct {
 	ID       string `bson:"_id"`
 	Email    string `bson:"email"`
 	Username string `bson:"username"`
-	Password string `bson:"password"`
+	Password string `bson:"password" json:"-"`
 	Type     string `bson:"type"`
 
-	CurrentAppointment *Appointment
-	OwnedShops         []*BarberShop
+	CurrentAppointment *Appointment  `bson:"currentAppointment,omitempty"`
+	OwnedShops         []*BarberShop `bson:"ownedShops,omitempty"`
 }

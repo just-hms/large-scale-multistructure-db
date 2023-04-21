@@ -217,7 +217,7 @@ response ✔️ -> status : `200`
 
 ```json
 {
-	"recoveryToken" : "token",
+	"resetToken" : "token",
 }
 ```
 
@@ -378,9 +378,7 @@ request
 
 ```json
 {
-	"date" : "01/12/2000",
-	"slot" : 1,
-	"barberShopID" : 1
+	"dateTime" : "08.30 01/12/2000",
 }
 ```
 
@@ -427,13 +425,13 @@ response ❌ -> status : `401` | `400`
 ```
 
 
-## 💈 `DELETE` /appointment/:id
+## 💈 `DELETE` /barber_shop/:id/appointment
 
 request
 
 ```json
 {
-
+	"appointmentId" : "1"
 }
 ```
 
@@ -462,8 +460,7 @@ request
 
 ```json
 {
-	"date" : "01/12/2000",
-	"slot" : 1,
+	"date" : "08:20 01/12/2000",
 	"unavailableEmployees" : 7,
 }
 ```

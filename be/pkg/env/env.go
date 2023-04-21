@@ -15,17 +15,18 @@ var EnvWrongType = errors.New("The specified env is the wrong type")
 
 var loaded = false
 
-var ()
-
-func load() {
+func loadEnv() {
+	if loaded {
+		return
+	}
 	loaded = true
 
-	_, b, _, ok := runtime.Caller(0)
+	_, caller, _, ok := runtime.Caller(0)
 	if !ok {
 		panic("error retrevieng the .env file")
 	}
 
-	envPath := filepath.Join(filepath.Dir(b), "../..", "../.env")
+	envPath := filepath.Join(filepath.Dir(caller), "../..", "../.env")
 
 	err := godotenv.Load(envPath)
 	if err != nil {
@@ -34,20 +35,21 @@ func load() {
 }
 
 func GetInteger(key string) (int, error) {
-	if !loaded {
-		load()
-	}
+	loadEnv()
+
 	env := os.Getenv(key)
 	if env == "" {
 		return 0, EnvNotFound
 	}
-	return strconv.Atoi(env)
+	value, err := strconv.Atoi(env)
+	if err != nil {
+		return 0, EnvWrongType
+	}
+	return value, nil
 }
 
 func GetString(key string) (string, error) {
-	if !loaded {
-		load()
-	}
+	loadEnv()
 	env := os.Getenv(key)
 	if env == "" {
 		return "", EnvNotFound

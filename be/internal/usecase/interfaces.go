@@ -7,34 +7,38 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 )
 
-//go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test
+type Usecase interface{}
+
+const (
+	USER byte = iota
+	PASSWORD_AUTH
+	BARBER_SHOP
+	CALENDAR
+	APPOINTMENT
+	HOLIDAY
+	REVIEW
+)
 
 type (
-
-	// INTERFACES
-
 	User interface {
-		Login(ctx context.Context, user *entity.User) (*entity.User, error)     // IMPLEMENTED | TESTED
-		Store(ctx context.Context, user *entity.User) error                     // IMPLEMENTED | TESTED
-		GetByID(ctx context.Context, ID string) (*entity.User, error)           // IMPLEMENTED | TESTED
-		ModifyByID(ctx context.Context, ID string, user *entity.User) error     // IMPLEMENTED | TESTED
-		DeleteByID(ctx context.Context, ID string) error                        // IMPLEMENTED | TESTED
-		List(ctx context.Context, email string) ([]*entity.User, error)         // IMPLEMENTED | TESTED
-		LostPassword(ctx context.Context, email string) (string, error)         // IMPLEMENTED
-		ResetPassword(ctx context.Context, ID string, newPassword string) error // IMPLEMENTED
-	}
+		Login(ctx context.Context, user *entity.User) (*entity.User, error)
+		Store(ctx context.Context, user *entity.User) error
+		GetByID(ctx context.Context, ID string) (*entity.User, error)
+		ModifyByID(ctx context.Context, ID string, user *entity.User) error
+		DeleteByID(ctx context.Context, ID string) error
+		List(ctx context.Context, email string) ([]*entity.User, error)
+		EditShopsByIDs(ctx context.Context, ID string, IDs []string) error
 
-	PasswordAuth interface {
-		Verify(hashed string, password string) bool  // IMPLEMENTED
-		HashAndSalt(password string) (string, error) // IMPLEMENTED
+		LostPassword(ctx context.Context, email string) (string, error)
+		ResetPassword(ctx context.Context, ID string, newPassword string) error
 	}
 
 	BarberShop interface {
-		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error) // IMPLEMENTED
-		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)                        // IMPLEMENTED
-		Store(ctx context.Context, shop *entity.BarberShop) error                                                   // IMPLEMENTED
-		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error                                   // IMPLEMENTED
-		DeleteByID(ctx context.Context, ID string) error                                                            // IMPLEMENTED
+		Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error)
+		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)
+		Store(ctx context.Context, shop *entity.BarberShop) error
+		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
+		DeleteByID(ctx context.Context, ID string) error
 	}
 
 	Calendar interface {
@@ -42,13 +46,13 @@ type (
 	}
 
 	Appointment interface {
-		Book(ctx context.Context, appointment *entity.Appointment) (string, error)
-		Cancel(ctx context.Context, appointment *entity.Appointment) (string, error)
-		DeleteByID(ctx context.Context, ID string) (string, error)
+		Book(ctx context.Context, appointment *entity.Appointment) error
+		Cancel(ctx context.Context, appointment *entity.Appointment) error
+		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
 	}
 
 	Holiday interface {
-		Set(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) (string, error)
+		Set(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error
 	}
 
 	Review interface {
@@ -61,11 +65,17 @@ type (
 		RemoveVoteByID(ctx context.Context, voterID, ID string) error
 	}
 
-	// TODO : add analytics, maybe raw access to db using custom store for each one
+	// TODO : add analytics, maybe raw access to db using custom store like AnalyticsStore
 
-	// REPOS
+)
+type (
+	PasswordAuth interface {
+		Verify(hashed string, password string) bool
+		HashAndSalt(password string) (string, error)
+	}
+)
 
-	// UserRepo -.
+type (
 	UserRepo interface {
 		Store(ctx context.Context, user *entity.User) error
 		GetByID(ctx context.Context, ID string) (*entity.User, error)
@@ -73,20 +83,21 @@ type (
 		ModifyByID(ctx context.Context, ID string, user *entity.User) error
 		GetByEmail(ctx context.Context, email string) (*entity.User, error)
 		List(ctx context.Context, email string) ([]*entity.User, error)
+		EditShopsByIDs(ctx context.Context, user *entity.User, IDs []string) error
 	}
 
 	BarberShopRepo interface {
 		Store(ctx context.Context, shop *entity.BarberShop) error
-		Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error)
+		Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error)
 		GetByID(ctx context.Context, ID string) (*entity.BarberShop, error)
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error
 	}
 
-	// TODO: add something that refresh the slots every day
 	SlotRepo interface {
 		GetByBarberShopID(ctx context.Context, ID string) ([]*entity.Slot, error)
 		Book(ctx context.Context, appointment *entity.Appointment) error
+		Get(ctx context.Context, shopID string, date time.Time) (*entity.Slot, error)
 		Cancel(ctx context.Context, appointment *entity.Appointment) error
 		SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error
 	}
@@ -98,7 +109,7 @@ type (
 	AppointmentRepo interface {
 		Book(ctx context.Context, appointment *entity.Appointment) error
 		Cancel(ctx context.Context, appointment *entity.Appointment) error
-		DeleteByID(ctx context.Context, ID string) error
+		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
 	}
 
 	ReviewRepo interface {
@@ -112,6 +123,4 @@ type (
 		UpVote(ctx context.Context, voterID string, shopID string) error
 		RemoveVote(ctx context.Context, voterID string, shopID string) error
 	}
-
-	Usecase interface{}
 )

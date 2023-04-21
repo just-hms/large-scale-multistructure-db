@@ -3,8 +3,11 @@ package controller
 import (
 	"net/http"
 
+	_ "github.com/just-hms/large-scale-multistructure-db/be/apidocs"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,71 +28,105 @@ func CORSAllowAll() gin.HandlerFunc {
 	}
 }
 
-func Router(usecases []usecase.Usecase) *gin.Engine {
+// @title Gin Swagger Example API
+// @version 1.0
+// @description This is a sample server server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:7000
+// @BasePath /api/
+// @schemes http
+func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
+
+	if production {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	router := gin.Default()
 	router.Use(CORSAllowAll())
 
 	api := router.Group("/api")
 
-	api.GET("/health/", func(c *gin.Context) { c.JSON(http.StatusOK, `{"message" : "ok"}`) })
+	url := ginSwagger.URL("/api/swagger/doc.json")
+	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+
+	api.GET("/health", Health)
 
 	// create the routes based on the given usecases
-	var (
-		mr *middleware.MiddlewareRoutes
-		ur *UserRoutes
-		br *BarberShopRoutes
+	mr := middleware.NewMiddlewareRoutes(ucs[usecase.USER].(usecase.User))
+	ur := NewUserRoutes(ucs[usecase.USER].(usecase.User))
+
+	br := NewBarberShopRoutes(
+		ucs[usecase.BARBER_SHOP].(usecase.BarberShop),
+		ucs[usecase.CALENDAR].(usecase.Calendar),
 	)
 
-	for _, uc := range usecases {
+	ar := NewAppointmentRoutes(
+		ucs[usecase.APPOINTMENT].(usecase.Appointment),
+		ucs[usecase.USER].(usecase.User),
+	)
 
-		switch u := uc.(type) {
+	hr := NewHolidayRoutes(
+		ucs[usecase.HOLIDAY].(usecase.Holiday),
+	)
 
-		// TODO : check this in the https://github.com/evrone/go-clean-template
-
-		case *usecase.UserUseCase:
-			mr = middleware.NewMiddlewareRoutes(u)
-			ur = NewUserRoutes(u)
-		case *usecase.BarberShopUseCase:
-			br = NewBarberShopRoutes(u)
-		}
-	}
-
-	// TODO :
-	// - fix trailing /
-	// - don't return hash password
-	// - return the ID
-
-	// link the path to the routes
 	user := api.Group("/user")
 	{
-		user.POST("/", ur.Register)                                         // TESTED
-		user.POST("/login/", ur.Login)                                      // TESTED
-		user.GET("/self/", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)      // TESTED
-		user.DELETE("/self/", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete) // TESTED
-		user.POST("/lost_password/", ur.LostPassword)
-		user.POST("/reset_password/", ur.ResetPassword)
+		user.POST("", ur.Register)
+		user.POST("/login", ur.Login)
+		user.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)
+		user.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete)
+		user.POST("/lostpassword", ur.LostPassword)
+		user.POST("/resetpassword/resettoken", ur.ResetPassword)
+
+		user.DELETE("/self/appointment", mr.RequireAuth, ar.DeleteSelfAppointment)
+	}
+
+	barberShop := api.Group("/barbershop")
+	barberShop.Use(mr.RequireAuth)
+	{
+		barberShop.POST("", br.Find)
+		barberShop.GET("/:shopid", br.Show)
+
+		barberShop.PUT("/:shopid", mr.RequireBarber, br.Modify)
+
+		barberShop.DELETE("/:shopid/appointment/:appointmentid", mr.RequireBarber, ar.DeleteAppointment)
+		barberShop.POST("/:shopid/appointment", ar.Book)
+
+		barberShop.GET("/:shopid/calendar", br.Calendar)
+		barberShop.POST("/:shopid/holiday", mr.RequireBarber, hr.Set)
 	}
 
 	admin := api.Group("/admin")
 	admin.Use(mr.RequireAdmin)
 	{
-		admin.GET("/user", ur.ShowAll)       // TESTED
-		admin.GET("/user/:id", ur.Show)      // TESTED
-		admin.DELETE("/user/:id", ur.Delete) // TESTED
+		admin.GET("/user", ur.ShowAll)
+		admin.GET("/user/:id", ur.Show)
+		admin.DELETE("/user/:id", ur.Delete)
 		admin.PUT("/user/:id", ur.Modify)
 
-		admin.POST("/barber_shop/", br.Create)
-		admin.DELETE("/barber_shop/:id", br.Delete)
-	}
-
-	barberShop := api.Group("/barber_shop")
-	barberShop.Use(mr.RequireAuth)
-	{
-		barberShop.GET("", br.Find)
-		barberShop.GET("/:id", br.Show)
-		barberShop.PUT("/:id", mr.RequireBarber, br.Modify)
+		admin.POST("/barbershop", br.Create)
+		admin.DELETE("/barbershop/:shopid", br.Delete)
 	}
 
 	return router
+}
+
+// HealthCheck godoc
+// @Summary Show the status of the server
+// @Description Get the status of the server
+// @Tags Root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /health [get]
+func Health(c *gin.Context) {
+	c.JSON(http.StatusOK, map[string]string{"message": "ok"})
 }
