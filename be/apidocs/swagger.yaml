@@ -1,0 +1,831 @@
+basePath: /api/
+definitions:
+  controller.BookAppointmentInput:
+    properties:
+      dateTime:
+        type: string
+    type: object
+  controller.CreateBarbershopInput:
+    properties:
+      employees_number:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  controller.FindBarbershopInput:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      radius:
+        type: number
+    type: object
+  controller.LoginInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  controller.LostPasswordInput:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  controller.ModifyBarberShopInput:
+    properties:
+      employees:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    type: object
+  controller.ModifyUserInput:
+    properties:
+      barbershopsId:
+        items:
+          type: string
+        type: array
+      email:
+        type: string
+    type: object
+  controller.RegisterInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  controller.SetHolidaysInput:
+    properties:
+      date:
+        type: string
+      unavailableEmployees:
+        type: integer
+    type: object
+  entity.Appointment:
+    properties:
+      barbershopID:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      start:
+        type: string
+      userID:
+        type: string
+    type: object
+  entity.BarberShop:
+    properties:
+      address:
+        type: string
+      appointments:
+        items:
+          $ref: '#/definitions/entity.Appointment'
+        type: array
+      employees:
+        type: integer
+      id:
+        type: string
+      imageLink:
+        type: string
+      location:
+        $ref: '#/definitions/entity.Location'
+      name:
+        type: string
+      phone:
+        type: string
+      rating:
+        type: number
+      reviews:
+        items:
+          $ref: '#/definitions/entity.Review'
+        type: array
+    type: object
+  entity.Location:
+    properties:
+      coordinates:
+        items:
+          type: number
+        type: array
+      type:
+        type: string
+    type: object
+  entity.Review:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      rating:
+        type: integer
+      reported:
+        type: boolean
+    type: object
+  entity.Slot:
+    properties:
+      bookedAppoIntments:
+        type: integer
+      start:
+        type: string
+      unavailableEmployees:
+        type: integer
+    type: object
+  entity.User:
+    properties:
+      currentAppointment:
+        $ref: '#/definitions/entity.Appointment'
+      email:
+        type: string
+      id:
+        type: string
+      ownedShops:
+        items:
+          $ref: '#/definitions/entity.BarberShop'
+        type: array
+      type:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:7000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Gin Swagger Example API
+  version: "1.0"
+paths:
+  /admin/barbershop:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new barbershop with the given name, location and number
+        of employees.
+      parameters:
+      - description: The input parameters for creating a new barbershop
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CreateBarbershopInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Create a new barbershop
+      tags:
+      - Barbershop
+  /admin/barbershop/{shopid}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a barbershop by ID.
+      parameters:
+      - description: The ID of the barbershop to delete
+        in: path
+        name: shopid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a barbershop by ID
+      tags:
+      - Barbershop
+    put:
+      consumes:
+      - application/json
+      description: Modifies details of a barbershop for the given shop ID.
+      parameters:
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: The updated barbershop details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ModifyBarberShopInput'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Modify details of a barbershop
+      tags:
+      - Barbershop
+  /admin/user:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of users filtered by email
+      parameters:
+      - description: Email filter
+        in: query
+        name: email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entity.User'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Show list of users
+      tags:
+      - User
+  /admin/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete user by ID
+      tags:
+      - User
+    get:
+      consumes:
+      - application/json
+      description: Get user information by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/entity.User'
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Show user information by ID
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: Modify a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Modify user input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ModifyUserInput'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Modify user by ID
+      tags:
+      - User
+  /barbershop:
+    post:
+      consumes:
+      - application/json
+      description: Finds barbershops within a certain radius of the given coordinates
+        and name.
+      parameters:
+      - description: The input parameters for finding barbershops
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.FindBarbershopInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entity.BarberShop'
+              type: array
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Find barbershops within a certain radius
+      tags:
+      - Barbershop
+  /barbershop/{shopid}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves details of a barbershop for the given shop ID.
+      parameters:
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/entity.BarberShop'
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve details of a barbershop
+      tags:
+      - Barbershop
+  /barbershop/{shopid}/appointment:
+    post:
+      consumes:
+      - application/json
+      description: Books a new appointment for the current user.
+      parameters:
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: The appointment details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.BookAppointmentInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Book a new appointment
+      tags:
+      - Appointment
+  /barbershop/{shopid}/appointment/{appointmentid}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an appointment at a specific barbershop
+      parameters:
+      - description: ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: ID of the appointment
+        in: path
+        name: appointmentid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Deletes an appointment
+      tags:
+      - Appointment
+  /barbershop/{shopid}/calendar:
+    get:
+      consumes:
+      - application/json
+      description: Gets the calendar for a barbershop by ID.
+      parameters:
+      - description: The ID of the barbershop to get the calendar for
+        in: path
+        name: shopid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entity.Slot'
+              type: array
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get the calendar for a barbershop by ID
+      tags:
+      - Barbershop
+  /barbershop/{shopid}/holiday:
+    post:
+      consumes:
+      - application/json
+      description: Set holiday for a given Barber Shop
+      parameters:
+      - description: Barber Shop ID
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: Set Holidays Input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.SetHolidaysInput'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Set holiday
+      tags:
+      - Holiday
+  /health:
+    get:
+      consumes:
+      - '*/*'
+      description: Get the status of the server
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of the server
+      tags:
+      - Root
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Create new user with the provided email and password
+      parameters:
+      - description: User credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Create new user
+      tags:
+      - User
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user with the provided email and password and returns
+        a JWT token for subsequent authenticated requests
+      parameters:
+      - description: User email and password
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'token" : "token"}'
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Logs in a user and returns a JWT token
+      tags:
+      - Auth
+  /user/lostpassword:
+    post:
+      consumes:
+      - application/json
+      description: Generate a password reset token and send it to the user's email
+        address
+      parameters:
+      - description: Lost password input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.LostPasswordInput'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Request password reset
+      tags:
+      - User
+  /user/resetpassword/{resettoken}:
+    post:
+      consumes:
+      - application/json
+      description: Reset password for a user given a reset token
+      parameters:
+      - description: Reset token
+        in: path
+        name: reset_token
+        required: true
+        type: string
+      - description: New password
+        in: body
+        name: newpassword
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Reset user password
+      tags:
+      - User
+  /user/self:
+    get:
+      consumes:
+      - application/json
+      description: Get user information by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/entity.User'
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Show user information by ID
+      tags:
+      - User
+  /user/self/appointment:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the appointment of the current user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Deletes the current user's appointment
+      tags:
+      - Appointment
+schemes:
+- http
+swagger: "2.0"

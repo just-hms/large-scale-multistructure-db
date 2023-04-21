@@ -1,29 +1,44 @@
 package redis
 
 import (
+	"fmt"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
+
 	redisdriver "github.com/go-redis/redis"
 )
-
-// TODO: put this in
-const RedisAddr = "cache:6379"
-const RedisPassword = ""
 
 type Redis struct {
 	Client *redisdriver.Client
 }
 
-// get url and options as param
-// add const
+func New() (*Redis, error) {
 
-// get url and options as param
+	redisHost, err := env.GetString("REDIS_HOST")
+	if err != nil {
+		redisHost = "localhost"
+	}
 
-func New() *Redis {
+	redisPort, err := env.GetInteger("REDIS_PORT")
+	if err != nil {
+		return nil, err
+	}
+
+	redisAddr := fmt.Sprintf("%s:%d", redisHost, redisPort)
+
+	// it's ok if the password is empty
+	redisPassword, _ := env.GetString("REDIS_PASSWORD")
 
 	return &Redis{
 		Client: redisdriver.NewClient(&redisdriver.Options{
-			Addr:     RedisAddr,
-			Password: RedisPassword,
+			Addr:     redisAddr,
+			Password: redisPassword,
 			DB:       0,
 		}),
-	}
+	}, nil
+}
+
+func (r *Redis) Clear() error {
+	_, err := r.Client.FlushAllAsync().Result()
+	return err
 }

@@ -2,7 +2,8 @@ package usecase
 
 import (
 	"context"
-	"large-scale-multistructure-db/be/internal/entity"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 )
 
 type BarberShopUseCase struct {
@@ -17,7 +18,7 @@ func NewBarberShopUseCase(shopRepo BarberShopRepo, viewRepo ShopViewRepo) *Barbe
 	}
 }
 
-func (uc *BarberShopUseCase) Find(ctx context.Context, lat string, lon string, name string, radius string) ([]*entity.BarberShop, error) {
+func (uc *BarberShopUseCase) Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error) {
 	return uc.shopRepo.Find(ctx, lat, lon, name, radius)
 }
 
@@ -47,6 +48,11 @@ func (uc *BarberShopUseCase) GetByID(ctx context.Context, viewerID string, ID st
 func (uc *BarberShopUseCase) Store(ctx context.Context, shop *entity.BarberShop) error {
 	return uc.shopRepo.Store(ctx, shop)
 }
+
+// TODO
+// - add check for not enough workes in the calendar
+// - unavailableEmployees cannot be higher then the actual employes
+
 func (uc *BarberShopUseCase) ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error {
 	return uc.shopRepo.ModifyByID(ctx, ID, shop)
 }

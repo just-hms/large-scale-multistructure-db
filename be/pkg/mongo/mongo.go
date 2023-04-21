@@ -2,23 +2,25 @@ package mongo
 
 import (
 	"context"
+	"fmt"
 	"time"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
 	mongodriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 // check this
 var ErrNoDocuments = mongodriver.ErrNoDocuments
 
 type Options struct {
-	DB_URI  string
-	DB_NAME string
+	DBName string
 }
 
 type Mongo struct {
-	DB  *mongodriver.Database
-	sex mongodriver.Session
+	DB *mongodriver.Database
 }
 
 // get url and options as param
@@ -28,15 +30,21 @@ func New(opt *Options) (*Mongo, error) {
 
 	m := &Mongo{}
 
-	if opt.DB_URI == "" {
-		opt.DB_URI = "mongodb://db:27017"
+	dbHost, err := env.GetString("MONGO_HOST")
+	if err != nil {
+		dbHost = "localhost"
 	}
 
-	if opt.DB_NAME == "" {
-		opt.DB_NAME = "test"
+	dbPort, err := env.GetInteger("MONGO_PORT")
+	if err != nil {
+		return nil, err
 	}
 
-	client, err := mongodriver.NewClient(options.Client().ApplyURI(opt.DB_URI))
+	mongoAddr := fmt.Sprintf("mongodb://%s:%d", dbHost, dbPort)
+
+	client, err := mongodriver.NewClient(
+		options.Client().ApplyURI(mongoAddr),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -49,19 +57,21 @@ func New(opt *Options) (*Mongo, error) {
 		return nil, err
 	}
 
-	m.DB = client.Database(opt.DB_NAME)
+	m.DB = client.Database(opt.DBName)
 
 	return m, nil
 }
 
-func (m *Mongo) Record() {
-	m.sex, _ = m.DB.Client().StartSession(&options.SessionOptions{
-		CausalConsistency: &options.DefaultCausalConsistency,
-	})
-	m.sex.StartTransaction()
-}
+// TODO: make this more general
+func (m *Mongo) CreateIndex(ctx context.Context) error {
+	indexOpts := options.CreateIndexes().SetMaxTime(time.Second * 10)
 
-func (m *Mongo) RollBack(ctx context.Context) {
-	m.sex.AbortTransaction(ctx)
-	m.sex.EndSession(ctx)
+	// Index to location 2dsphere type.
+	pointIndexModel := mongodriver.IndexModel{
+		Keys:    bsonx.MDoc{"location": bsonx.String("2dsphere")},
+	}
+
+	pointIndexes := m.DB.Collection("barbershops").Indexes()
+	_, err := pointIndexes.CreateOne(ctx, pointIndexModel, indexOpts)
+	return err
 }

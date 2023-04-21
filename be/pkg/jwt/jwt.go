@@ -2,8 +2,10 @@ package jwt
 
 import (
 	"fmt"
-	"large-scale-multistructure-db/be/config/constants"
+	"os"
 	"time"
+
+	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
 	jwtdriver "github.com/golang-jwt/jwt"
 )
@@ -21,11 +23,22 @@ func CreateToken(userID string) (string, error) {
 
 	claims["authorized"] = true
 	claims["userID"] = userID
-	claims["exp"] = time.Now().Add(time.Hour * constants.TOKEN_HOUR_LIFE_SPAN).Unix()
+
+	lifespan, err := env.GetInteger("TOKEN_HOUR_LIFE_SPAN")
+	if err != nil {
+		return "", err
+	}
+
+	claims["exp"] = time.Now().Add(time.Hour * time.Duration(lifespan)).Unix()
 
 	token := jwtdriver.NewWithClaims(jwtdriver.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(constants.API_SECRET))
+	apiSecret, err := env.GetString("API_SECRET")
+	if err != nil {
+		return "", err
+	}
+
+	return token.SignedString([]byte(apiSecret))
 }
 
 // extract the userID from which the token was generated
@@ -38,7 +51,7 @@ func ExtractTokenID(tokenString string) (string, error) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(constants.API_SECRET), nil
+		return []byte(os.Getenv("API_SECRET")), nil
 	})
 
 	if err != nil {
