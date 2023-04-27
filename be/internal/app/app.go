@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -15,9 +16,19 @@ import (
 
 func Run() {
 
+	// TODO:
+	//	- add option pattern to create with index
 	mongo, err := mongo.New(&mongo.Options{DBName: "barber-deploy"})
 	if err != nil {
 		fmt.Printf("mongo-error: %s", err.Error())
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := mongo.CreateIndex(ctx); err != nil {
+		fmt.Printf("index-error: %s", err.Error())
 		return
 	}
 
