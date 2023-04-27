@@ -262,7 +262,7 @@ func (ur *UserRoutes) LostPassword(ctx *gin.Context) {
 }
 
 type ResetPasswordInput struct {
-	Password string `json:"newpassword" binding:"required"`
+	NewPassword string `json:"newpassword" binding:"required"`
 }
 
 // ResetPassword resets the password for a user given a reset token
@@ -292,7 +292,7 @@ func (ur *UserRoutes) ResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	if err := ur.userUseCase.ResetPassword(ctx, userID, input.Password); err != nil {
+	if err := ur.userUseCase.ResetPassword(ctx, userID, input.NewPassword); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
