@@ -1,7 +1,5 @@
-import {headers} from "./request-utils"
+import { headers, url } from "./request-utils";
 
-
-const url = "http://127.0.0.1:7000/api/" 
 export function getReservation(user) {
     // this function will retrieve all the shop reviews
     return {

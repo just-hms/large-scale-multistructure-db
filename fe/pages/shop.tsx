@@ -140,7 +140,7 @@ export default function Shop() {
             <div className='flex flex-col items-center order-first lg:order-none w-full px-3 lg:py-3'>
                 <div className="w-full top-0 transform -translate-y-40 lg:-translate-y-20 inset-0 flex justify-center items-center">
                   <div className="w-full h-full flex flex-col items-center justify-start rounded-3xl bg-slate-700 bg-opacity-60 backdrop-blur-lg drop-shadow-lg">
-                    <div className='w-full transform -translate-y-1/2 h-20 w-20 shadow shadow-black/70 rounded-full'>
+                    <div className='w-1/2 transform -translate-y-1/2 h-20 w-20 shadow shadow-black/70 rounded-full'>
                       <Image className="w-full h-full object-cover rounded-full " src={barber_propic} alt="barber salon"/>
                     </div>
                     <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-slate-200 ">

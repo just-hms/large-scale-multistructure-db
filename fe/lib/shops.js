@@ -1,21 +1,27 @@
-import { headers } from "./request-utils";
+import { headers, url } from "./request-utils";
 
-const url = "http://127.0.0.1:7000/api/" 
-export async function getShopData(shopid) {
+export async function getShopData(id) {
   const token = localStorage.getItem("token")
-  const response = await fetch(url+'barber_shop/'+shopid, {
+  const response = await fetch(url+'barber_shop/'+id, {
     method: 'GET',
     headers: headers(localStorage.getItem("token"))
   })
   return response;
 }
 
-export function getReviews(shopid){
+export function getReviews(id){
 }
-  
-export async function submitReview(shopid){
+
+export async function shopCalendar(id){
+  const response = await fetch(url+`barbershop/`+id+`/calendar`, {
+      method: 'GET',
+      headers: headers(localStorage.getItem("token"))
+  })
+  return response;
+}
+export async function submitReview(id){
   const token = localStorage.getItem("token")
-  const response = await fetch(url+'/barber_shop/'+shopid+'/review/', {
+  const response = await fetch(url+'/barber_shop/'+id+'/review/', {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),
     body: JSON.stringify({

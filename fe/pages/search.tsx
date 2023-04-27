@@ -38,18 +38,21 @@ export default function Search() {
       if(!token){
         router.push("/")
       }else{
-        fetch("https://api.geoapify.com/v1/geocode/search?text="+area+"&apiKey=66c0af4256094d7f93fd472e1a188390")
-        .then(async response => {
-          const response_json = await response.json()
-          const lat = response_json.features[0].properties.lat
-          const lon = response_json.features[0].properties.lon
-          const response_shops = await (await findShops(lat,lon)).json()
-          setShops(response_shops.barberShops)
-          setLoaded(true)
-        })
-        .catch((e) => {
-          console.error(`An error occurred: ${e}`)
-        });
+        if(area){
+          console.log(area)
+          fetch("https://api.geoapify.com/v1/geocode/search?text="+area+"&apiKey=66c0af4256094d7f93fd472e1a188390")
+          .then(async response => {
+            const response_json = await response.json()
+            const lat = response_json.features[0].properties.lat
+            const lon = response_json.features[0].properties.lon
+            const response_shops = await (await findShops(lat,lon)).json()
+            setShops(response_shops.barberShops)
+            setLoaded(true)
+          })
+          .catch((e) => {
+            console.error(`An error occurred: ${e}`)
+          });
+        }
       }
     }, [area]);
 

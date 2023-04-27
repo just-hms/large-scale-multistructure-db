@@ -1,3 +1,4 @@
+export const url = "http://127.0.0.1:7000/api/" 
 
 export function headers(token){
     if(token)

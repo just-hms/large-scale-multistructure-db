@@ -5,3 +5,4 @@ scraper/mapsApiKey.txt
 .vscode/
 # .env
 .idea/
+NOTES.md

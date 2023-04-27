@@ -1,3 +1,6 @@
+import { headers, url } from "./request-utils";
+
+
 export function getReservations(barber) {
     // this function will retrieve all the shop reviews
     return [{
@@ -27,5 +30,7 @@ export function getReservations(barber) {
         user:"Franco Califano"
       },];
   }
-    
-  value={textareaValue} onChange={(e) => setTextareaValue(e.target.value)
+
+
+
+  // value={textareaValue} onChange={(e) => setTextareaValue(e.target.value)

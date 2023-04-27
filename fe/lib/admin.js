@@ -1,6 +1,6 @@
 import { Coming_Soon } from "@next/font/google";
-import {headers} from "./request-utils"
-const url = "http://127.0.0.1:7000/api/" 
+import { headers, url } from "./request-utils";
+
 
 export async function getAccountInfos(){
   const response = await fetch(url+`admin/user`, {
@@ -17,7 +17,9 @@ export async function deleteUser (id){
   })
   return response;
 }
+
 export async function createShop(values){
+  console.log(values.address)
   const address_response = await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(values.adress)+"&apiKey=66c0af4256094d7f93fd472e1a188390")
   const response_json = await address_response.json()
   const lat = response_json.features[0].properties.lat
@@ -29,7 +31,26 @@ export async function createShop(values){
       "employees_number": values.employeesNumber,
       "name": values.name,
       "Latitude": lat,
-      "Longitude": lon,
+      "Longitude": lon
+    })
+  })
+  return response
+}
+
+export async function modifyShop(values, id){
+
+  const address_response = await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(values.adress)+"&apiKey=66c0af4256094d7f93fd472e1a188390")
+  const response_json = await address_response.json()
+  const lat = response_json.features[0].properties.lat
+  const lon = response_json.features[0].properties.lon
+  const response = await fetch(url+`admin/barbershop/`+id, {
+    method: 'POST',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "employees_number":values.employeesNumber,
+      "name": (values.name)?values.name:'',
+      "Latitude": lat,
+      "Longitude": lon
     })
   })
   return response
@@ -39,6 +60,28 @@ export async function deleteShop (id){
   const response = await fetch(url+`admin/barber_shop/`+id, {
     method: 'DELETE',
     headers: headers(localStorage.getItem("token"))
+  })
+  return response;
+}
+
+export async function assignShop (id,barbershops_to_add){
+  const response = await fetch(url+`admin/user/`+id, {
+    method: 'PUT',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "barbershopsId": barbershops_to_add
+    })
+  })
+  return response;
+}
+
+export async function modifyUserEmail (id,email){
+  const response = await fetch(url+`admin/user/`+id, {
+    method: 'PUT',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "email": email
+    })
   })
   return response;
 }
