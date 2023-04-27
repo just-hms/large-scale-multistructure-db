@@ -559,3 +559,45 @@ func (s *ControllerSuite) TestUserModify() {
 
 	}
 }
+
+func (s *ControllerSuite) TestUserChangePassword() {
+	// Perform the lost password request to get the reset token
+	lostJSON, _ := json.Marshal(controller.LostPasswordInput{
+		Email: s.fixture[USER1_EMAIL],
+	})
+
+	req, _ := http.NewRequest("POST", "/api/user/lostpassword", bytes.NewBuffer(lostJSON))
+	req.Header.Set("Content-Type", "application/json")
+
+	w := httptest.NewRecorder()
+	s.srv.ServeHTTP(w, req)
+
+	s.Require().Equal(http.StatusAccepted, w.Code)
+
+	body, err := io.ReadAll(w.Body)
+	s.Require().Nil(err)
+
+	type response struct {
+		ResetToken string `json:"resetToken"`
+	}
+	var res response
+	err = json.Unmarshal(body, &res)
+	s.Require().Nil(err)
+
+	// Create a new password to be set
+
+	resetJSON, _ := json.Marshal(controller.ResetPasswordInput{
+		NewPassword: "newpassword",
+	})
+	req, _ = http.NewRequest(
+		"POST",
+		"/api/user/resetpassword/"+res.ResetToken,
+		bytes.NewBuffer(resetJSON),
+	)
+	req.Header.Set("Content-Type", "application/json")
+
+	w2 := httptest.NewRecorder()
+	s.srv.ServeHTTP(w2, req)
+
+	s.Require().Equal(http.StatusAccepted, w2.Code)
+}

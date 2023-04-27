@@ -80,8 +80,7 @@ func (s *ControllerSuite) TestBarberShopFind() {
 			newBarberShopJson, _ := json.Marshal(tc.input)
 
 			// create a request for the self endpoint
-			var req *http.Request
-			req, _ = http.NewRequest("POST", "/api/barbershop", bytes.NewBuffer(newBarberShopJson))
+			req, _ := http.NewRequest("POST", "/api/barbershop", bytes.NewBuffer(newBarberShopJson))
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
