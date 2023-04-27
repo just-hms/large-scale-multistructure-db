@@ -6,7 +6,7 @@ import Link from 'next/link';
 import barber_icon from '../public/barber-shop.png'
 import { changePassword } from '../lib/user';
 
-export default function SignupForm() {
+export default function PasswordRecovery() {
     const router = useRouter()
     const [loaded,setLoaded] = useState(false)
     const [error,setError] = useState("")
@@ -21,7 +21,6 @@ export default function SignupForm() {
                 setError("Passwords not matching")
             }else{
                 const response = await changePassword(values)
-                console.log(response)
                 if(response.ok){
                     return router.push("/");
                 }else if(response.status == 400){

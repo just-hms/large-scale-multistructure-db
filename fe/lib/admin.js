@@ -3,7 +3,7 @@ import {headers} from "./request-utils"
 const url = "http://127.0.0.1:7000/api/" 
 
 export async function getAccountInfos(){
-  const response = await fetch(url+`admin/user?email=`, {
+  const response = await fetch(url+`admin/user`, {
     method: 'GET',
     headers: headers(localStorage.getItem("token"))
   })
@@ -22,14 +22,14 @@ export async function createShop(values){
   const response_json = await address_response.json()
   const lat = response_json.features[0].properties.lat
   const lon = response_json.features[0].properties.lon
-  const response = await fetch(url+`admin/barber_shop/`, {
+  const response = await fetch(url+`admin/barbershop`, {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),
     body: JSON.stringify({
+      "employees_number": values.employeesNumber,
       "name": values.name,
-      "Latitude": 1,
-      "Longitude": 1,
-      "employees_number": 2//values.employeesNumber
+      "Latitude": lat,
+      "Longitude": lon,
     })
   })
   return response

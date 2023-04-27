@@ -21,7 +21,7 @@ export default function SignupForm() {
                 setError("Passwords not matching")
             }else{
                 const response = await signup(values)
-                if(response.ok){
+                if(response.status == 201){
                     return router.push("/");
                 }else if(response.status == 400){
                     setError("Email not valid")

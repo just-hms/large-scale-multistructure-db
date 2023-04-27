@@ -14,7 +14,7 @@ export function getReservation(user) {
 export async function getUserInfos(){
   const token = localStorage.getItem("token")
   // req.Header.Add("Authorization", "Bearer "+tc.token)
-  const response = await fetch(url+'user/self/', {
+  const response = await fetch(url+'user/self', {
     method: 'GET',
     headers: headers(localStorage.getItem("token"))
   })
@@ -22,7 +22,7 @@ export async function getUserInfos(){
 }
 
 export async function signup(values){
-  const response = await fetch(url+'user/', {
+  const response = await fetch(url+'user', {
     method: 'POST',
     headers: headers(),
     body: JSON.stringify({
@@ -34,7 +34,7 @@ export async function signup(values){
 }
 
 export async function signin(values){
-  const response = await fetch(url+'user/login/', {
+  const response = await fetch(url+'user/login', {
     method: 'POST',
     headers: headers(),
     body: JSON.stringify({
@@ -46,7 +46,7 @@ export async function signin(values){
 }
 
 export async function deleteAccount(){
-  const response = await fetch(url+'user/self/', {
+  const response = await fetch(url+'user/self', {
     method: 'DELETE',
     headers: headers(localStorage.getItem("token"))
   })
@@ -55,22 +55,23 @@ export async function deleteAccount(){
 
 // TODO: !!!
 export async function changePassword(values){
-  const response = await fetch(url+'user/lost_password/', {
+  const response = await fetch(url+'user/lostpassword', {
     method: 'POST',
     headers: headers(),
     body: JSON.stringify({
-            "username": values.email,
+      "email": values.email,
     })
   })
-  if(response.ok){
+  if(response.ok){  
     const response_json = await response.json()
-    const reset_password = await fetch(url+'user/reset_password?reset_token='+encodeURIComponent(response_json.resetToken), {
+    const reset_password = await fetch(url+'user/resetpassword/'+encodeURIComponent(response_json.resetToken), {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify({
-              "new_password": values.password,
+              "NewPassword": values.password,
       })
     })
     return reset_password
   }
+  return response
 }

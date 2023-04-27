@@ -43,14 +43,7 @@ export default function Search() {
           const response_json = await response.json()
           const lat = response_json.features[0].properties.lat
           const lon = response_json.features[0].properties.lon
-          const response_shops = {barberShops:[
-            {name:"pippo",
-            id:1111,
-            meanRating:3,
-            description:"small description of the shop",
-            distance:1,
-            image:"path_to_image"
-            }]}//await (await findShops(lat,lon)).json()
+          const response_shops = await (await findShops(lat,lon)).json()
           setShops(response_shops.barberShops)
           setLoaded(true)
         })

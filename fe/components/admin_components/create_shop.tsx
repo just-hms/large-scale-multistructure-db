@@ -23,14 +23,14 @@ export default function CreateShop({accounts}:any) {
 return (
     <>
      <div className='flex flex-col items-center justify-start text-left text-slate-300 text-lg w-full'>
-        <div className='relative max-h-96 overflow-auto rounded-3xl bg-slate-700 shadow-md shadow-black/70 px-5 w-full lg:w-3/4'>
+        <div className='relative max-h-128 overflow-auto rounded-3xl bg-slate-700 shadow-md shadow-black/70 px-5 w-full lg:w-3/4'>
           <h1 className='sticky py-5 top-0 bg-slate-700 w-full text-xl font-bold text-center w-full border-b border-slate-500'>Create Shop</h1>
           <form className="space-y-4 md:space-y-6 py-5 w-full flex flex-col justify-center items-center" onSubmit={formik.handleSubmit}>
               <div className='w-full lg:w-3/4'>
                   <label htmlFor="name" className="block mb-2 text-sm font-medium text-slate-200">Shop Name</label>
                   <input type="text" name="name" id="name" onChange={formik.handleChange} value={formik.values.name} className="border border-slate-500  bg-slate-600 text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" placeholder="Name" required/>
-                  <label htmlFor="description" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Shop Description</label>
-                  <input type="text" name="description" id="description" onChange={formik.handleChange} value={formik.values.description} placeholder="Description" className="border border-slate-500 bg-slate-600  text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" required/>
+                  {/* <label htmlFor="description" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Shop Description</label>
+                  <input type="text" name="description" id="description" onChange={formik.handleChange} value={formik.values.description} placeholder="Description" className="border border-slate-500 bg-slate-600  text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" required/> */}
                   <label htmlFor="address" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Address</label>
                   <input type="text" name="address" id="address" onChange={formik.handleChange} value={formik.values.address} placeholder="Address" className="border border-slate-500 bg-slate-600  text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" required/>
                   <label htmlFor="employeesNumber" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Employees Number</label>
