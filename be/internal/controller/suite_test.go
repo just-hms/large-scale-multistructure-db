@@ -75,6 +75,7 @@ func (s *ControllerSuite) TearDownSuite() {
 
 const (
 	USER1_ID byte = iota
+	USER1_EMAIL
 	USER2_ID
 	USER3_ID
 	ADMIN_ID
@@ -144,6 +145,7 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 
 	fixture[USER1_ID] = users[0].ID
 	fixture[USER1_TOKEN], _ = jwt.CreateToken(users[0].ID)
+	fixture[USER1_EMAIL] = users[0].Email
 
 	fixture[USER2_ID] = users[1].ID
 	fixture[USER2_TOKEN], _ = jwt.CreateToken(users[1].ID)

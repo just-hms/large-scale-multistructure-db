@@ -84,7 +84,7 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		user.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)
 		user.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete)
 		user.POST("/lostpassword", ur.LostPassword)
-		user.POST("/resetpassword/resettoken", ur.ResetPassword)
+		user.POST("/resetpassword/:resettoken", ur.ResetPassword)
 
 		user.DELETE("/self/appointment", mr.RequireAuth, ar.DeleteSelfAppointment)
 	}
