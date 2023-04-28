@@ -8,12 +8,16 @@
 ## deploy
 
 ```shell
+# rename .env.template to .env
+# add secrets
 make deploy
 ```
 
 ## dev
 
 ```shell
+# rename .env.template to .env
+# add secrets
 sudo make dev
 
 # get the doc in json and html :)

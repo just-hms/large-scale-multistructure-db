@@ -19,6 +19,12 @@ jobs:
             **/*.go
             go.mod
             go.sum
+      
+      - name: Add envs
+        run: mv .env.template .env
+      
       - name: Run test
         run: make github
+        env:
+          GEOCODE_API_SECRET: ${{ secrets.GEOCODE_API_SECRET }}
         if: env.GIT_DIFF

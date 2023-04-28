@@ -10,6 +10,9 @@ import (
 	jwtdriver "github.com/golang-jwt/jwt"
 )
 
+// TODO
+// - maybe pass create a struct and pass the env to a constructor ???
+
 // move this part into a separate area, and don't use token no more inside the usecases
 
 // given an userID
@@ -33,7 +36,7 @@ func CreateToken(userID string) (string, error) {
 
 	token := jwtdriver.NewWithClaims(jwtdriver.SigningMethodHS256, claims)
 
-	apiSecret, err := env.GetString("API_SECRET")
+	apiSecret, err := env.GetString("TOKEN_API_SECRET")
 	if err != nil {
 		return "", err
 	}
@@ -51,7 +54,7 @@ func ExtractTokenID(tokenString string) (string, error) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(os.Getenv("API_SECRET")), nil
+		return []byte(os.Getenv("TOKEN_API_SECRET")), nil
 	})
 
 	if err != nil {
