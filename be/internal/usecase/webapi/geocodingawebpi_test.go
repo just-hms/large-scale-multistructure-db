@@ -1,9 +1,10 @@
-package geocodinapi_test
+package webapi_test
 
 import (
 	"testing"
 
-	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/geocodinapi"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/webapi"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -16,14 +17,14 @@ func TestGeocodingAPISuite(t *testing.T) {
 }
 
 func (s *GeocodingAPISuite) TestSearch() {
-	api, err := geocodinapi.New()
+	api, err := webapi.New()
 	s.Require().NoError(err)
 	res, err := api.Search("via brombeis naples")
 	s.Require().NoError(err)
 
 	s.Require().Len(res, 5)
 
-	s.Require().Equal(res[0], geocodinapi.GeocodingInfo{
+	s.Require().Equal(res[0], entity.GeocodingInfo{
 		Country:   "Italy",
 		Region:    "Campania",
 		City:      "Naples",

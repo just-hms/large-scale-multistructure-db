@@ -1,4 +1,4 @@
-package geocodinapi
+package webapi
 
 import (
 	"encoding/json"
@@ -6,36 +6,26 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 	"github.com/tidwall/gjson"
 )
 
-type GeocodingAPI struct {
+type GeocodingWebAPI struct {
 	apikey string
 }
 
-type GeocodingInfo struct {
-	Country   string
-	Region    string
-	City      string
-	Latitude  float64
-	Longitude float64
-	Address   string
-}
-
-func New() (*GeocodingAPI, error) {
+func New() (*GeocodingWebAPI, error) {
 	apikey, err := env.GetString("GEOCODE_API_SECRET")
 	if err != nil {
 		return nil, err
 	}
-	return &GeocodingAPI{
+	return &GeocodingWebAPI{
 		apikey: apikey,
 	}, nil
 }
 
-// TODO:
-//   - return a struct
-func (a *GeocodingAPI) Search(area string) ([]GeocodingInfo, error) {
+func (a *GeocodingWebAPI) Search(area string) ([]entity.GeocodingInfo, error) {
 
 	// Create a new GET request
 	url := fmt.Sprintf("https://api.geoapify.com/v1/geocode/search?text=%s&apiKey=%s", area, a.apikey)
@@ -73,7 +63,7 @@ func (a *GeocodingAPI) Search(area string) ([]GeocodingInfo, error) {
 			"}",
 	)
 
-	geocods := []GeocodingInfo{}
+	geocods := []entity.GeocodingInfo{}
 	err = json.Unmarshal([]byte(res.Raw), &geocods)
 	if err != nil {
 		return nil, err

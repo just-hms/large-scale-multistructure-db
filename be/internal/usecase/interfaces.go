@@ -19,6 +19,8 @@ const (
 	REVIEW
 )
 
+// Usecase interfaces
+
 type (
 	User interface {
 		Login(ctx context.Context, user *entity.User) (*entity.User, error)
@@ -65,9 +67,21 @@ type (
 		RemoveVoteByID(ctx context.Context, voterID, ID string) error
 	}
 
+	Place interface {
+		Search(area string) ([]entity.GeocodingInfo, error)
+	}
+
 	// TODO : add analytics, maybe raw access to db using custom store like AnalyticsStore
 
 )
+
+// Utility interfaces
+type (
+	GeocodingWebAPI interface {
+		Search(area string) ([]entity.GeocodingInfo, error)
+	}
+)
+
 type (
 	PasswordAuth interface {
 		Verify(hashed string, password string) bool
