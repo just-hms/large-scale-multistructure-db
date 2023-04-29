@@ -81,7 +81,7 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		ucs[usecase.GEOCODING].(usecase.Geocoding),
 	)
 
-	api.POST("geocoding/search", gr.Search)
+	api.POST("geocoding/search", mr.RequireAuth, gr.Search)
 
 	user := api.Group("/user")
 	{
@@ -125,7 +125,8 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 	return router
 }
 
-// HealthCheck godoc
+// HealthCheck Show the status of the server
+//
 // @Summary Show the status of the server
 // @Description Get the status of the server
 // @Tags Root

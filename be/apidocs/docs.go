@@ -686,6 +686,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/geocoding/search": {
+            "post": {
+                "description": "Given some information about a place returns a list of possible location with some other information about them in order of importance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Geocoding"
+                ],
+                "summary": "Given an area returns an array of geocodes",
+                "parameters": [
+                    {
+                        "description": "Area to search",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.SearchInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/entity.GeocodingInfo"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "Get the status of the server",
@@ -1123,6 +1175,17 @@ const docTemplate = `{
                 }
             }
         },
+        "controller.SearchInput": {
+            "type": "object",
+            "required": [
+                "area"
+            ],
+            "properties": {
+                "area": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.SetHolidaysInput": {
             "type": "object",
             "properties": {
@@ -1192,6 +1255,29 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/entity.Review"
                     }
+                }
+            }
+        },
+        "entity.GeocodingInfo": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "region": {
+                    "type": "string"
                 }
             }
         },

@@ -29,6 +29,7 @@ type BookAppointmentInput struct {
 }
 
 // Book handles a POST request to book a new appointment.
+//
 // @Summary Book a new appointment
 // @Description Books a new appointment for the current user.
 // @Tags Appointment
@@ -73,6 +74,8 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{})
 }
 
+// DeleteSelfAppointment deletes the current appointment of an user
+//
 // @Summary Deletes the current user's appointment
 // @Description Deletes the appointment of the current user
 // @Tags Appointment
@@ -111,6 +114,8 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 }
 
+// DeleteAppointment deletes the appointment of the specified user
+//
 // @Summary Deletes an appointment
 // @Description Deletes an appointment at a specific barbershop
 // @Tags Appointment

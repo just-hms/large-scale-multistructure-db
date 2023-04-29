@@ -21,6 +21,18 @@ type SearchInput struct {
 	Area string `json:"area" binding:"required"`
 }
 
+// Search returns a list of geocoding informations
+//
+// @Summary Given an area returns an array of geocodes
+// @Description Given some information about a place returns a list of possible location with some other information about them in order of importance
+// @Tags Geocoding
+// @Accept  json
+// @Produce  json
+// @Param input body SearchInput true "Area to search"
+// @Success 200 {object} map[string][]entity.GeocodingInfo
+// @Failure 400 {object} string	"Bad request"
+// @Failure 401 {object} string	"Unauthorized"
+// @Router /geocoding/search [post]
 func (ur *GeocodingRoutes) Search(ctx *gin.Context) {
 	input := SearchInput{}
 	if err := ctx.ShouldBindJSON(&input); err != nil {

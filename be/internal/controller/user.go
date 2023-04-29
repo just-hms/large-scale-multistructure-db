@@ -26,8 +26,6 @@ type LoginInput struct {
 }
 
 // Login logs in a user and returns a JWT token.
-// It expects a JSON payload containing the user's email and password.
-// It returns a JWT token that can be used for subsequent authenticated requests.
 //
 // @Summary Logs in a user and returns a JWT token
 // @Description Logs in a user with the provided email and password and returns a JWT token for subsequent authenticated requests
@@ -74,6 +72,7 @@ type RegisterInput struct {
 }
 
 // Register creates a new user with the given email and password
+//
 // @Summary Create new user
 // @Description Create new user with the provided email and password
 // @Tags User
@@ -107,6 +106,7 @@ func (ur *UserRoutes) Register(ctx *gin.Context) {
 }
 
 // Show Shows the user informations
+//
 // @Summary Show user information by ID
 // @Description Get user information by ID
 // @Tags User
@@ -133,6 +133,7 @@ func (ur *UserRoutes) Show(ctx *gin.Context) {
 }
 
 // ShowAll Shows the list of all users
+//
 // @Summary Show list of users
 // @Description Get a list of users filtered by email
 // @Tags User
@@ -158,7 +159,7 @@ func (ur *UserRoutes) ShowAll(ctx *gin.Context) {
 }
 
 // Delete deletes a user with the given ID.
-// It accepts a path parameter "id" to specify the ID of the user to be deleted.
+//
 // @Summary Delete user by ID
 // @Description Delete a user by ID
 // @Tags User
@@ -186,8 +187,7 @@ type ModifyUserInput struct {
 }
 
 // Modify modifies a user with the given ID by updating their email and barbershop associations.
-// The "email" field specifies the updated email address of the user.
-// The "barbershopsId" field specifies an array of barbershop IDs to associate the user with.
+//
 // @Summary Modify user by ID
 // @Description Modify a user by ID
 // @Tags User
@@ -230,8 +230,7 @@ type LostPasswordInput struct {
 }
 
 // LostPassword generates a password reset token for the user with the given email address and sends it to them via email.
-// It accepts a JSON payload in the request body with the field "email", which specifies the email address of the user to reset the password for.
-// If successful, it returns a JSON response with the password reset token.
+//
 // @Summary Request password reset
 // @Description Generate a password reset token and send it to the user's email address
 // @Tags User
@@ -266,6 +265,7 @@ type ResetPasswordInput struct {
 }
 
 // ResetPassword resets the password for a user given a reset token
+//
 // @Summary Reset user password
 // @Description Reset password for a user given a reset token
 // @Tags User
