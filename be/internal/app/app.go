@@ -10,6 +10,7 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/auth"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/webapi"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
 )
@@ -63,6 +64,8 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis) map[byte]usecase.Usecase 
 	slotRepo := repo.NewSlotRepo(r)
 
 	password := auth.NewPasswordAuth()
+	// TODO : move check before and pass conf matrix
+	search_api, _ := webapi.NewGeocodingWebAPI()
 
 	ucs := map[byte]usecase.Usecase{}
 	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
@@ -73,9 +76,9 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis) map[byte]usecase.Usecase 
 		userRepo,
 		barberShopRepo,
 	)
-
 	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
 	ucs[usecase.HOLIDAY] = usecase.NewHolidayUseCase(slotRepo, barberShopRepo)
+	ucs[usecase.GEOCODING] = usecase.NewGeocodingUseCase(search_api)
 
 	return ucs
 }

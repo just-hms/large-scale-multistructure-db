@@ -77,6 +77,12 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		ucs[usecase.HOLIDAY].(usecase.Holiday),
 	)
 
+	gr := NewGeocodingRoutes(
+		ucs[usecase.GEOCODING].(usecase.Geocoding),
+	)
+
+	api.POST("geocoding/search", gr.Search)
+
 	user := api.Group("/user")
 	{
 		user.POST("", ur.Register)

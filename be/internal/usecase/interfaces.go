@@ -17,6 +17,7 @@ const (
 	APPOINTMENT
 	HOLIDAY
 	REVIEW
+	GEOCODING
 )
 
 // Usecase interfaces
@@ -67,8 +68,8 @@ type (
 		RemoveVoteByID(ctx context.Context, voterID, ID string) error
 	}
 
-	Place interface {
-		Search(area string) ([]entity.GeocodingInfo, error)
+	Geocoding interface {
+		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
 	}
 
 	// TODO : add analytics, maybe raw access to db using custom store like AnalyticsStore
@@ -78,7 +79,7 @@ type (
 // Utility interfaces
 type (
 	GeocodingWebAPI interface {
-		Search(area string) ([]entity.GeocodingInfo, error)
+		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
 	}
 )
 

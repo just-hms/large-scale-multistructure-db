@@ -1,6 +1,7 @@
 package webapi
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,7 +16,7 @@ type GeocodingWebAPI struct {
 	apikey string
 }
 
-func New() (*GeocodingWebAPI, error) {
+func NewGeocodingWebAPI() (*GeocodingWebAPI, error) {
 	apikey, err := env.GetString("GEOCODE_API_SECRET")
 	if err != nil {
 		return nil, err
@@ -25,9 +26,8 @@ func New() (*GeocodingWebAPI, error) {
 	}, nil
 }
 
-func (a *GeocodingWebAPI) Search(area string) ([]entity.GeocodingInfo, error) {
+func (a *GeocodingWebAPI) Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error) {
 
-	// Create a new GET request
 	url := fmt.Sprintf("https://api.geoapify.com/v1/geocode/search?text=%s&apiKey=%s", area, a.apikey)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

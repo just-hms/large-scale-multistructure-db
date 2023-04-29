@@ -1,6 +1,7 @@
 package webapi_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -17,9 +18,9 @@ func TestGeocodingAPISuite(t *testing.T) {
 }
 
 func (s *GeocodingAPISuite) TestSearch() {
-	api, err := webapi.New()
+	api, err := webapi.NewGeocodingWebAPI()
 	s.Require().NoError(err)
-	res, err := api.Search("via brombeis naples")
+	res, err := api.Search(context.Background(), "via brombeis naples")
 	s.Require().NoError(err)
 
 	s.Require().Len(res, 5)
