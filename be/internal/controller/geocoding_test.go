@@ -18,6 +18,8 @@ func (s *ControllerSuite) TestGeocodingSearch() {
 	})
 
 	req, _ := http.NewRequest("POST", "/api/geocoding/search", bytes.NewBuffer(searchJSON))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Bearer "+s.fixture[USER1_TOKEN])
 
 	w := httptest.NewRecorder()
 	s.srv.ServeHTTP(w, req)
