@@ -10,8 +10,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var EnvNotFound = errors.New("No env for the specified key")
-var EnvWrongType = errors.New("The specified env is the wrong type")
+var ErrEnvNotFound = errors.New("No env for the specified key")
+var ErrEnvWrongType = errors.New("The specified env is the wrong type")
 
 var loaded = false
 
@@ -34,26 +34,50 @@ func loadEnv() {
 	}
 }
 
-func GetInteger(key string) (int, error) {
+func GetInt(key string) (int, error) {
 	loadEnv()
 
 	env := os.Getenv(key)
 	if env == "" {
-		return 0, EnvNotFound
+		return 0, ErrEnvNotFound
 	}
 	value, err := strconv.Atoi(env)
 	if err != nil {
-		return 0, EnvWrongType
+		return 0, ErrEnvWrongType
 	}
 	return value, nil
+}
+
+func GetIntWithDefault(key string, d int) int {
+	loadEnv()
+
+	env := os.Getenv(key)
+	if env == "" {
+		return d
+	}
+	value, err := strconv.Atoi(env)
+	if err != nil {
+		return d
+	}
+	return value
 }
 
 func GetString(key string) (string, error) {
 	loadEnv()
 	env := os.Getenv(key)
 	if env == "" {
-		return "", EnvNotFound
+		return "", ErrEnvNotFound
 	}
 
 	return env, nil
+}
+
+func GetStringWithDefault(key string, d string) string {
+	loadEnv()
+	env := os.Getenv(key)
+	if env == "" {
+		return d
+	}
+
+	return env
 }

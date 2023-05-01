@@ -4,6 +4,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// TODO
+//   - add must implement syntax to structs
+
 type PasswordAuth struct{}
 
 func NewPasswordAuth() *PasswordAuth {

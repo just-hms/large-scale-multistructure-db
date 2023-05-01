@@ -48,7 +48,8 @@ func (s *ControllerSuite) SetupSuite() {
 	redis, err := redis.New()
 	s.Require().NoError(err)
 
-	ucs := app.BuildRequirements(mongo, redis)
+	ucs, err := app.BuildRequirements(mongo, redis)
+	s.Require().NoError(err)
 
 	s.resetDB = func() {
 

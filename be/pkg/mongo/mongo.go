@@ -30,12 +30,8 @@ func New(opt *Options) (*Mongo, error) {
 
 	m := &Mongo{}
 
-	dbHost, err := env.GetString("MONGO_HOST")
-	if err != nil {
-		dbHost = "localhost"
-	}
-
-	dbPort, err := env.GetInteger("MONGO_PORT")
+	dbHost := env.GetStringWithDefault("MONGO_HOST", "localhost")
+	dbPort, err := env.GetInt("MONGO_PORT")
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +64,7 @@ func (m *Mongo) CreateIndex(ctx context.Context) error {
 
 	// Index to location 2dsphere type.
 	pointIndexModel := mongodriver.IndexModel{
-		Keys:    bsonx.MDoc{"location": bsonx.String("2dsphere")},
+		Keys: bsonx.MDoc{"location": bsonx.String("2dsphere")},
 	}
 
 	pointIndexes := m.DB.Collection("barbershops").Indexes()

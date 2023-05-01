@@ -17,7 +17,10 @@ const (
 	APPOINTMENT
 	HOLIDAY
 	REVIEW
+	GEOCODING
 )
+
+// Usecase interfaces
 
 type (
 	User interface {
@@ -65,9 +68,21 @@ type (
 		RemoveVoteByID(ctx context.Context, voterID, ID string) error
 	}
 
+	Geocoding interface {
+		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
+	}
+
 	// TODO : add analytics, maybe raw access to db using custom store like AnalyticsStore
 
 )
+
+// Utility interfaces
+type (
+	GeocodingWebAPI interface {
+		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
+	}
+)
+
 type (
 	PasswordAuth interface {
 		Verify(hashed string, password string) bool

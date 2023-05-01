@@ -5,3 +5,5 @@ scraper/mapsApiKey.txt
 .vscode/
 # .env
 .idea/
+
+.env

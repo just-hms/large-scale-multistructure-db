@@ -8,17 +8,35 @@
 ## deploy
 
 ```shell
+# rename .env.template to .env
+# add secrets
+make down
 make deploy
 ```
 
 ## dev
 
+### docker
+
 ```shell
-sudo make dev
+# rename .env.template to .env
+# add secrets
+make down
+make dev
 
 # get the doc in json and html :)
 curl http://localhost:8080/api/swagger/doc.json
 curl http://localhost:7000/api/swagger/index.html
+```
+
+### locally
+
+```shell
+# rename .env.template to .env
+# add secrets
+make down
+make infrastructure
+go run ./...
 ```
 
 ## test
@@ -26,15 +44,19 @@ curl http://localhost:7000/api/swagger/index.html
 ### docker
 
 ```shell
-sudo make test
+# rename .env.template to .env
+# add secrets
+make down
+make test
 ```
 
 ### locally
 
 ```shell
-# edit the env file
-sudo make down
-sudo make infrastructure
+# rename .env.template to .env
+# add secrets
+make down
+make infrastructure
 go test ./...
 ```
 

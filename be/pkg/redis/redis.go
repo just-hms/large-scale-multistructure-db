@@ -14,20 +14,14 @@ type Redis struct {
 
 func New() (*Redis, error) {
 
-	redisHost, err := env.GetString("REDIS_HOST")
-	if err != nil {
-		redisHost = "localhost"
-	}
-
-	redisPort, err := env.GetInteger("REDIS_PORT")
+	redisHost := env.GetStringWithDefault("REDIS_HOST", "localhost")
+	redisPassword := env.GetStringWithDefault("REDIS_PASSWORD", "")
+	redisPort, err := env.GetInt("REDIS_PORT")
 	if err != nil {
 		return nil, err
 	}
 
 	redisAddr := fmt.Sprintf("%s:%d", redisHost, redisPort)
-
-	// it's ok if the password is empty
-	redisPassword, _ := env.GetString("REDIS_PASSWORD")
 
 	return &Redis{
 		Client: redisdriver.NewClient(&redisdriver.Options{

@@ -2,13 +2,15 @@ package jwt
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
 	jwtdriver "github.com/golang-jwt/jwt"
 )
+
+// TODO
+// - maybe pass create a struct and pass the env to a constructor ???
 
 // move this part into a separate area, and don't use token no more inside the usecases
 
@@ -24,7 +26,7 @@ func CreateToken(userID string) (string, error) {
 	claims["authorized"] = true
 	claims["userID"] = userID
 
-	lifespan, err := env.GetInteger("TOKEN_HOUR_LIFE_SPAN")
+	lifespan, err := env.GetInt("TOKEN_HOUR_LIFE_SPAN")
 	if err != nil {
 		return "", err
 	}
@@ -33,7 +35,7 @@ func CreateToken(userID string) (string, error) {
 
 	token := jwtdriver.NewWithClaims(jwtdriver.SigningMethodHS256, claims)
 
-	apiSecret, err := env.GetString("API_SECRET")
+	apiSecret, err := env.GetString("TOKEN_API_SECRET")
 	if err != nil {
 		return "", err
 	}
@@ -50,8 +52,11 @@ func ExtractTokenID(tokenString string) (string, error) {
 		if _, ok := token.Method.(*jwtdriver.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-
-		return []byte(os.Getenv("API_SECRET")), nil
+		secret, err := env.GetString("TOKEN_API_SECRET")
+		if err != nil {
+			return nil, err
+		}
+		return []byte(secret), nil
 	})
 
 	if err != nil {
