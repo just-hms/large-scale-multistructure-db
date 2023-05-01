@@ -30,8 +30,8 @@ export async function createShop(values){
     body: JSON.stringify({
       "employees_number": values.employeesNumber,
       "name": values.name,
-      "Latitude": lat,
-      "Longitude": lon
+      "Latitude": 23,
+      "Longitude": 43
     })
   })
   return response
