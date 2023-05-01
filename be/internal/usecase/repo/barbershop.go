@@ -113,6 +113,12 @@ func (r *BarberShopRepo) ModifyByID(ctx context.Context, ID string, shop *entity
 		if shop.Name != "" {
 			update["name"] = shop.Name
 		}
+		if shop.Name != "" {
+			update["description"] = shop.Description
+		}
+		if shop.Employees != -1 {
+			update["employees"] = shop.Employees
+		}
 	}
 
 	res, err := r.DB.Collection("barbershops").UpdateOne(ctx, bson.M{"_id": ID}, bson.M{"$set": update})

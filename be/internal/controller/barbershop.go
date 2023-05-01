@@ -68,6 +68,7 @@ func (br *BarberShopRoutes) Find(ctx *gin.Context) {
 
 type CreateBarbershopInput struct {
 	Name            string  `json:"name" binding:"required"`
+	Description     string  `json:"description" binding:"required"`
 	Latitude        float64 `json:"latitude"`
 	Longitude       float64 `json:"longitude"`
 	EmployeesNumber int     `json:"employees_number"`
@@ -94,9 +95,10 @@ func (br *BarberShopRoutes) Create(ctx *gin.Context) {
 	}
 
 	err := br.barberShopUseCase.Store(ctx, &entity.BarberShop{
-		Name:      input.Name,
-		Location:  entity.NewLocation(input.Latitude, input.Longitude),
-		Employees: input.EmployeesNumber,
+		Name:        input.Name,
+		Location:    entity.NewLocation(input.Latitude, input.Longitude),
+		Employees:   input.EmployeesNumber,
+		Description: input.Description,
 	})
 
 	if err != nil {
@@ -143,10 +145,11 @@ func (br *BarberShopRoutes) Show(ctx *gin.Context) {
 }
 
 type ModifyBarberShopInput struct {
-	Name      string  `json:"name"`
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
-	Employees int     `json:"employees"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+	Employees   int     `json:"employees"`
 }
 
 // Modify handles a PUT request to modify details of a barbershop.
