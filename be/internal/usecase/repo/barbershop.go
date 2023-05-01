@@ -113,7 +113,7 @@ func (r *BarberShopRepo) ModifyByID(ctx context.Context, ID string, shop *entity
 		if shop.Name != "" {
 			update["name"] = shop.Name
 		}
-		if shop.Name != "" {
+		if shop.Description != "" {
 			update["description"] = shop.Description
 		}
 		if shop.Employees != -1 {

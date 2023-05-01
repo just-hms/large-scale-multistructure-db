@@ -192,7 +192,8 @@ func (s *RepoSuite) TestBarberShopModifyByID() {
 	barberRepo := repo.NewBarberShopRepo(s.db)
 
 	shop := &entity.BarberShop{
-		Name: "brownies",
+		Name:        "brownies",
+		Description: "kek",
 	}
 	barberRepo.Store(context.Background(), shop)
 
@@ -263,6 +264,18 @@ func (s *RepoSuite) TestBarberShopModifyByID() {
 				s.Require().Equal(tc.mods.Location, modifiedShop.Location)
 			} else {
 				s.Require().NotEqual(tc.mods.Location, modifiedShop.Location)
+			}
+
+			if tc.mods.Employees != -1 {
+				s.Require().Equal(tc.mods.Employees, modifiedShop.Employees)
+			} else {
+				s.Require().NotEqual(tc.mods.Employees, modifiedShop.Employees)
+			}
+
+			if tc.mods.Description != "" {
+				s.Require().Equal(tc.mods.Description, modifiedShop.Description)
+			} else {
+				s.Require().NotEqual(tc.mods.Description, modifiedShop.Description)
 			}
 		})
 	}
