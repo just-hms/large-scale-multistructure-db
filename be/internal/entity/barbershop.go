@@ -6,9 +6,10 @@ type BarberShop struct {
 	Rating   float64
 	Location *Location `json:"location" bson:"location"`
 
-	Address   string
-	ImageLink string
-	Phone     string
+	Address     string
+	Description string
+	ImageLink   string
+	Phone       string
 
 	Employees int
 
