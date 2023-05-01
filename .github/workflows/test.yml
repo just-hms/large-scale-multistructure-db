@@ -23,6 +23,11 @@ jobs:
       - name: Add envs
         run: mv .env.template .env
       
+      - name: Check env
+        run: echo $GEOCODE_API_SECRET
+        env:
+          GEOCODE_API_SECRET: ${{ secrets.GEOCODE_API_SECRET }}
+
       - name: Run test
         run: make github
         env:
