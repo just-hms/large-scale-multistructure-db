@@ -22,9 +22,7 @@ jobs:
       
       - name: Add envs
         run: |
-          mv .env.template .env
-          echo GEOCODE_API_SECRET=${{ secrets.GEOCODE_API_SECRET }} >> .env
-      
+          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Run test
         run: make github
         if: env.GIT_DIFF
