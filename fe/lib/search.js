@@ -7,7 +7,7 @@ const response = await fetch(url+`barbershop`, {
     body: JSON.stringify({
       "latitude": lat,
       "longitude": lon,
-      "radius": 10,
+      "radius": 100000,
     })
 })
 return response;

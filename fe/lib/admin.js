@@ -19,8 +19,7 @@ export async function deleteUser (id){
 }
 
 export async function createShop(values){
-  console.log(values.address)
-  const address_response = await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(values.adress)+"&apiKey=66c0af4256094d7f93fd472e1a188390")
+  const address_response = await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(values.address)+"&apiKey=66c0af4256094d7f93fd472e1a188390")
   const response_json = await address_response.json()
   const lat = response_json.features[0].properties.lat
   const lon = response_json.features[0].properties.lon
@@ -30,8 +29,8 @@ export async function createShop(values){
     body: JSON.stringify({
       "employees_number": values.employeesNumber,
       "name": values.name,
-      "Latitude": 23,
-      "Longitude": 43
+      "Latitude": lat,
+      "Longitude": lon
     })
   })
   return response

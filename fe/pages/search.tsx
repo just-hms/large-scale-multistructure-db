@@ -22,7 +22,7 @@ export default function Search() {
     const searchFilter = (shops:any) => {
       if(shops)
         return shops.filter(
-          (el:any) => el.name.toLowerCase().includes(query.toLocaleLowerCase())
+          (el:any) => el.Name.toLowerCase().includes(query.toLocaleLowerCase())
         )
     }
     //Handling the input on our search bar
@@ -39,13 +39,13 @@ export default function Search() {
         router.push("/")
       }else{
         if(area){
-          console.log(area)
           fetch("https://api.geoapify.com/v1/geocode/search?text="+area+"&apiKey=66c0af4256094d7f93fd472e1a188390")
           .then(async response => {
             const response_json = await response.json()
             const lat = response_json.features[0].properties.lat
             const lon = response_json.features[0].properties.lon
             const response_shops = await (await findShops(lat,lon)).json()
+            console.log(response_shops.barberShops)
             setShops(response_shops.barberShops)
             setLoaded(true)
           })

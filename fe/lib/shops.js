@@ -2,7 +2,7 @@ import { headers, url } from "./request-utils";
 
 export async function getShopData(id) {
   const token = localStorage.getItem("token")
-  const response = await fetch(url+'barber_shop/'+id, {
+  const response = await fetch(url+'barbershop/'+id, {
     method: 'GET',
     headers: headers(localStorage.getItem("token"))
   })
@@ -21,7 +21,7 @@ export async function shopCalendar(id){
 }
 export async function submitReview(id){
   const token = localStorage.getItem("token")
-  const response = await fetch(url+'/barber_shop/'+id+'/review/', {
+  const response = await fetch(url+'/barbershop/'+id+'/review/', {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),
     body: JSON.stringify({

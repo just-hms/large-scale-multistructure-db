@@ -10,11 +10,12 @@ import { useRouter } from 'next/router';
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function User({reservationData}:any) {
+export default function User() {
   const router = useRouter()
   const [loaded,setLoaded] = useState(false)
   const [content, setContent] = useState("account_info");
   const [userData, setUserData] = useState<any[]>([])
+  const [reservationData, setReservationData] = useState<any[]>([])
   let displayed_element;
 
   useEffect(()=>{
@@ -23,7 +24,9 @@ export default function User({reservationData}:any) {
       router.push("/")
     }else{
       const fetchData = async () => {
-        setUserData(await (await getUserInfos()).json())
+        const userInfos = await (await getUserInfos()).json()
+        setUserData(userInfos)
+        setReservationData(userInfos.user.CurrentAppointment)
         setLoaded(true)
       }
       fetchData()
@@ -69,12 +72,4 @@ export default function User({reservationData}:any) {
     <Footer/>
     </>
   )
-}
-
-
-export async function getStaticProps(){
-  const reservationData =  getReservation("user");
-  return {
-      props: {reservationData}
-  }
 }

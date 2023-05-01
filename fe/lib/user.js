@@ -11,7 +11,6 @@ export function getReservation(user) {
 
 export async function getUserInfos(){
   const token = localStorage.getItem("token")
-  // req.Header.Add("Authorization", "Bearer "+tc.token)
   const response = await fetch(url+'user/self', {
     method: 'GET',
     headers: headers(localStorage.getItem("token"))
@@ -51,7 +50,6 @@ export async function deleteAccount(){
   return response;
 }
 
-// TODO: !!!
 export async function changePassword(values){
   const response = await fetch(url+'user/lostpassword', {
     method: 'POST',

@@ -63,9 +63,10 @@ export default function Shop() {
         const fetchData = async (shopid:any) => {
           const response = await getShopData(shopid)
           if (response.ok){                                         
-            setshopData(await response.json())
+            const json_response = await response.json()
+            setshopData(json_response.barbershop)
           }else{
-            // router.push("/404")
+            router.push("/404")
           }
           setLoaded(true)
         }
@@ -79,7 +80,7 @@ export default function Shop() {
   return (
     <>
       <Head>
-        <title>{shopData.title} | Barber Shop</title>
+        <title>{shopData.Name} | Barber Shop</title>
       <link rel="icon" type="image/png" sizes="32x32" href="/barber-shop.png"></link>
       </Head>
       <Navbar style="absolute top-0">
@@ -144,11 +145,11 @@ export default function Shop() {
                       <Image className="w-full h-full object-cover rounded-full " src={barber_propic} alt="barber salon"/>
                     </div>
                     <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-slate-200 ">
-                      {shopData.name}
+                      {shopData.Name}
                     </h1>
                     <div className='w-3/4 border-b border-slate-600 pt-1'></div>
                     <p className="text-md text-justify leading-tight tracking-tight text-slate-300 break-words w-3/4 p-3 ">
-                      {shopData.description}
+                      {shopData.Description}
                     </p>
                   </div>
               </div>

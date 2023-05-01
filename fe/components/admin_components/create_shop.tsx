@@ -13,9 +13,12 @@ export default function CreateShop({accounts}:any) {
     onSubmit: async (values, {resetForm}) => {
       setMessage("")
       const response = await createShop(values)
-        if(response.ok){
-        setMessage("Barber Shop Created") 
+      if(response.ok){
         resetForm();
+        setMessage("Barber Shop Created") 
+      }else{
+        const resp_text = await response.json()
+        setMessage(resp_text.error)
       }
     },
 });
