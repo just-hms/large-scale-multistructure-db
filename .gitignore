@@ -6,4 +6,4 @@ scraper/mapsApiKey.txt
 # .env
 .idea/
 
-*env
+.env
