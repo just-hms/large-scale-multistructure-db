@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/config"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
@@ -24,12 +23,7 @@ func Run(cfg *config.Config) {
 		fmt.Printf("mongo-error: %s", err.Error())
 		return
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	// TODO: move this index somewhere else
-	if err := mongo.CreateIndex(ctx); err != nil {
+	if err := repo.AddIndexes(mongo); err != nil {
 		fmt.Printf("index-error: %s", err.Error())
 		return
 	}

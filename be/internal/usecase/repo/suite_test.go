@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/config"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
 	"github.com/stretchr/testify/suite"
@@ -38,10 +39,15 @@ func (s *RepoSuite) SetupSuite() {
 	s.db = mongo
 	s.cache = redis
 	s.resetDB = func() {
-		redis.Clear()
-		mongo.DB.Drop(context.Background())
-		// TODO: move this somewhere else
-		mongo.CreateIndex(context.Background())
+		err := redis.Clear()
+		s.Require().NoError(err)
+
+		err = mongo.DB.Drop(context.Background())
+		s.Require().NoError(err)
+
+		err = repo.AddIndexes(mongo)
+		s.Require().NoError(err)
+
 	}
 }
 

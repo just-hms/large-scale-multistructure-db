@@ -7,7 +7,6 @@ import (
 
 	mongodriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 // check this
@@ -47,18 +46,4 @@ func New(host string, port int, dbName string) (*Mongo, error) {
 	m.DB = client.Database(dbName)
 
 	return m, nil
-}
-
-// TODO: make this more general
-func (m *Mongo) CreateIndex(ctx context.Context) error {
-	indexOpts := options.CreateIndexes().SetMaxTime(time.Second * 10)
-
-	// Index to location 2dsphere type.
-	pointIndexModel := mongodriver.IndexModel{
-		Keys: bsonx.MDoc{"location": bsonx.String("2dsphere")},
-	}
-
-	pointIndexes := m.DB.Collection("barbershops").Indexes()
-	_, err := pointIndexes.CreateOne(ctx, pointIndexModel, indexOpts)
-	return err
 }

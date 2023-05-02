@@ -11,6 +11,7 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
 
@@ -60,8 +61,7 @@ func (s *ControllerSuite) SetupSuite() {
 		err := mongo.DB.Drop(context.Background())
 		s.Require().NoError(err)
 
-		// TODO: move this somewhere else
-		err = mongo.CreateIndex(context.Background())
+		err = repo.AddIndexes(mongo)
 		s.Require().NoError(err)
 
 		s.fixture, err = InitFixture(ucs)
