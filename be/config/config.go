@@ -27,22 +27,21 @@ type (
 	}
 
 	Redis struct {
-		Host string `env:"REDIS_HOST" env-default:"localhost"`
-		Port int    `env-required:"true" env:"REDIS_PORT"`
+		Host     string `env:"REDIS_HOST" env-default:"localhost"`
+		Port     int    `env-required:"true" env:"REDIS_PORT"`
+		Password string `env:"REDIS_PASSWORD" env-default:""`
 	}
 )
 
 // NewConfig returns app config.
 func NewConfig() (*Config, error) {
-	cfg := &Config{}
-
 	_, caller, _, ok := runtime.Caller(0)
 	if !ok {
 		return nil, errors.New("error retrevieng the .env file")
 	}
-
 	envPath := filepath.Join(filepath.Dir(caller), "../../.env")
 
+	cfg := &Config{}
 	err := cleanenv.ReadConfig(envPath, cfg)
 	if err != nil {
 		return nil, err

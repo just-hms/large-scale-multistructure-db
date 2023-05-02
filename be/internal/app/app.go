@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/just-hms/large-scale-multistructure-db/be/config"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
@@ -15,11 +16,9 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
 )
 
-func Run() {
+func Run(cfg *config.Config) {
 
-	// TODO:
-	//	- add option pattern to create with index
-	mongo, err := mongo.New(&mongo.Options{DBName: "barber-deploy"})
+	mongo, err := mongo.New(cfg.Mongo.Host, cfg.Mongo.Port, "barber-deploy")
 	if err != nil {
 		fmt.Printf("mongo-error: %s", err.Error())
 		return
@@ -28,12 +27,13 @@ func Run() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	// TODO: move this index somewhere else
 	if err := mongo.CreateIndex(ctx); err != nil {
 		fmt.Printf("index-error: %s", err.Error())
 		return
 	}
 
-	redis, err := redis.New()
+	redis, err := redis.New(cfg.Redis.Host, cfg.Redis.Port, cfg.Redis.Password)
 	if err != nil {
 		fmt.Printf("redis-error: %s", err.Error())
 		return

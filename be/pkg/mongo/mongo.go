@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
-
 	mongodriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -26,18 +24,11 @@ type Mongo struct {
 // get url and options as param
 // add const
 
-func New(opt *Options) (*Mongo, error) {
+func New(host string, port int, dbName string) (*Mongo, error) {
 
 	m := &Mongo{}
 
-	dbHost := env.GetStringWithDefault("MONGO_HOST", "localhost")
-	dbPort, err := env.GetInt("MONGO_PORT")
-	if err != nil {
-		return nil, err
-	}
-
-	mongoAddr := fmt.Sprintf("mongodb://%s:%d", dbHost, dbPort)
-
+	mongoAddr := fmt.Sprintf("mongodb://%s:%d", host, port)
 	client, err := mongodriver.NewClient(
 		options.Client().ApplyURI(mongoAddr),
 	)
@@ -53,7 +44,7 @@ func New(opt *Options) (*Mongo, error) {
 		return nil, err
 	}
 
-	m.DB = client.Database(opt.DBName)
+	m.DB = client.Database(dbName)
 
 	return m, nil
 }
