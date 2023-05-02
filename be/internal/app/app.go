@@ -11,6 +11,7 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/auth"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/tokenapi"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/webapi"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
@@ -39,7 +40,7 @@ func Run(cfg *config.Config) {
 		return
 	}
 
-	ucs, err := BuildRequirements(mongo, redis)
+	ucs, err := BuildRequirements(mongo, redis, cfg)
 	if err != nil {
 		fmt.Printf("build-error: %s", err.Error())
 		return
@@ -59,7 +60,7 @@ func Run(cfg *config.Config) {
 	router.Run()
 }
 
-func BuildRequirements(m *mongo.Mongo, r *redis.Redis) (map[byte]usecase.Usecase, error) {
+func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[byte]usecase.Usecase, error) {
 
 	userRepo := repo.NewUserRepo(m)
 	barberShopRepo := repo.NewBarberShopRepo(m)
@@ -68,13 +69,15 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis) (map[byte]usecase.Usecase
 	slotRepo := repo.NewSlotRepo(r)
 
 	password := auth.NewPasswordAuth()
+	tokenapi := tokenapi.New(cfg.TokenLifespan, cfg.ApiSecret)
+
 	// TODO : move check before and pass conf matrix
-	search_api, err := webapi.NewGeocodingWebAPI()
+	search_api, err := webapi.NewGeocodingWebAPI(cfg.Geocoding.Apikey)
 	if err != nil {
 		return nil, err
 	}
 	ucs := map[byte]usecase.Usecase{}
-	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password)
+	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password, tokenapi)
 	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
 	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(
 		appintmentRepo,
@@ -85,6 +88,8 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis) (map[byte]usecase.Usecase
 	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
 	ucs[usecase.HOLIDAY] = usecase.NewHolidayUseCase(slotRepo, barberShopRepo)
 	ucs[usecase.GEOCODING] = usecase.NewGeocodingUseCase(search_api)
+
+	ucs[usecase.TOKEN] = usecase.NewTokenUsecase(tokenapi)
 
 	return ucs, nil
 }

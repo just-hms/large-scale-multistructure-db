@@ -14,6 +14,7 @@ type (
 		JWT
 		Mongo
 		Redis
+		Geocoding
 	}
 
 	JWT struct {
@@ -30,6 +31,9 @@ type (
 		Host     string `env:"REDIS_HOST" env-default:"localhost"`
 		Port     int    `env-required:"true" env:"REDIS_PORT"`
 		Password string `env:"REDIS_PASSWORD" env-default:""`
+	}
+	Geocoding struct {
+		Apikey string `env-required:"true" env:"GEOCODE_API_SECRET"`
 	}
 )
 

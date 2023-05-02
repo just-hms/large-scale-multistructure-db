@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 	"github.com/tidwall/gjson"
 )
 
@@ -16,11 +15,7 @@ type GeocodingWebAPI struct {
 	apikey string
 }
 
-func NewGeocodingWebAPI() (*GeocodingWebAPI, error) {
-	apikey, err := env.GetString("GEOCODE_API_SECRET")
-	if err != nil {
-		return nil, err
-	}
+func NewGeocodingWebAPI(apikey string) (*GeocodingWebAPI, error) {
 	return &GeocodingWebAPI{
 		apikey: apikey,
 	}, nil

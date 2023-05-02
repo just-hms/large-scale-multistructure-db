@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/just-hms/large-scale-multistructure-db/be/config"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/webapi"
 	"github.com/stretchr/testify/suite"
@@ -18,7 +19,10 @@ func TestGeocodingAPISuite(t *testing.T) {
 }
 
 func (s *GeocodingAPISuite) TestSearch() {
-	api, err := webapi.NewGeocodingWebAPI()
+	cfg, err := config.NewConfig()
+	s.Require().NoError(err)
+
+	api, err := webapi.NewGeocodingWebAPI(cfg.Geocoding.Apikey)
 	s.Require().NoError(err)
 	res, err := api.Search(context.Background(), "via brombeis naples")
 	s.Require().NoError(err)

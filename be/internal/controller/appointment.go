@@ -7,7 +7,6 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,12 +14,14 @@ import (
 type AppointmentRoutes struct {
 	appoinmentUseCase usecase.Appointment
 	userUseCase       usecase.User
+	tokenUseCase      usecase.Token
 }
 
-func NewAppointmentRoutes(uc usecase.Appointment, us usecase.User) *AppointmentRoutes {
+func NewAppointmentRoutes(uc usecase.Appointment, us usecase.User, t usecase.Token) *AppointmentRoutes {
 	return &AppointmentRoutes{
 		appoinmentUseCase: uc,
 		userUseCase:       us,
+		tokenUseCase:      t,
 	}
 }
 
@@ -51,7 +52,7 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 	}
 
 	token := middleware.ExtractTokenFromRequest(ctx)
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := ur.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -89,7 +90,7 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 	token := middleware.ExtractTokenFromRequest(ctx)
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := ur.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

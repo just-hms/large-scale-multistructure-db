@@ -11,7 +11,6 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
 
@@ -53,7 +52,7 @@ func (s *ControllerSuite) SetupSuite() {
 	redis, err := redis.New(cfg.Redis.Host, cfg.Redis.Port, cfg.Redis.Password)
 	s.Require().NoError(err)
 
-	ucs, err := app.BuildRequirements(mongo, redis)
+	ucs, err := app.BuildRequirements(mongo, redis, cfg)
 	s.Require().NoError(err)
 
 	s.resetDB = func() {
@@ -148,24 +147,25 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 			return nil, err
 		}
 	}
+	tokenUsecase := ucs[usecase.TOKEN].(usecase.Token)
 
 	fixture[USER1_ID] = users[0].ID
-	fixture[USER1_TOKEN], _ = jwt.CreateToken(users[0].ID)
+	fixture[USER1_TOKEN], _ = tokenUsecase.CreateToken(users[0].ID)
 	fixture[USER1_EMAIL] = users[0].Email
 
 	fixture[USER2_ID] = users[1].ID
-	fixture[USER2_TOKEN], _ = jwt.CreateToken(users[1].ID)
+	fixture[USER2_TOKEN], _ = tokenUsecase.CreateToken(users[1].ID)
 
 	fixture[ADMIN_ID] = users[2].ID
-	fixture[ADMIN_TOKEN], _ = jwt.CreateToken(users[2].ID)
+	fixture[ADMIN_TOKEN], _ = tokenUsecase.CreateToken(users[2].ID)
 
 	fixture[USER3_ID] = users[3].ID
-	fixture[USER3_TOKEN], _ = jwt.CreateToken(users[3].ID)
+	fixture[USER3_TOKEN], _ = tokenUsecase.CreateToken(users[3].ID)
 
 	fixture[BARBER1_ID] = users[4].ID
-	fixture[BARBER1_TOKEN], _ = jwt.CreateToken(users[4].ID)
+	fixture[BARBER1_TOKEN], _ = tokenUsecase.CreateToken(users[4].ID)
 	fixture[BARBER2_ID] = users[5].ID
-	fixture[BARBER2_TOKEN], _ = jwt.CreateToken(users[5].ID)
+	fixture[BARBER2_TOKEN], _ = tokenUsecase.CreateToken(users[5].ID)
 
 	// appointments
 
