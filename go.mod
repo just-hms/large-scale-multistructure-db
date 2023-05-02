@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
@@ -51,6 +52,7 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
 )
 
 require (
@@ -58,6 +60,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0
+	github.com/ilyakaznacheev/cleanenv v1.4.2
 	github.com/joho/godotenv v1.5.1
 	github.com/klauspost/compress v1.16.3 // indirect
 	github.com/montanaflynn/stats v0.7.0 // indirect

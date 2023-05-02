@@ -26,12 +26,17 @@ func CreateToken(userID string) (string, error) {
 	claims["authorized"] = true
 	claims["userID"] = userID
 
-	lifespan, err := env.GetInt("TOKEN_HOUR_LIFE_SPAN")
+	lifespan, err := env.GetString("TOKEN_LIFE_SPAN")
 	if err != nil {
 		return "", err
 	}
 
-	claims["exp"] = time.Now().Add(time.Hour * time.Duration(lifespan)).Unix()
+	duration, err := time.ParseDuration(lifespan)
+	if err != nil {
+		return "", err
+	}
+
+	claims["exp"] = time.Now().Add(duration).Unix()
 
 	token := jwtdriver.NewWithClaims(jwtdriver.SigningMethodHS256, claims)
 
