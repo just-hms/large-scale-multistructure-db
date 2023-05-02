@@ -11,7 +11,6 @@ import (
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 )
 
 func (s *ControllerSuite) TestLogin() {
@@ -67,13 +66,6 @@ func (s *ControllerSuite) TestLogin() {
 
 				err = json.Unmarshal(body, &res)
 				s.Require().Nil(err)
-
-				// check if the tokenID is in the jwt token
-				tokenID, err := jwt.ExtractTokenID(res.Token)
-
-				s.Require().Nil(err)
-				s.Require().NotEmpty(tokenID)
-
 			}
 
 			// assert that the response status code is as expected

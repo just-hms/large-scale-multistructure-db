@@ -5,18 +5,19 @@ import (
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserRoutes struct {
-	userUseCase usecase.User
+	userUseCase  usecase.User
+	tokenUseCase usecase.Token
 }
 
-func NewUserRoutes(uc usecase.User) *UserRoutes {
+func NewUserRoutes(uc usecase.User, t usecase.Token) *UserRoutes {
 	return &UserRoutes{
-		userUseCase: uc,
+		userUseCase:  uc,
+		tokenUseCase: t,
 	}
 }
 
@@ -55,7 +56,7 @@ func (ur *UserRoutes) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := jwt.CreateToken(user.ID)
+	token, err := ur.tokenUseCase.CreateToken(user.ID)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -279,7 +280,7 @@ type ResetPasswordInput struct {
 func (ur *UserRoutes) ResetPassword(ctx *gin.Context) {
 
 	token := ctx.Param("resettoken")
-	userID, err := jwt.ExtractTokenID(token)
+	userID, err := ur.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

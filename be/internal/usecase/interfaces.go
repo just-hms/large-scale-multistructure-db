@@ -18,6 +18,7 @@ const (
 	HOLIDAY
 	REVIEW
 	GEOCODING
+	TOKEN
 )
 
 // Usecase interfaces
@@ -72,6 +73,11 @@ type (
 		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
 	}
 
+	Token interface {
+		CreateToken(userID string) (string, error)
+		ExtractTokenID(tokenString string) (string, error)
+	}
+
 	// TODO : add analytics, maybe raw access to db using custom store like AnalyticsStore
 
 )
@@ -81,15 +87,17 @@ type (
 	GeocodingWebAPI interface {
 		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
 	}
-)
-
-type (
 	PasswordAuth interface {
 		Verify(hashed string, password string) bool
 		HashAndSalt(password string) (string, error)
 	}
+	TokenApi interface {
+		CreateToken(id string) (string, error)
+		ExtractTokenID(token string) (string, error)
+	}
 )
 
+// Repositories
 type (
 	UserRepo interface {
 		Store(ctx context.Context, user *entity.User) error

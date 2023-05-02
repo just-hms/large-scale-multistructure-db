@@ -6,7 +6,6 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,12 +13,14 @@ import (
 type BarberShopRoutes struct {
 	barberShopUseCase usecase.BarberShop
 	calendarUseCase   usecase.Calendar
+	tokenUseCase      usecase.Token
 }
 
-func NewBarberShopRoutes(uc usecase.BarberShop, cl usecase.Calendar) *BarberShopRoutes {
+func NewBarberShopRoutes(uc usecase.BarberShop, cl usecase.Calendar, t usecase.Token) *BarberShopRoutes {
 	return &BarberShopRoutes{
 		barberShopUseCase: uc,
 		calendarUseCase:   cl,
+		tokenUseCase:      t,
 	}
 }
 
@@ -127,7 +128,7 @@ func (br *BarberShopRoutes) Show(ctx *gin.Context) {
 	ID := ctx.Param("shopid")
 
 	token := middleware.ExtractTokenFromRequest(ctx)
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := br.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

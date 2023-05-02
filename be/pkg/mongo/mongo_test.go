@@ -4,22 +4,19 @@ import (
 	"context"
 	"testing"
 
+	"github.com/just-hms/large-scale-multistructure-db/be/config"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMongoSetup(t *testing.T) {
 
-	mongo, err := mongo.New(&mongo.Options{
-		DBName: "test",
-	})
+	cfg, err := config.NewConfig()
+	assert.Nil(t, err)
 
-	if err != nil {
-		t.Errorf("Failed to connect to Mongo: %v", err)
-		return
-	}
+	mongo, err := mongo.New(cfg.Mongo.Host, cfg.Mongo.Port, "test")
+	assert.Nil(t, err)
 
-	if err := mongo.DB.Client().Ping(context.Background(), nil); err != nil {
-		t.Errorf("Failed to connect to Mongo: %v", err)
-		return
-	}
+	err = mongo.DB.Client().Ping(context.Background(), nil)
+	assert.Nil(t, err)
 }

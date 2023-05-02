@@ -1,10 +1,8 @@
-package jwt
+package tokenapi
 
 import (
 	"fmt"
 	"time"
-
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/env"
 
 	jwtdriver "github.com/golang-jwt/jwt"
 )
@@ -16,7 +14,20 @@ import (
 
 // given an userID
 // returns a token
-func CreateToken(userID string) (string, error) {
+
+type JWT struct {
+	tokenLifespan time.Duration
+	apisecret     string
+}
+
+func New(tokenLifespan time.Duration, apisecret string) *JWT {
+	return &JWT{
+		tokenLifespan: tokenLifespan,
+		apisecret:     apisecret,
+	}
+}
+
+func (j *JWT) CreateToken(userID string) (string, error) {
 
 	if userID == "" {
 		return "", fmt.Errorf("cannot create token from empty string")
@@ -25,38 +36,22 @@ func CreateToken(userID string) (string, error) {
 
 	claims["authorized"] = true
 	claims["userID"] = userID
-
-	lifespan, err := env.GetInt("TOKEN_HOUR_LIFE_SPAN")
-	if err != nil {
-		return "", err
-	}
-
-	claims["exp"] = time.Now().Add(time.Hour * time.Duration(lifespan)).Unix()
+	claims["exp"] = time.Now().Add(j.tokenLifespan).Unix()
 
 	token := jwtdriver.NewWithClaims(jwtdriver.SigningMethodHS256, claims)
-
-	apiSecret, err := env.GetString("TOKEN_API_SECRET")
-	if err != nil {
-		return "", err
-	}
-
-	return token.SignedString([]byte(apiSecret))
+	return token.SignedString([]byte(j.apisecret))
 }
 
 // extract the userID from which the token was generated
 // return an error if the token is not valid or expired
-func ExtractTokenID(tokenString string) (string, error) {
+func (j *JWT) ExtractTokenID(tokenString string) (string, error) {
 
 	token, err := jwtdriver.Parse(tokenString, func(token *jwtdriver.Token) (interface{}, error) {
 
 		if _, ok := token.Method.(*jwtdriver.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		secret, err := env.GetString("TOKEN_API_SECRET")
-		if err != nil {
-			return nil, err
-		}
-		return []byte(secret), nil
+		return []byte(j.apisecret), nil
 	})
 
 	if err != nil {

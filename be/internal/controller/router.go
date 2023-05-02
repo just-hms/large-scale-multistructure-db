@@ -60,17 +60,25 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 	api.GET("/health", Health)
 
 	// create the routes based on the given usecases
-	mr := middleware.NewMiddlewareRoutes(ucs[usecase.USER].(usecase.User))
-	ur := NewUserRoutes(ucs[usecase.USER].(usecase.User))
+	mr := middleware.NewMiddlewareRoutes(
+		ucs[usecase.USER].(usecase.User),
+		ucs[usecase.TOKEN].(usecase.Token),
+	)
+	ur := NewUserRoutes(
+		ucs[usecase.USER].(usecase.User),
+		ucs[usecase.TOKEN].(usecase.Token),
+	)
 
 	br := NewBarberShopRoutes(
 		ucs[usecase.BARBER_SHOP].(usecase.BarberShop),
 		ucs[usecase.CALENDAR].(usecase.Calendar),
+		ucs[usecase.TOKEN].(usecase.Token),
 	)
 
 	ar := NewAppointmentRoutes(
 		ucs[usecase.APPOINTMENT].(usecase.Appointment),
 		ucs[usecase.USER].(usecase.User),
+		ucs[usecase.TOKEN].(usecase.Token),
 	)
 
 	hr := NewHolidayRoutes(
