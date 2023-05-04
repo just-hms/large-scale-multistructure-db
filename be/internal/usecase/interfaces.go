@@ -60,13 +60,13 @@ type (
 	}
 
 	Review interface {
-		Store(ctx context.Context, userID string, shopID string) error
-		GetByBarberShop(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, ID string) error
+		Store(ctx context.Context, review *entity.Review, shopID string) error
+		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
+		DeleteByID(ctx context.Context, shopID, reviewID string) error
 
-		UpVoteByID(ctx context.Context, voterID, ID string) error
-		DownVoteByID(ctx context.Context, voterID, ID string) error
-		RemoveVoteByID(ctx context.Context, voterID, ID string) error
+		UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+		RemoveVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 	}
 
 	Geocoding interface {
@@ -136,14 +136,14 @@ type (
 	}
 
 	ReviewRepo interface {
-		Store(ctx context.Context, userID string, shopID string) error
-		GetByBarberShop(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, ID string) error
+		Store(ctx context.Context, review *entity.Review, shopID string) error
+		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
+		DeleteByID(ctx context.Context, shopID, reviewID string) error
 	}
 
 	VoteRepo interface {
-		DownVote(ctx context.Context, voterID string, shopID string) error
-		UpVote(ctx context.Context, voterID string, shopID string) error
-		RemoveVote(ctx context.Context, voterID string, shopID string) error
+		UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+		RemoveVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 	}
 )
