@@ -80,6 +80,46 @@ func (s *RepoSuite) TestReviewStore() {
 
 }
 
+func (s *RepoSuite) TestGetByBarberShopID() {
+
+	userRepo := repo.NewUserRepo(s.db)
+	shopRepo := repo.NewBarberShopRepo(s.db)
+	reviewRepo := repo.NewReviewRepo(s.db)
+
+	user1 := &entity.User{Email: "giovanni"}
+	user2 := &entity.User{Email: "mario"}
+	shop := &entity.BarberShop{Name: "brownies"}
+
+	err := userRepo.Store(context.Background(), user1)
+	s.Require().NoError(err)
+	err = userRepo.Store(context.Background(), user2)
+	s.Require().NoError(err)
+
+	err = shopRepo.Store(context.Background(), shop)
+	s.Require().NoError(err)
+
+	review1 := &entity.Review{
+		Rating:  4,
+		Content: "test1",
+		UserID:  user1.ID,
+	}
+	review2 := &entity.Review{
+		Rating:  5,
+		Content: "test2",
+		UserID:  user2.ID,
+	}
+
+	err = reviewRepo.Store(context.Background(), review1, shop.ID)
+	s.Require().NoError(err)
+	err = reviewRepo.Store(context.Background(), review2, shop.ID)
+	s.Require().NoError(err)
+
+	reviews, err := reviewRepo.GetByBarberShopID(context.Background(), shop.ID)
+	s.Require().NoError(err)
+	s.Require().Len(reviews, 2)
+
+}
+
 func (s *RepoSuite) TestReviewDelete() {
 
 	userRepo := repo.NewUserRepo(s.db)
