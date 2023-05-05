@@ -93,7 +93,7 @@ func (rr *ReviewRoutes) ShowByShop(ctx *gin.Context) {
 	reviews, err := rr.reviewUseCase.GetByBarberShopID(ctx, shopID)
 
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
