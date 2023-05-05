@@ -99,6 +99,9 @@ const (
 	SHOP2_ID
 	EMPTY_SHOP
 
+	USER1_SHOP1_REVIEW1_ID
+	USER1_SHOP1_REVIEW2_ID
+
 	USER1_SHOP1_APPOINTMENT_ID
 )
 
@@ -166,6 +169,36 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 	fixture[BARBER1_TOKEN], _ = tokenUsecase.CreateToken(users[4].ID)
 	fixture[BARBER2_ID] = users[5].ID
 	fixture[BARBER2_TOKEN], _ = tokenUsecase.CreateToken(users[5].ID)
+
+	// reviews
+
+	reviews := []*entity.Review{
+		{
+			Rating:  4,
+			Content: "test",
+			UserID:  fixture[USER1_ID],
+		},
+		{
+			Rating:  2,
+			Content: "asd",
+			UserID:  fixture[USER1_ID],
+		},
+	}
+	reviewUsecase := ucs[usecase.REVIEW].(usecase.Review)
+	for _, a := range reviews {
+		err := reviewUsecase.Store(context.Background(), a, fixture[SHOP1_ID])
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	fixture[USER1_SHOP1_REVIEW1_ID] = reviews[0].ReviewID
+	fixture[USER1_SHOP1_REVIEW2_ID] = reviews[1].ReviewID
+
+	err := reviewUsecase.UpVoteByID(context.Background(), fixture[USER1_ID], fixture[SHOP1_ID], fixture[USER1_SHOP1_REVIEW1_ID])
+	if err != nil {
+		return nil, err
+	}
 
 	// appointments
 
