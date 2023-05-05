@@ -43,6 +43,8 @@ func (r *ReviewRepo) Store(ctx context.Context, review *entity.Review, shopID st
 	review.ReviewID = uuid.NewString()
 	review.Username = user.Username
 	review.Reported = false
+	review.UpVotes = []string{}
+	review.DownVotes = []string{}
 	review.CreatedAt = time.Now()
 
 	filter := bson.M{"_id": shopID}
