@@ -123,8 +123,8 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		barberShop.GET("/:shopid/review", rr.ShowByShop)
 		barberShop.DELETE("/:shopid/review/:reviewid", mr.RequireBarber, rr.Delete)
 
-		barberShop.POST("/:shopid/review/:reviewid", rr.Vote)
-		barberShop.DELETE("/:shopid/review/:reviewid", rr.RemoveVote)
+		barberShop.POST("/:shopid/review/:reviewid/vote", rr.Vote)
+		barberShop.DELETE("/:shopid/review/:reviewid/vote", rr.RemoveVote)
 
 		barberShop.GET("/:shopid/calendar", br.Calendar)
 		barberShop.POST("/:shopid/holiday", mr.RequireBarber, hr.Set)
