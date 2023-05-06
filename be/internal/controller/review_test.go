@@ -300,14 +300,14 @@ func (s *ControllerSuite) TestDeleteVote() {
 		},
 		{
 			name:     "Review does not exist",
-			token:    s.fixture[BARBER1_TOKEN],
+			token:    s.fixture[USER2_TOKEN],
 			shopId:   s.fixture[SHOP1_ID],
 			reviewId: "fake_review",
 			status:   http.StatusBadRequest,
 		},
 		{
 			name:     "Correctly deleted",
-			token:    s.fixture[BARBER1_TOKEN],
+			token:    s.fixture[USER2_TOKEN],
 			shopId:   s.fixture[SHOP1_ID],
 			reviewId: s.fixture[USER1_SHOP1_REVIEW1_ID],
 			status:   http.StatusAccepted,
@@ -319,7 +319,7 @@ func (s *ControllerSuite) TestDeleteVote() {
 		s.Run(tc.name, func() {
 
 			// create a request for the register endpoint
-			req, _ := http.NewRequest("DELETE", "/api/barbershop/"+tc.shopId+"/review/"+tc.reviewId, nil)
+			req, _ := http.NewRequest("DELETE", "/api/barbershop/"+tc.shopId+"/review/"+tc.reviewId+"/vote", nil)
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Add("Authorization", "Bearer "+tc.token)
 
