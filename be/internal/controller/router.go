@@ -85,6 +85,11 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		ucs[usecase.HOLIDAY].(usecase.Holiday),
 	)
 
+	rr := NewReviewRoutes(
+		ucs[usecase.REVIEW].(usecase.Review),
+		ucs[usecase.TOKEN].(usecase.Token),
+	)
+
 	gr := NewGeocodingRoutes(
 		ucs[usecase.GEOCODING].(usecase.Geocoding),
 	)
@@ -113,6 +118,13 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 
 		barberShop.DELETE("/:shopid/appointment/:appointmentid", mr.RequireBarber, ar.DeleteAppointment)
 		barberShop.POST("/:shopid/appointment", ar.Book)
+
+		barberShop.POST("/:shopid/review", rr.Store)
+		barberShop.GET("/:shopid/review", rr.ShowByShop)
+		barberShop.DELETE("/:shopid/review/:reviewid", mr.RequireBarber, rr.Delete)
+
+		barberShop.POST("/:shopid/review/:reviewid/vote", rr.Vote)
+		barberShop.DELETE("/:shopid/review/:reviewid/vote", rr.RemoveVote)
 
 		barberShop.GET("/:shopid/calendar", br.Calendar)
 		barberShop.POST("/:shopid/holiday", mr.RequireBarber, hr.Set)

@@ -60,6 +60,8 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 	barberShopRepo := repo.NewBarberShopRepo(m)
 	viewShopRepo := repo.NewShopViewRepo(m)
 	appintmentRepo := repo.NewAppointmentRepo(m)
+	reviewRepo := repo.NewReviewRepo(m)
+	voteRepo := repo.NewVoteRepo(m)
 	slotRepo := repo.NewSlotRepo(r)
 
 	password := auth.NewPasswordAuth()
@@ -79,6 +81,7 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 		userRepo,
 		barberShopRepo,
 	)
+	ucs[usecase.REVIEW] = usecase.NewReviewUseCase(reviewRepo, voteRepo)
 	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
 	ucs[usecase.HOLIDAY] = usecase.NewHolidayUseCase(slotRepo, barberShopRepo)
 	ucs[usecase.GEOCODING] = usecase.NewGeocodingUseCase(search_api)
