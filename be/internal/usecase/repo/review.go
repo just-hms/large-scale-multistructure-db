@@ -40,7 +40,7 @@ func (r *ReviewRepo) Store(ctx context.Context, review *entity.Review, shopID st
 		return err
 	}
 
-	review.ReviewID = uuid.NewString()
+	review.ID = uuid.NewString()
 	review.Username = user.Username
 	review.Reported = false
 	review.UpVotes = []string{}
@@ -81,7 +81,7 @@ func (r *ReviewRepo) DeleteByID(ctx context.Context, shopID, reviewID string) er
 		return err
 	}
 
-	reviewFilter := bson.M{"_id": shopID, "reviews": bson.M{"$elemMatch": bson.M{"reviewId": reviewID}}}
+	reviewFilter := bson.M{"_id": shopID, "reviews": bson.M{"$elemMatch": bson.M{"_id": reviewID}}}
 	err = r.DB.Collection("barbershops").FindOne(ctx, reviewFilter).Err()
 
 	if err != nil {
@@ -91,7 +91,7 @@ func (r *ReviewRepo) DeleteByID(ctx context.Context, shopID, reviewID string) er
 		return err
 	}
 
-	update := bson.M{"$pull": bson.M{"reviews": bson.M{"reviewId": reviewID}}}
+	update := bson.M{"$pull": bson.M{"reviews": bson.M{"_id": reviewID}}}
 
 	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, shopFilter, update)
 

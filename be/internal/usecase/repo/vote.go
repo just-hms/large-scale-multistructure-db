@@ -28,7 +28,7 @@ func (v *VoteRepo) UpVoteByID(ctx context.Context, userID, shopID, reviewID stri
 		return err
 	}
 
-	reviewFilter := bson.M{"_id": shopID, "reviews": bson.M{"$elemMatch": bson.M{"reviewId": reviewID}}}
+	reviewFilter := bson.M{"_id": shopID, "reviews": bson.M{"$elemMatch": bson.M{"_id": reviewID}}}
 	err = v.DB.Collection("barbershops").FindOne(ctx, reviewFilter).Err()
 
 	if err != nil {
@@ -38,10 +38,10 @@ func (v *VoteRepo) UpVoteByID(ctx context.Context, userID, shopID, reviewID stri
 		return err
 	}
 
-	reviewFilter = bson.M{"_id": shopID, "reviews.reviewId": reviewID}
+	reviewFilter = bson.M{"_id": shopID, "reviews._id": reviewID}
 
 	// Check that Upvote wasn't already present
-	upvoteFilter := bson.M{"_id": shopID, "reviews.reviewId": reviewID, "reviews.upvotes": bson.M{"$in": bson.A{userID}}}
+	upvoteFilter := bson.M{"_id": shopID, "reviews._id": reviewID, "reviews.upvotes": bson.M{"$in": bson.A{userID}}}
 	err = v.DB.Collection("barbershops").FindOne(ctx, upvoteFilter).Err()
 	if err != mongo.ErrNoDocuments {
 		return fmt.Errorf("user already upvoted")
@@ -73,7 +73,7 @@ func (v *VoteRepo) DownVoteByID(ctx context.Context, userID, shopID, reviewID st
 		return err
 	}
 
-	reviewFilter := bson.M{"_id": shopID, "reviews": bson.M{"$elemMatch": bson.M{"reviewId": reviewID}}}
+	reviewFilter := bson.M{"_id": shopID, "reviews": bson.M{"$elemMatch": bson.M{"_id": reviewID}}}
 	err = v.DB.Collection("barbershops").FindOne(ctx, reviewFilter).Err()
 
 	if err != nil {
@@ -83,10 +83,10 @@ func (v *VoteRepo) DownVoteByID(ctx context.Context, userID, shopID, reviewID st
 		return err
 	}
 
-	reviewFilter = bson.M{"_id": shopID, "reviews.reviewId": reviewID}
+	reviewFilter = bson.M{"_id": shopID, "reviews._id": reviewID}
 
 	// Check that the Downvote wasn't already present
-	downvoteFilter := bson.M{"_id": shopID, "reviews.reviewId": reviewID, "reviews.downvotes": bson.M{"$in": bson.A{userID}}}
+	downvoteFilter := bson.M{"_id": shopID, "reviews._id": reviewID, "reviews.downvotes": bson.M{"$in": bson.A{userID}}}
 	err = v.DB.Collection("barbershops").FindOne(ctx, downvoteFilter).Err()
 	if err != mongo.ErrNoDocuments {
 		return fmt.Errorf("user already downvoted")
@@ -117,7 +117,7 @@ func (v *VoteRepo) RemoveVoteByID(ctx context.Context, userID, shopID, reviewID 
 		return err
 	}
 
-	reviewFilter := bson.M{"_id": shopID, "reviews": bson.M{"$elemMatch": bson.M{"reviewId": reviewID}}}
+	reviewFilter := bson.M{"_id": shopID, "reviews": bson.M{"$elemMatch": bson.M{"_id": reviewID}}}
 	err = v.DB.Collection("barbershops").FindOne(ctx, reviewFilter).Err()
 
 	if err != nil {
@@ -127,7 +127,7 @@ func (v *VoteRepo) RemoveVoteByID(ctx context.Context, userID, shopID, reviewID 
 		return err
 	}
 
-	reviewFilter = bson.M{"_id": shopID, "reviews.reviewId": reviewID}
+	reviewFilter = bson.M{"_id": shopID, "reviews._id": reviewID}
 
 	upvoteUpdate := bson.M{"$pull": bson.M{"reviews.$[].upvotes": userID}}
 	_, err = v.DB.Collection("barbershops").UpdateOne(ctx, reviewFilter, upvoteUpdate)

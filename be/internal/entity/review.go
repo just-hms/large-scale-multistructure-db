@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Review struct {
-	ReviewID  string    `bson:"reviewId"`
+	ID        string    `bson:"_id"`
 	UserID    string    `bson:"userId"`
 	Username  string    `bson:"username"`
 	Rating    int       `bson:"rating"`

@@ -150,7 +150,7 @@ func (s *RepoSuite) TestReviewDelete() {
 	s.Require().NoError(err)
 	s.Require().Len(shop.Reviews, 1)
 
-	err = reviewRepo.DeleteByID(context.Background(), shop.ID, review.ReviewID)
+	err = reviewRepo.DeleteByID(context.Background(), shop.ID, review.ID)
 	s.Require().NoError(err)
 
 	// check that the review was correctly deleted

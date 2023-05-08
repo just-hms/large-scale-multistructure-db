@@ -39,11 +39,11 @@ func (s *RepoSuite) TestUpVote() {
 	s.Require().NoError(err)
 	s.Require().Len(shop.Reviews, 1)
 
-	err = voteRepo.UpVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.UpVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().NoError(err)
 
 	// check that a user cannot upvote twice
-	err = voteRepo.UpVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.UpVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().Error(err, mongo.ErrNoDocuments)
 
 	// check that the vote was correctly created
@@ -79,11 +79,11 @@ func (s *RepoSuite) TestDownVote() {
 	err = reviewRepo.Store(context.Background(), review, shop.ID)
 	s.Require().NoError(err)
 
-	err = voteRepo.DownVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.DownVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().NoError(err)
 
 	// check that a user cannot downvote twice
-	err = voteRepo.DownVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.DownVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().Error(err, mongo.ErrNoDocuments)
 
 	// check that the vote was correctly created
@@ -93,7 +93,7 @@ func (s *RepoSuite) TestDownVote() {
 	s.Require().Len(shop.Reviews[0].DownVotes, 1)
 
 	// check that an upvote correctly removes a downvote
-	err = voteRepo.UpVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.UpVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().NoError(err)
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
@@ -101,7 +101,7 @@ func (s *RepoSuite) TestDownVote() {
 	s.Require().Len(shop.Reviews[0].DownVotes, 0)
 
 	// check that a downvote correctly removes an upvote
-	err = voteRepo.DownVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.DownVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().NoError(err)
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
@@ -142,28 +142,28 @@ func (s *RepoSuite) TestRemoveVote() {
 	s.Require().Len(shop.Reviews, 1)
 
 	// check that the upvote is correctly created
-	err = voteRepo.UpVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.UpVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().NoError(err)
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
 	s.Require().Len(shop.Reviews[0].UpVotes, 1)
 
 	// check that the upvote gets correctly removed
-	err = voteRepo.RemoveVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.RemoveVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().NoError(err)
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
 	s.Require().Len(shop.Reviews[0].UpVotes, 0)
 
 	// check that the downvote is correctly created
-	err = voteRepo.DownVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.DownVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().NoError(err)
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
 	s.Require().Len(shop.Reviews[0].DownVotes, 1)
 
 	// check that the downvote gets correctly removed
-	err = voteRepo.RemoveVoteByID(context.Background(), user.ID, shop.ID, review.ReviewID)
+	err = voteRepo.RemoveVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().NoError(err)
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)

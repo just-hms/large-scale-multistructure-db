@@ -192,8 +192,8 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 		}
 	}
 
-	fixture[USER1_SHOP1_REVIEW1_ID] = reviews[0].ReviewID
-	fixture[USER1_SHOP1_REVIEW2_ID] = reviews[1].ReviewID
+	fixture[USER1_SHOP1_REVIEW1_ID] = reviews[0].ID
+	fixture[USER1_SHOP1_REVIEW2_ID] = reviews[1].ID
 
 	err := reviewUsecase.UpVoteByID(context.Background(), fixture[USER2_ID], fixture[SHOP1_ID], fixture[USER1_SHOP1_REVIEW1_ID])
 	if err != nil {
