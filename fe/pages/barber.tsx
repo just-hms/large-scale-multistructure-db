@@ -13,6 +13,7 @@ export default function User() {
   const [content, setContent] = useState("account_info");
   const [loaded,setLoaded] = useState(false)
   const [userData, setUserData] = useState<any[]>([])
+  const [shopsData, setShopsData] = useState<any[]>([])
   const router = useRouter()
   let displayed_element;
   // check if logged in and barber
@@ -22,7 +23,9 @@ export default function User() {
       router.push("/")
     }else{
       const fetchData = async () => {
-        setUserData(await (await getUserInfos()).json())
+        const retrievedData = await (await getUserInfos()).json() 
+        setUserData(retrievedData)
+        setShopsData(retrievedData.ownedShops)
         // TODO: from here construct [{"name":id,"name":id}] for shops and give it to ModifyShop
         setLoaded(true)
       }
@@ -32,8 +35,7 @@ export default function User() {
   if (content == "account_info") {
     displayed_element = <UserInfos userdata={userData}/>;
   } else if (content == "modify_shop"){
-    // give the list of shops which is inside userData
-    displayed_element = <ModifyShop/>;
+    displayed_element = <ModifyShop shops={shopsData}/>;
   } else if (content == "reservations"){
     displayed_element = <BarberReservations/>;
   } else if (content == "analytics"){
