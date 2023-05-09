@@ -30,14 +30,23 @@ func (s *RepoSuite) TestUpVote() {
 		UserID:  user.ID,
 	}
 
+	review2 := &entity.Review{
+		Rating:  3,
+		Content: "test",
+		UserID:  user.ID,
+	}
+
 	err = reviewRepo.Store(context.Background(), review, shop.ID)
+	s.Require().NoError(err)
+
+	err = reviewRepo.Store(context.Background(), review2, shop.ID)
 	s.Require().NoError(err)
 
 	// check that the review was correctly created
 	// in the barbershop collection
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
-	s.Require().Len(shop.Reviews, 1)
+	s.Require().Len(shop.Reviews, 2)
 
 	err = voteRepo.UpVoteByID(context.Background(), user.ID, shop.ID, review.ID)
 	s.Require().NoError(err)
@@ -51,6 +60,9 @@ func (s *RepoSuite) TestUpVote() {
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
 	s.Require().Len(shop.Reviews[0].UpVotes, 1)
+
+	// check that the vote was not placed in the wrong review
+	s.Require().Len(shop.Reviews[1].UpVotes, 0)
 
 }
 
