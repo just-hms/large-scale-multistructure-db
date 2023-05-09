@@ -17,7 +17,11 @@ const (
 	APPOINTMENT
 	HOLIDAY
 	REVIEW
+	GEOCODING
+	TOKEN
 )
+
+// Usecase interfaces
 
 type (
 	User interface {
@@ -56,25 +60,44 @@ type (
 	}
 
 	Review interface {
-		Store(ctx context.Context, userID string, shopID string) error
-		GetByBarberShop(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, ID string) error
+		Store(ctx context.Context, review *entity.Review, shopID string) error
+		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
+		DeleteByID(ctx context.Context, shopID, reviewID string) error
 
-		UpVoteByID(ctx context.Context, voterID, ID string) error
-		DownVoteByID(ctx context.Context, voterID, ID string) error
-		RemoveVoteByID(ctx context.Context, voterID, ID string) error
+		UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+		RemoveVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+	}
+
+	Geocoding interface {
+		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
+	}
+
+	Token interface {
+		CreateToken(userID string) (string, error)
+		ExtractTokenID(tokenString string) (string, error)
 	}
 
 	// TODO : add analytics, maybe raw access to db using custom store like AnalyticsStore
 
 )
+
+// Utility interfaces
 type (
+	GeocodingWebAPI interface {
+		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
+	}
 	PasswordAuth interface {
 		Verify(hashed string, password string) bool
 		HashAndSalt(password string) (string, error)
 	}
+	TokenApi interface {
+		CreateToken(id string) (string, error)
+		ExtractTokenID(token string) (string, error)
+	}
 )
 
+// Repositories
 type (
 	UserRepo interface {
 		Store(ctx context.Context, user *entity.User) error
@@ -113,14 +136,14 @@ type (
 	}
 
 	ReviewRepo interface {
-		Store(ctx context.Context, userID string, shopID string) error
-		GetByBarberShop(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, ID string) error
+		Store(ctx context.Context, review *entity.Review, shopID string) error
+		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
+		DeleteByID(ctx context.Context, shopID, reviewID string) error
 	}
 
 	VoteRepo interface {
-		DownVote(ctx context.Context, voterID string, shopID string) error
-		UpVote(ctx context.Context, voterID string, shopID string) error
-		RemoveVote(ctx context.Context, voterID string, shopID string) error
+		UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+		RemoveVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 	}
 )

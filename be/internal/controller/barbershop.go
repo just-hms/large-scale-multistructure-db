@@ -6,7 +6,6 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,12 +13,14 @@ import (
 type BarberShopRoutes struct {
 	barberShopUseCase usecase.BarberShop
 	calendarUseCase   usecase.Calendar
+	tokenUseCase      usecase.Token
 }
 
-func NewBarberShopRoutes(uc usecase.BarberShop, cl usecase.Calendar) *BarberShopRoutes {
+func NewBarberShopRoutes(uc usecase.BarberShop, cl usecase.Calendar, t usecase.Token) *BarberShopRoutes {
 	return &BarberShopRoutes{
 		barberShopUseCase: uc,
 		calendarUseCase:   cl,
+		tokenUseCase:      t,
 	}
 }
 
@@ -31,6 +32,7 @@ type FindBarbershopInput struct {
 }
 
 // Find handles a POST request to find barbershops within a certain radius.
+//
 // @Summary Find barbershops within a certain radius
 // @Description Finds barbershops within a certain radius of the given coordinates and name.
 // @Tags Barbershop
@@ -67,12 +69,14 @@ func (br *BarberShopRoutes) Find(ctx *gin.Context) {
 
 type CreateBarbershopInput struct {
 	Name            string  `json:"name" binding:"required"`
+	Description     string  `json:"description" binding:"required"`
 	Latitude        float64 `json:"latitude"`
 	Longitude       float64 `json:"longitude"`
 	EmployeesNumber int     `json:"employees_number"`
 }
 
 // Create handles a POST request to create a new barbershop.
+//
 // @Summary Create a new barbershop
 // @Description Creates a new barbershop with the given name, location and number of employees.
 // @Tags Barbershop
@@ -92,9 +96,10 @@ func (br *BarberShopRoutes) Create(ctx *gin.Context) {
 	}
 
 	err := br.barberShopUseCase.Store(ctx, &entity.BarberShop{
-		Name:      input.Name,
-		Location:  entity.NewLocation(input.Latitude, input.Longitude),
-		Employees: input.EmployeesNumber,
+		Name:        input.Name,
+		Location:    entity.NewLocation(input.Latitude, input.Longitude),
+		Employees:   input.EmployeesNumber,
+		Description: input.Description,
 	})
 
 	if err != nil {
@@ -106,6 +111,7 @@ func (br *BarberShopRoutes) Create(ctx *gin.Context) {
 }
 
 // Show handles a GET request to retrieve details of a barbershop.
+//
 // @Summary Retrieve details of a barbershop
 // @Description Retrieves details of a barbershop for the given shop ID.
 // @Tags Barbershop
@@ -122,7 +128,7 @@ func (br *BarberShopRoutes) Show(ctx *gin.Context) {
 	ID := ctx.Param("shopid")
 
 	token := middleware.ExtractTokenFromRequest(ctx)
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := br.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -140,13 +146,15 @@ func (br *BarberShopRoutes) Show(ctx *gin.Context) {
 }
 
 type ModifyBarberShopInput struct {
-	Name      string  `json:"name"`
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
-	Employees int     `json:"employees"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+	Employees   int     `json:"employees"`
 }
 
 // Modify handles a PUT request to modify details of a barbershop.
+//
 // @Summary Modify details of a barbershop
 // @Description Modifies details of a barbershop for the given shop ID.
 // @Tags Barbershop
@@ -184,6 +192,7 @@ func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
 }
 
 // Delete handles a DELETE request to delete a barbershop by ID.
+//
 // @Summary Delete a barbershop by ID
 // @Description Deletes a barbershop by ID.
 // @Tags Barbershop
@@ -209,6 +218,7 @@ func (br *BarberShopRoutes) Delete(ctx *gin.Context) {
 }
 
 // Calendar handles a GET request to get the calendar for a barbershop by ID.
+//
 // @Summary Get the calendar for a barbershop by ID
 // @Description Gets the calendar for a barbershop by ID.
 // @Tags Barbershop

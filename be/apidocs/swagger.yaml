@@ -76,6 +76,13 @@ definitions:
     - email
     - password
     type: object
+  controller.SearchInput:
+    properties:
+      area:
+        type: string
+    required:
+    - area
+    type: object
   controller.SetHolidaysInput:
     properties:
       date:
@@ -122,6 +129,21 @@ definitions:
         items:
           $ref: '#/definitions/entity.Review'
         type: array
+    type: object
+  entity.GeocodingInfo:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      region:
+        type: string
     type: object
   entity.Location:
     properties:
@@ -615,6 +637,41 @@ paths:
       summary: Set holiday
       tags:
       - Holiday
+  /geocoding/search:
+    post:
+      consumes:
+      - application/json
+      description: Given some information about a place returns a list of possible
+        location with some other information about them in order of importance
+      parameters:
+      - description: Area to search
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.SearchInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entity.GeocodingInfo'
+              type: array
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Given an area returns an array of geocodes
+      tags:
+      - Geocoding
   /health:
     get:
       consumes:

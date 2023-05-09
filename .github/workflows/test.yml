@@ -19,6 +19,10 @@ jobs:
             **/*.go
             go.mod
             go.sum
+      
+      - name: Add envs
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Run test
         run: make github
         if: env.GIT_DIFF

@@ -6,11 +6,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/just-hms/large-scale-multistructure-db/be/config"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/app"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/redis"
 
@@ -41,22 +42,26 @@ func (s *ControllerSuite) SetupTest() {
 
 func (s *ControllerSuite) SetupSuite() {
 
+	cfg, err := config.NewConfig()
+	s.Require().NoError(err)
+
 	fmt.Println(">>> From SetupSuite")
 
-	mongo, err := mongo.New(&mongo.Options{DBName: "test"})
-	s.Require().NoError(err)
-	redis, err := redis.New()
+	mongo, err := mongo.New(cfg.Mongo.Host, cfg.Mongo.Port, "controller-test")
 	s.Require().NoError(err)
 
-	ucs := app.BuildRequirements(mongo, redis)
+	redis, err := redis.New(cfg.Redis.Host, cfg.Redis.Port, cfg.Redis.Password)
+	s.Require().NoError(err)
+
+	ucs, err := app.BuildRequirements(mongo, redis, cfg)
+	s.Require().NoError(err)
 
 	s.resetDB = func() {
 
 		err := mongo.DB.Drop(context.Background())
 		s.Require().NoError(err)
 
-		// TODO: move this somewhere else
-		err = mongo.CreateIndex(context.Background())
+		err = repo.AddIndexes(mongo)
 		s.Require().NoError(err)
 
 		s.fixture, err = InitFixture(ucs)
@@ -93,6 +98,9 @@ const (
 	SHOP1_ID
 	SHOP2_ID
 	EMPTY_SHOP
+
+	USER1_SHOP1_REVIEW1_ID
+	USER1_SHOP1_REVIEW2_ID
 
 	USER1_SHOP1_APPOINTMENT_ID
 )
@@ -142,24 +150,55 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 			return nil, err
 		}
 	}
+	tokenUsecase := ucs[usecase.TOKEN].(usecase.Token)
 
 	fixture[USER1_ID] = users[0].ID
-	fixture[USER1_TOKEN], _ = jwt.CreateToken(users[0].ID)
+	fixture[USER1_TOKEN], _ = tokenUsecase.CreateToken(users[0].ID)
 	fixture[USER1_EMAIL] = users[0].Email
 
 	fixture[USER2_ID] = users[1].ID
-	fixture[USER2_TOKEN], _ = jwt.CreateToken(users[1].ID)
+	fixture[USER2_TOKEN], _ = tokenUsecase.CreateToken(users[1].ID)
 
 	fixture[ADMIN_ID] = users[2].ID
-	fixture[ADMIN_TOKEN], _ = jwt.CreateToken(users[2].ID)
+	fixture[ADMIN_TOKEN], _ = tokenUsecase.CreateToken(users[2].ID)
 
 	fixture[USER3_ID] = users[3].ID
-	fixture[USER3_TOKEN], _ = jwt.CreateToken(users[3].ID)
+	fixture[USER3_TOKEN], _ = tokenUsecase.CreateToken(users[3].ID)
 
 	fixture[BARBER1_ID] = users[4].ID
-	fixture[BARBER1_TOKEN], _ = jwt.CreateToken(users[4].ID)
+	fixture[BARBER1_TOKEN], _ = tokenUsecase.CreateToken(users[4].ID)
 	fixture[BARBER2_ID] = users[5].ID
-	fixture[BARBER2_TOKEN], _ = jwt.CreateToken(users[5].ID)
+	fixture[BARBER2_TOKEN], _ = tokenUsecase.CreateToken(users[5].ID)
+
+	// reviews
+
+	reviews := []*entity.Review{
+		{
+			Rating:  4,
+			Content: "test",
+			UserID:  fixture[USER1_ID],
+		},
+		{
+			Rating:  2,
+			Content: "asd",
+			UserID:  fixture[USER1_ID],
+		},
+	}
+	reviewUsecase := ucs[usecase.REVIEW].(usecase.Review)
+	for _, a := range reviews {
+		err := reviewUsecase.Store(context.Background(), a, fixture[SHOP1_ID])
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	fixture[USER1_SHOP1_REVIEW1_ID] = reviews[0].ID
+	fixture[USER1_SHOP1_REVIEW2_ID] = reviews[1].ID
+
+	err := reviewUsecase.UpVoteByID(context.Background(), fixture[USER2_ID], fixture[SHOP1_ID], fixture[USER1_SHOP1_REVIEW1_ID])
+	if err != nil {
+		return nil, err
+	}
 
 	// appointments
 

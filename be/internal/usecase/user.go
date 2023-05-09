@@ -5,11 +5,11 @@ import (
 	"errors"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 )
 
 // TranslationUseCase -.
 type UserUseCase struct {
+	jwt      TokenApi
 	repo     UserRepo
 	password PasswordAuth
 }
@@ -17,10 +17,11 @@ type UserUseCase struct {
 var ErrUserAlreadyExists = errors.New("email already exists")
 
 // New -.
-func NewUserUseCase(r UserRepo, p PasswordAuth) *UserUseCase {
+func NewUserUseCase(r UserRepo, p PasswordAuth, j TokenApi) *UserUseCase {
 	return &UserUseCase{
 		repo:     r,
 		password: p,
+		jwt:      j,
 	}
 }
 
@@ -79,7 +80,7 @@ func (uc *UserUseCase) LostPassword(ctx context.Context, email string) (string, 
 		return "", err
 	}
 
-	resetToken, err := jwt.CreateToken(user.ID)
+	resetToken, err := uc.jwt.CreateToken(user.ID)
 
 	if err != nil {
 		return "", err

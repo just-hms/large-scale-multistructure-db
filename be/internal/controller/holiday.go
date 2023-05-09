@@ -25,6 +25,7 @@ type SetHolidaysInput struct {
 }
 
 // Set holiday for a given Barber Shop
+//
 // @Summary Set holiday
 // @Description Set holiday for a given Barber Shop
 // @Tags Holiday

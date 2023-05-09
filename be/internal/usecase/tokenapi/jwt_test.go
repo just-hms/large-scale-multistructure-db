@@ -1,24 +1,25 @@
-package jwt_test
+package tokenapi_test
 
 import (
 	"testing"
+	"time"
 
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
-
+	jwt "github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/tokenapi"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestInvertibility(t *testing.T) {
 
+	j := jwt.New(time.Hour, "api_secret")
 	// tokenize an ID
 	startID := "1"
-	token, err := jwt.CreateToken(startID)
+	token, err := j.CreateToken(startID)
 
 	// check that there is no error
 	assert.Nil(t, err)
 
 	// get the ID from the token
-	resID, err := jwt.ExtractTokenID(token)
+	resID, err := j.ExtractTokenID(token)
 	assert.Nil(t, err)
 
 	// check if the extracted token is the same as the start

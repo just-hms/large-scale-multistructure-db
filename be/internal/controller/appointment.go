@@ -7,7 +7,6 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,12 +14,14 @@ import (
 type AppointmentRoutes struct {
 	appoinmentUseCase usecase.Appointment
 	userUseCase       usecase.User
+	tokenUseCase      usecase.Token
 }
 
-func NewAppointmentRoutes(uc usecase.Appointment, us usecase.User) *AppointmentRoutes {
+func NewAppointmentRoutes(uc usecase.Appointment, us usecase.User, t usecase.Token) *AppointmentRoutes {
 	return &AppointmentRoutes{
 		appoinmentUseCase: uc,
 		userUseCase:       us,
+		tokenUseCase:      t,
 	}
 }
 
@@ -29,6 +30,7 @@ type BookAppointmentInput struct {
 }
 
 // Book handles a POST request to book a new appointment.
+//
 // @Summary Book a new appointment
 // @Description Books a new appointment for the current user.
 // @Tags Appointment
@@ -50,7 +52,7 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 	}
 
 	token := middleware.ExtractTokenFromRequest(ctx)
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := ur.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -73,6 +75,8 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{})
 }
 
+// DeleteSelfAppointment deletes the current appointment of an user
+//
 // @Summary Deletes the current user's appointment
 // @Description Deletes the appointment of the current user
 // @Tags Appointment
@@ -86,7 +90,7 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 	token := middleware.ExtractTokenFromRequest(ctx)
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := ur.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -111,6 +115,8 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 }
 
+// DeleteAppointment deletes the appointment of the specified user
+//
 // @Summary Deletes an appointment
 // @Description Deletes an appointment at a specific barbershop
 // @Tags Appointment

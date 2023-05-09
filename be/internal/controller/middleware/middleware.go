@@ -6,18 +6,19 @@ import (
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
-	"github.com/just-hms/large-scale-multistructure-db/be/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )
 
 type MiddlewareRoutes struct {
-	userUseCase usecase.User
+	userUseCase  usecase.User
+	tokenUseCase usecase.Token
 }
 
-func NewMiddlewareRoutes(uc usecase.User) *MiddlewareRoutes {
+func NewMiddlewareRoutes(uc usecase.User, t usecase.Token) *MiddlewareRoutes {
 	return &MiddlewareRoutes{
-		userUseCase: uc,
+		userUseCase:  uc,
+		tokenUseCase: t,
 	}
 }
 
@@ -31,7 +32,7 @@ func ExtractTokenFromRequest(ctx *gin.Context) string {
 func (mr *MiddlewareRoutes) RequireAuth(ctx *gin.Context) {
 
 	token := ExtractTokenFromRequest(ctx)
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := mr.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -50,7 +51,7 @@ func (mr *MiddlewareRoutes) RequireAdmin(ctx *gin.Context) {
 
 	token := ExtractTokenFromRequest(ctx)
 
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := mr.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -74,7 +75,7 @@ func (mr *MiddlewareRoutes) RequireAdmin(ctx *gin.Context) {
 func (mr *MiddlewareRoutes) MarkWithAuthID(ctx *gin.Context) {
 
 	token := ExtractTokenFromRequest(ctx)
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := mr.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -91,7 +92,7 @@ func (mr *MiddlewareRoutes) MarkWithAuthID(ctx *gin.Context) {
 func (mr *MiddlewareRoutes) RequireBarber(ctx *gin.Context) {
 
 	token := ExtractTokenFromRequest(ctx)
-	tokenID, err := jwt.ExtractTokenID(token)
+	tokenID, err := mr.tokenUseCase.ExtractTokenID(token)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
