@@ -48,13 +48,13 @@ func (v *VoteRepo) UpVoteByID(ctx context.Context, userID, shopID, reviewID stri
 	}
 
 	// Check if user has already downvoted the review, and remove if it has
-	downvoteUpdate := bson.M{"$pull": bson.M{"reviews.$[].downvotes": userID}}
+	downvoteUpdate := bson.M{"$pull": bson.M{"reviews.$.downvotes": userID}}
 	_, err = v.DB.Collection("barbershops").UpdateOne(ctx, reviewFilter, downvoteUpdate)
 	if err != nil {
 		return err
 	}
 
-	upvoteUpdate := bson.M{"$push": bson.M{"reviews.$[].upvotes": userID}}
+	upvoteUpdate := bson.M{"$push": bson.M{"reviews.$.upvotes": userID}}
 	_, err = v.DB.Collection("barbershops").UpdateOne(ctx, reviewFilter, upvoteUpdate)
 
 	return err
@@ -93,13 +93,13 @@ func (v *VoteRepo) DownVoteByID(ctx context.Context, userID, shopID, reviewID st
 	}
 
 	// Check if user has already upvoted the review, and remove if it has
-	upvoteUpdate := bson.M{"$pull": bson.M{"reviews.$[].upvotes": userID}}
+	upvoteUpdate := bson.M{"$pull": bson.M{"reviews.$.upvotes": userID}}
 	_, err = v.DB.Collection("barbershops").UpdateOne(ctx, reviewFilter, upvoteUpdate)
 	if err != nil {
 		return err
 	}
 
-	downvoteUpdate := bson.M{"$push": bson.M{"reviews.$[].downvotes": userID}}
+	downvoteUpdate := bson.M{"$push": bson.M{"reviews.$.downvotes": userID}}
 	_, err = v.DB.Collection("barbershops").UpdateOne(ctx, reviewFilter, downvoteUpdate)
 
 	return err
@@ -129,13 +129,13 @@ func (v *VoteRepo) RemoveVoteByID(ctx context.Context, userID, shopID, reviewID 
 
 	reviewFilter = bson.M{"_id": shopID, "reviews._id": reviewID}
 
-	upvoteUpdate := bson.M{"$pull": bson.M{"reviews.$[].upvotes": userID}}
+	upvoteUpdate := bson.M{"$pull": bson.M{"reviews.$.upvotes": userID}}
 	_, err = v.DB.Collection("barbershops").UpdateOne(ctx, reviewFilter, upvoteUpdate)
 	if err != nil {
 		return err
 	}
 
-	downvoteUpdate := bson.M{"$pull": bson.M{"reviews.$[].downvotes": userID}}
+	downvoteUpdate := bson.M{"$pull": bson.M{"reviews.$.downvotes": userID}}
 	_, err = v.DB.Collection("barbershops").UpdateOne(ctx, reviewFilter, downvoteUpdate)
 	return err
 
