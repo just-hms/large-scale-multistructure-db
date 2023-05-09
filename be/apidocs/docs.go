@@ -686,6 +686,305 @@ const docTemplate = `{
                 }
             }
         },
+        "/barbershop/{shopid}/review": {
+            "get": {
+                "description": "ShowByShop retrieves all the Reviews in a given BarberShop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "ShowByShop retrieves all the Reviews in a given BarberShop",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/entity.Review"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Stores a Review in the given BarberShop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Stores a Review in the given BarberShop",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Rating and TextContent of a Review",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.StoreReviewInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/barbershop/{shopid}/review/{reviewid}": {
+            "delete": {
+                "description": "Delete removes a Review from a BarberShop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Delete removes a Review from a BarberShop",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The ID of the Review",
+                        "name": "reviewid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/barbershop/{shopid}/review/{reviewid}/vote": {
+            "post": {
+                "description": "Vote saves an Upvote or Downvote for a Review in the given BarberShop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Vote saves an Upvote or Downvote for a Review in the given BarberShop",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The ID of the Review",
+                        "name": "reviewid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Wheter a Vote is an Upvote(",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.ReviewVoteInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "RemoveVote removes a Vote from a Review in a BarberShop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "RemoveVote removes a Vote from a Review in a BarberShop",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The ID of the Review",
+                        "name": "reviewid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/geocoding/search": {
             "post": {
                 "description": "Given some information about a place returns a list of possible location with some other information about them in order of importance",
@@ -1069,9 +1368,13 @@ const docTemplate = `{
         "controller.CreateBarbershopInput": {
             "type": "object",
             "required": [
+                "description",
                 "name"
             ],
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "employees_number": {
                     "type": "integer"
                 },
@@ -1132,6 +1435,9 @@ const docTemplate = `{
         "controller.ModifyBarberShopInput": {
             "type": "object",
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "employees": {
                     "type": "integer"
                 },
@@ -1175,6 +1481,14 @@ const docTemplate = `{
                 }
             }
         },
+        "controller.ReviewVoteInput": {
+            "type": "object",
+            "properties": {
+                "upvote": {
+                    "type": "boolean"
+                }
+            }
+        },
         "controller.SearchInput": {
             "type": "object",
             "required": [
@@ -1193,6 +1507,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "unavailableEmployees": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.StoreReviewInput": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "rating": {
                     "type": "integer"
                 }
             }
@@ -1228,6 +1553,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/entity.Appointment"
                     }
+                },
+                "description": {
+                    "type": "string"
                 },
                 "employees": {
                     "type": "integer"
@@ -1304,11 +1632,32 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "downVotes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "rating": {
                     "type": "integer"
                 },
                 "reported": {
                     "type": "boolean"
+                },
+                "reviewID": {
+                    "type": "string"
+                },
+                "upVotes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "userID": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
