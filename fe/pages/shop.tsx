@@ -1,4 +1,4 @@
-import { getShopData,submitReview } from '../lib/shops';
+import { getShopData,submitReview, shopCalendar,getReviews  } from '../lib/shops';
 import { useFormik} from 'formik';
 import Image from 'next/image';
 import Navbar from '../components/navbar';
@@ -12,48 +12,25 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 
 export default function Shop() {
-  const formik = useFormik({
-    initialValues: {
-        title: '',
-        body: '',
-        rating: 0,
-    },
-    onSubmit: async (values:any) => {
-      alert(JSON.stringify(values))
-      // const response = await submitReview(values)
-      // if(response.ok){
-      //     window.location.reload()
-      // }
-    },
-  });
-
   const [loaded,setLoaded] = useState(false)
   const router = useRouter()
   const [shopData, setshopData] = useState<any>('')
-  const [reviewsData, setreviewsData] = useState<any[]>([{
-    id:1111,
-    name:"Pippo Baudo",
-    title:"Gatti fritti",
-    review:"Distanza dal ristorante: 950m 4 ordini totali richiesti al momento della recensione: 2 consegne e 2 cancellazioni. Qualità, quantità e prezzo del ristorante sono eccellenti in loco, ma il servizio relativo alle consegne è del tutto inadeguato. Entrambe le volte che ho ricevuto la consegna il cibo è arrivato danneggiato in qualche modo. Particolarmente grave il caso del Mafè (composto da abbondante salsa di consistenza liquida, oleosa) spedito in contenitori di stagnola con tappo di carta. ",
-    upvotes:10,
-    vote:3,
-  },{
-    id:1112,
-    name:"Pippo Baudo",
-    title:"Gatti fritti",
-    review:"Distanza dal ristorante: 950m 4 ordini totali richiesti al momento della recensione: 2 consegne e 2 cancellazioni. Qualità, quantità e prezzo del ristorante sono eccellenti in loco, ma il servizio relativo alle consegne è del tutto inadeguato. Entrambe le volte che ho ricevuto la consegna il cibo è arrivato danneggiato in qualche modo. Particolarmente grave il caso del Mafè (composto da abbondante salsa di consistenza liquida, oleosa) spedito in contenitori di stagnola con tappo di carta. ",
-    upvotes:-10,
-    vote:5,
-  },{
-    id:1113,
-    name:"Pippo Baudo",
-    title:"Gatti fritti",
-    review:"Distanza dal ristorante: 950m 4 ordini totali richiesti al momento della recensione: 2 consegne e 2 cancellazioni. Qualità, quantità e prezzo del ristorante sono eccellenti in loco, ma il servizio relativo alle consegne è del tutto inadeguato. Entrambe le volte che ho ricevuto la consegna il cibo è arrivato danneggiato in qualche modo. Particolarmente grave il caso del Mafè (composto da abbondante salsa di consistenza liquida, oleosa) spedito in contenitori di stagnola con tappo di carta. ",
-    upvotes:10,
-    vote:2,
-  }])
-  // query parameter
   const { shopid } = router.query
+  const formik = useFormik({
+    initialValues: {
+        content: '',
+        rating: 0,
+    },
+    onSubmit: async (values:any) => {
+      const response = await submitReview(shopid,values)
+      if(response.ok){
+          window.location.reload()
+      }
+    },
+  });
+
+  const [reviewsData, setreviewsData] = useState<any[]>([])
+  // query parameter
   useEffect(()=>{
     if(shopid != undefined){
       const token = localStorage.getItem('token')
@@ -62,6 +39,13 @@ export default function Shop() {
       }else{
         const fetchData = async (shopid:any) => {
           const response = await getShopData(shopid)
+          const calendar = await (await shopCalendar(shopid)).json()
+          const reviews = await (await getReviews(shopid)).json()
+          if(reviews.reviews == null)
+            setreviewsData([])
+          else
+            setreviewsData(reviews.reviews)
+          
           if (response.ok){                                         
             const json_response = await response.json()
             setshopData(json_response.barbershop)
@@ -88,7 +72,7 @@ export default function Shop() {
             <path className='w-full fill-slate-900' d="M 0 90 C 480 0 600 0 720 10.7 C 840 21 960 43 1080 48 C 1200 53 1320 43 1380 37.3 L 1440 32 L 1440 0 L 1380 0 C 1320 0 1200 0 1080 0 C 960 0 840 0 720 0 C 600 0 480 0 360 0 C 240 0 120 0 60 0 L 0 0 Z"></path>
         </svg>
       </Navbar>
-      <div className='h-full'>
+      <div className='h-screen'>
         <div className='h-96 w-full'>
           <Image className="w-full h-full object-cover " src={barber_background} alt="barber salon"/>
         </div>
@@ -96,13 +80,13 @@ export default function Shop() {
           {/* REVIEWS */}
           <div className="w-full lg:w-1/2 lg:h-full bg-slate-800 mt-0 px-3 pb-3 lg:py-3 order-last lg:order-none">
             <div className="w-full top-0 transform lg:-translate-y-20 flex justify-center items-center">
-              <div className='relative max-h-128 overflow-auto rounded-3xl shadow-md shadow-black/70'>
+              <div className='w-full relative max-h-128 overflow-auto rounded-3xl shadow-md shadow-black/70'>
                 <div className="bg-slate-800 text-white w-full flex flex-col items-center justify-center ">
                   <div className="mx-5 text-center font-bold leading-tight tracking-tight text-slate-200 sticky top-0 bg-slate-800 w-full flex flex-col items-center">
                     <h1 className='text-2xl py-1 border-b border-slate-600 w-5/6'>Reviews</h1>
                   </div>
-                  <div className="text-lg text-center  font-bold leading-tight tracking-tight text-slate-300 break-words p-3 mx-5">
-                    <Reviews>{reviewsData}</Reviews>
+                  <div className="text-lg text-center w-3/4 font-bold leading-tight tracking-tight text-slate-300 break-words p-3 mx-5">
+                    <Reviews reviews={reviewsData} shopid={shopid}></Reviews>
                   </div>
                   {/* leave a review */}
                   <div className='bg-slate-800 border-t border-slate-600 w-full sticky bottom-0'>
@@ -111,8 +95,8 @@ export default function Shop() {
                         Leave a review!
                       </h1>
                       <div className='w-3/4 border-b border-slate-700 pt-1'></div>
-                      <p className='text-sm'>Give the review a title:</p>
-                      <input name="title" id="title" onChange={formik.handleChange} value={formik.values.title} className='bg-slate-700 w-3/4 focus:outline-none resize-none rounded-md p-1.5 text-sm break-words mt-1'/>
+                      {/* <p className='text-sm'>Give the review a title:</p>
+                      <input name="title" id="title" onChange={formik.handleChange} value={formik.values.title} className='bg-slate-700 w-3/4 focus:outline-none resize-none rounded-md p-1.5 text-sm break-words mt-1'/> */}
                       <div className="text-sm text-justify leading-tight tracking-tight text-slate-300 break-words w-3/4 py-2 flex flex-col">
                         <div className='flex items-center justify-between'>
                           How did we do?
@@ -126,7 +110,7 @@ export default function Shop() {
                             }} 
                             value={formik.values.rating}/>
                         </div>
-                        <textarea name="body" id="body" onChange={formik.handleChange} value={formik.values.body} className='bg-slate-700 focus:outline-none resize-none rounded-md p-1.5 text-sm break-words mt-1'/>                  
+                        <textarea name="content" id="content" onChange={formik.handleChange} value={formik.values.content} className='bg-slate-700 focus:outline-none resize-none rounded-md p-1.5 text-sm break-words mt-1'/>                  
                         <button type="submit" className="w-full text-sm bg-slate-600 hover:bg-slate-500 focus:outline-none rounded-lg border-slate-700 text-sm py-2 text-center mt-3 z-10">What I thought</button>
                       </div>
                     </form>

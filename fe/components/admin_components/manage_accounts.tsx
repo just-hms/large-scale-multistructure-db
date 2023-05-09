@@ -8,16 +8,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function ManageUsers({accounts}:any) {
 
   const [query, setQuery] = useState('');
-  console.log(accounts)
   const searchFilter = (accounts:any) => {
     if(accounts){
       return accounts.filter(
-        (el:any) => el.Email.toLowerCase().includes(query.toLocaleLowerCase())
+        (el:any) => {
+          return el.Email.toLowerCase().includes(query.toLocaleLowerCase())
+        }
       )
     }
   }
   const filtered = searchFilter(accounts)
-
+  console.log(filtered)
   //Handling the input on our search bar
   const handleChange = (e:any) => {
     setQuery(e.target.value)
@@ -31,7 +32,7 @@ export default function ManageUsers({accounts}:any) {
               <div className="sticky top-0 bg-slate-700 w-full flex flex-col items-center justify-center border-b border-slate-600 px-5 pt-5">
                 <p className="text-2xl font-bold">Accounts</p> 
                 <div className="flex flex-col lg:p-0 lg:flex-row items-center justify-between ">
-                  <GeneralDropdown elements={["Barber", "User"]} placeholder="Type" classname="px-1 py-2 hover:text-slate-500 rounded-full text-slate-200 bg-slate-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg"><></></GeneralDropdown>
+                  {/* <GeneralDropdown elements={["Barber", "User"]} placeholder="Type" classname="px-1 py-2 hover:text-slate-500 rounded-full text-slate-200 bg-slate-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg"><></></GeneralDropdown> */}
                   {/* SEARCH BAR */}
                   <div className=" text-lg text-center font-bold leading-tight tracking-tight text-slate-300 break-words p-5">
                     <div className='w-full py-2 my-5 lg:m-5 flex items-center justify-center rounded-full bg-slate-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg'>

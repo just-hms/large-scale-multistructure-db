@@ -7,6 +7,8 @@ definitions:
     type: object
   controller.CreateBarbershopInput:
     properties:
+      description:
+        type: string
       employees_number:
         type: integer
       latitude:
@@ -16,6 +18,7 @@ definitions:
       name:
         type: string
     required:
+    - description
     - name
     type: object
   controller.FindBarbershopInput:
@@ -48,6 +51,8 @@ definitions:
     type: object
   controller.ModifyBarberShopInput:
     properties:
+      description:
+        type: string
       employees:
         type: integer
       latitude:
@@ -76,6 +81,11 @@ definitions:
     - email
     - password
     type: object
+  controller.ReviewVoteInput:
+    properties:
+      upvote:
+        type: boolean
+    type: object
   controller.SearchInput:
     properties:
       area:
@@ -88,6 +98,13 @@ definitions:
       date:
         type: string
       unavailableEmployees:
+        type: integer
+    type: object
+  controller.StoreReviewInput:
+    properties:
+      content:
+        type: string
+      rating:
         type: integer
     type: object
   entity.Appointment:
@@ -111,6 +128,8 @@ definitions:
         items:
           $ref: '#/definitions/entity.Appointment'
         type: array
+      description:
+        type: string
       employees:
         type: integer
       id:
@@ -160,10 +179,24 @@ definitions:
         type: string
       createdAt:
         type: string
+      downVotes:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
       rating:
         type: integer
       reported:
         type: boolean
+      upVotes:
+        items:
+          type: string
+        type: array
+      userID:
+        type: string
+      username:
+        type: string
     type: object
   entity.Slot:
     properties:
@@ -637,6 +670,207 @@ paths:
       summary: Set holiday
       tags:
       - Holiday
+  /barbershop/{shopid}/review:
+    get:
+      consumes:
+      - application/json
+      description: ShowByShop retrieves all the Reviews in a given BarberShop
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entity.Review'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: ShowByShop retrieves all the Reviews in a given BarberShop
+      tags:
+      - Review
+    post:
+      consumes:
+      - application/json
+      description: Stores a Review in the given BarberShop
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: Rating and TextContent of a Review
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.StoreReviewInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Stores a Review in the given BarberShop
+      tags:
+      - Review
+  /barbershop/{shopid}/review/{reviewid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete removes a Review from a BarberShop
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: The ID of the Review
+        in: path
+        name: reviewid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Delete removes a Review from a BarberShop
+      tags:
+      - Review
+  /barbershop/{shopid}/review/{reviewid}/vote:
+    delete:
+      consumes:
+      - application/json
+      description: RemoveVote removes a Vote from a Review in a BarberShop
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: The ID of the Review
+        in: path
+        name: reviewid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: RemoveVote removes a Vote from a Review in a BarberShop
+      tags:
+      - Review
+    post:
+      consumes:
+      - application/json
+      description: Vote saves an Upvote or Downvote for a Review in the given BarberShop
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: The ID of the Review
+        in: path
+        name: reviewid
+        required: true
+        type: string
+      - description: Wheter a Vote is an Upvote(
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ReviewVoteInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Vote saves an Upvote or Downvote for a Review in the given BarberShop
+      tags:
+      - Review
   /geocoding/search:
     post:
       consumes:

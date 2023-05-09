@@ -8,6 +8,7 @@ export default function CreateShop({accounts}:any) {
     initialValues: {
         name: '',
         address: '',
+        shopDescription: '',
         employeesNumber: '',
     },
     onSubmit: async (values, {resetForm}) => {
@@ -31,8 +32,13 @@ return (
               <div className='w-full lg:w-3/4'>
                   <label htmlFor="name" className="block mb-2 text-sm font-medium text-slate-200">Shop Name</label>
                   <input type="text" name="name" id="name" onChange={formik.handleChange} value={formik.values.name} className="border border-slate-500  bg-slate-600 text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" placeholder="Name" required/>
+                  
                   <label htmlFor="address" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Address</label>
                   <input type="text" name="address" id="address" onChange={formik.handleChange} value={formik.values.address} placeholder="Address" className="border border-slate-500 bg-slate-600  text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700" required/>
+                  
+                  <label htmlFor="shopDescription" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Shop Description</label>
+                  <input type="text" name="shopDescription" id="shopDescription" onChange={formik.handleChange} value={formik.values.shopDescription} placeholder="Description" className="border border-slate-500 bg-slate-600  text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700 " required/>
+                  
                   <label htmlFor="employeesNumber" className="mt-2 block mb-2 text-sm font-medium text-slate-200">Employees Number</label>
                   <input type="number" name="employeesNumber" id="employeesNumber" onChange={formik.handleChange} value={formik.values.employeesNumber} placeholder="0" className="border border-slate-500 bg-slate-600  text-slate-300 sm:text-sm rounded-lg focus:ring-slate-700 block w-full p-2.5 bg-slate-700 " required/>
               </div>

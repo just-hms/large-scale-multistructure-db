@@ -19,16 +19,22 @@ export async function deleteUser (id){
 }
 
 export async function createShop(values){
-  const address_response = await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(values.address)+"&apiKey=66c0af4256094d7f93fd472e1a188390")
-  const response_json = await address_response.json()
-  const lat = response_json.features[0].properties.lat
-  const lon = response_json.features[0].properties.lon
+  const geocoding = await fetch(url+`geocoding/search`,{
+    method: 'POST',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "area": values.address,
+    })
+  }).then((response)=>response.json())
+  const lat = geocoding.geocodes.Latitude
+  const lon = geocoding.geocodes.Longitude
   const response = await fetch(url+`admin/barbershop`, {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),
     body: JSON.stringify({
       "employees_number": values.employeesNumber,
       "name": values.name,
+      "description":values.shopDescription,
       "Latitude": lat,
       "Longitude": lon
     })
@@ -37,11 +43,15 @@ export async function createShop(values){
 }
 
 export async function modifyShop(values, id){
-
-  const address_response = await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(values.adress)+"&apiKey=66c0af4256094d7f93fd472e1a188390")
-  const response_json = await address_response.json()
-  const lat = response_json.features[0].properties.lat
-  const lon = response_json.features[0].properties.lon
+  const geocoding = await fetch(url+`geocoding/search`,{
+    method: 'POST',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "area": values.address,
+    })
+  }).then((response)=>response.json())
+  const lat = geocoding.geocodes.Latitude
+  const lon = geocoding.geocodes.Longitude
   const response = await fetch(url+`admin/barbershop/`+id, {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),

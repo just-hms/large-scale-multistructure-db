@@ -9,7 +9,12 @@ export async function getShopData(id) {
   return response;
 }
 
-export function getReviews(id){
+export async function getReviews(id){
+  const response = await fetch(url+`barbershop/`+id+`/review`, {
+    method: 'GET',
+    headers: headers(localStorage.getItem("token"))
+  })
+  return response;
 }
 
 export async function shopCalendar(id){
@@ -19,15 +24,31 @@ export async function shopCalendar(id){
   })
   return response;
 }
-export async function submitReview(id){
-  const token = localStorage.getItem("token")
-  const response = await fetch(url+'/barbershop/'+id+'/review/', {
+
+
+export async function submitReview(id,values){
+  console.log(values)
+  const response = await fetch(url+'barbershop/'+id+'/review', {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),
     body: JSON.stringify({
-      "title" : "kek",
-      "body" : "kekkeroni",
-      "rating" : 3
+      "content" : values.content,
+      "rating" : values.rating
+    })
+  })
+  return response;
+}
+
+export async function submitVote(shopid, reviewid, vote){
+  await fetch(url+'barbershop/'+shopid+'/review/'+reviewid+'/vote', {
+    method: 'DELETE',
+    headers: headers(localStorage.getItem("token"))
+  })
+  const response = await fetch(url+'barbershop/'+shopid+'/review/'+reviewid+'/vote', {
+    method: 'POST',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "upvote" : vote,
     })
   })
   return response;
