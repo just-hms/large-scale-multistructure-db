@@ -57,7 +57,7 @@ export default function LoginForm() {
                         </div>
                         <p className='text-rose-600 text-sm'>{error}</p>
                         {/* <Link href="/password_recovery" className="text-sm font-medium hover:underline text-slate-300">Forgot Password?</Link> */}
-                        <button type="submit" className="w-full text-slate-300 bg-rose-800 hover:bg-rose-700 focus:outline-none focus:ring-rose-300 font-medium rounded-lg border-slate-700 text-sm px-5 py-2.5 text-center">Sign in</button>
+                        <button type="submit" className="w-full text-slate-300 bg-rose-800 hover:bg-rose-700 focus:border-rose-600 font-medium rounded-lg border-slate-700 text-sm px-5 py-2.5 text-center">Sign in</button>
                         <p className="text-sm font-light text-slate-400 ">
                             Don’t have an account yet? <Link href="/signup" className="font-medium text-slate-400 hover:underline">Sign up</Link>
                         </p>

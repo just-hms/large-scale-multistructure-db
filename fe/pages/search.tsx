@@ -88,7 +88,7 @@ export default function Search() {
                   </div>
                   <input
                     type="text"
-                    className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none" 
+                    className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none " 
                      id="barberSearch" placeholder="Search"
                     onChange={handleChange}
                   />

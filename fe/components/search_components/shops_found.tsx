@@ -12,9 +12,7 @@ export default function ShopsFound({shops}:any) {
         <div className="w-full flex-col text-xl justify-start items-center px-3 overflow-auto">
             <div className="w-full bg-slate-800 sticky top-0 flex flex-col lg:flex-row justify-between items-center pb-2 px-2 border-b border-slate-600 mb-3">
                 <div className="py-2 lg:p-0">Found {(shops)?shops.length:0} Barber Shops</div>
-                {/* <div className="flex items-center justify-end " >
-                    <GeneralDropdown elements={[1,2,3]} placeholder="" classname=""><div>Ordered By</div></GeneralDropdown>
-                </div> */}
+
             </div>
             {(shops !== undefined)?shops.map((shop:any)=>
             <Link href={"/shop?shopid="+shop.ID} key={shop.ID} className="w-full text-slate-200 px-2 flex flex-col items-center justify-start">
@@ -23,7 +21,7 @@ export default function ShopsFound({shops}:any) {
                         <div key={shop.ID+"title"} className="text-sm flex items-center lg:items-start justify-start w-full text-left">
                             {/* TODO SOURCE */}
                             <div className='h-32 lg:w-1/2'>
-                                <Image className="w-full h-full object-cover rounded-lg shadow-md shadow-black/30" src={barber_background} alt="barber salon"/>
+                                <Image className="w-full h-full object-cover rounded-lg shadow-md shadow-black/30 hover:shadow-black/80" src={barber_background} alt="barber salon"/>
                             </div>
                             <div className="flex flex-col items-start justify-start w-full px-3">
                                 <div key={shop.ID+"name"} className="text-xl text-left font-bold hover:underline">{shop.Name}</div>

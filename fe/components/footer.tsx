@@ -8,7 +8,7 @@ export default function Footer() {
         <div className='flex flex-row lg:flex-col w-full lg:w-1/3 justify-center items-center'>
           <ul>
             <li>
-            <h1>Find us on GitHub:</h1>
+            <h1 className='font-bold text-slate-200'>Find us on GitHub:</h1>
               <a href='https://github.com/b0-n0-b0' className='hover:text-white hover:cursor-pointer'>
                 <FontAwesomeIcon icon={faGithub} className="pr-3"/>
                 Edoardo Geraci

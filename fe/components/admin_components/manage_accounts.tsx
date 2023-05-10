@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function ManageUsers({accounts}:any) {
 
+  // change to useEffect triggered by onsubmit which changes the users shown
   const [query, setQuery] = useState('');
   const searchFilter = (accounts:any) => {
     if(accounts){
@@ -18,7 +19,7 @@ export default function ManageUsers({accounts}:any) {
     }
   }
   const filtered = searchFilter(accounts)
-  console.log(filtered)
+
   //Handling the input on our search bar
   const handleChange = (e:any) => {
     setQuery(e.target.value)

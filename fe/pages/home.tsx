@@ -61,7 +61,7 @@ export default function Home(){
                 <div className='w-full lg:w-1/2 m-5 flex items-center justify-center rounded-full bg-red-900 bg-opacity-60 backdrop-blur-lg drop-shadow-lg'>
                   <input
                     type="text"
-                    className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none" 
+                    className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none " 
                     id="barberSearch" placeholder="Desired area"
                     onChange={handleChange}
                     

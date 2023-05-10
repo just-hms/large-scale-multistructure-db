@@ -58,7 +58,7 @@ export default function SignupForm() {
                                     <input type="password" name="repeatPassword" id="repeatPassword" onChange={formik.handleChange} value={formik.values.repeatPassword} placeholder="••••••••" className="border sm:text-sm rounded-lg block w-full p-2.5 bg-slate-700 border-slate-600 placeholder-slate-400 text-slate-300 focus:ring-slate-500 focus:border-slate-500" required />
                                 </div>
                                 <p className='text-rose-600 text-sm'>{error}</p>
-                                <button type="submit" className="w-full text-slate-300 bg-rose-800 hover:bg-rose-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg border-slate-700 text-sm px-5 py-2.5 text-center">Sign up</button>
+                                <button type="submit" className="w-full text-slate-300 bg-rose-800 hover:bg-rose-700 focus:border-rose-600 font-medium rounded-lg border-slate-700 text-sm px-5 py-2.5 text-center">Sign up</button>
                                 <p className="text-sm font-light text-slate-500"></p>
                             </form>
                         </div>

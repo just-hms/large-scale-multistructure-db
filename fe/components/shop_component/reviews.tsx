@@ -33,10 +33,10 @@ export default function Reviews({reviews,shopid, userid}:any) {
                                 <button key={review.ID+"arrowDown"} className="hover: text-white mr-3 text-sm" onClick={(e)=>handleVote(review,false)}>
                                     <FontAwesomeIcon key={review.ID+"arrowDownIcon"}  icon={faArrowDown} className={(review.DownVotes.includes(userid))?"text-orange-500":""}/>
                                 </button>
-                                {(review.UserID === userid)?<button key={review.ID+"trashbin"} className="hover: text-white mr-3 text-sm" onClick={(e)=>deleteReview(shopid, review.ID)}>
-                                    <FontAwesomeIcon key={review.ID+"trashbin"}  icon={faTrash}/>
-                                </button>:<></>}
-                                <div className={`text-sm ${review.UpVotes.length >= 0 ? "text-green-700" : "text-rose-600"}`}> {((review.UpVotes.length - review.DownVotes.length) >= 0) ? "+": "-"}{review.UpVotes.length - review.DownVotes.length}</div>
+                                        {/* {(review.UserID === userid)?<button key={review.ID+"trashbin"} className="hover: text-white mr-3 text-sm" onClick={(e)=>deleteReview(shopid, review.ID)}>
+                                            <FontAwesomeIcon key={review.ID+"trashbin"}  icon={faTrash}/>
+                                        </button>:<></>} */}
+                                <div className={`text-sm ${(review.UpVotes.length - review.DownVotes.length) >= 0 ? "text-green-700" : "text-rose-600"}`}> {((review.UpVotes.length - review.DownVotes.length) >= 0) ? "+": "-"}{review.UpVotes.length - review.DownVotes.length}</div>
                             </div>
                         </div>
                         <div key={review.ID+"separator"} className="w-full border-b border-slate-500"></div>
