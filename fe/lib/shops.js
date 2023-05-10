@@ -40,10 +40,6 @@ export async function submitReview(id,values){
 }
 
 export async function submitVote(shopid, reviewid, vote){
-  await fetch(url+'barbershop/'+shopid+'/review/'+reviewid+'/vote', {
-    method: 'DELETE',
-    headers: headers(localStorage.getItem("token"))
-  })
   const response = await fetch(url+'barbershop/'+shopid+'/review/'+reviewid+'/vote', {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),
@@ -52,4 +48,17 @@ export async function submitVote(shopid, reviewid, vote){
     })
   })
   return response;
+}
+
+export async function deleteVote(shopid, reviewid){
+  await fetch(url+'barbershop/'+shopid+'/review/'+reviewid+'/vote', {
+    method: 'DELETE',
+    headers: headers(localStorage.getItem("token"))
+  })
+}
+export async function deleteReview(shopid, reviewid){
+  await fetch(url+'barbershop/'+shopid+'/review/'+reviewid, {
+    method: 'DELETE',
+    headers: headers(localStorage.getItem("token"))
+  })
 }

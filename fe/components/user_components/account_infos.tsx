@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router';
 import { deleteAccount, getUserInfos } from '../../lib/user';
+
 export default function UserInfos({userdata}:any) {
   const router = useRouter();
   return (

@@ -1,5 +1,6 @@
-import { getShopData,submitReview, shopCalendar,getReviews  } from '../lib/shops';
-import { useFormik} from 'formik';
+import { getShopData,submitReview,shopCalendar,getReviews } from '../lib/shops';
+import { getUserInfos } from '../lib/user';
+import { useFormik } from 'formik';
 import Image from 'next/image';
 import Navbar from '../components/navbar';
 import Head from 'next/head';
@@ -16,6 +17,8 @@ export default function Shop() {
   const router = useRouter()
   const [shopData, setshopData] = useState<any>('')
   const { shopid } = router.query
+  const [reviewsData, setreviewsData] = useState<any[]>([])
+  const [userid, setUserid] = useState<string>('')
   const formik = useFormik({
     initialValues: {
         content: '',
@@ -29,7 +32,6 @@ export default function Shop() {
     },
   });
 
-  const [reviewsData, setreviewsData] = useState<any[]>([])
   // query parameter
   useEffect(()=>{
     if(shopid != undefined){
@@ -40,11 +42,13 @@ export default function Shop() {
         const fetchData = async (shopid:any) => {
           const response = await getShopData(shopid)
           const calendar = await (await shopCalendar(shopid)).json()
-          const reviews = await (await getReviews(shopid)).json()
-          if(reviews.reviews == null)
-            setreviewsData([])
+          const reviews_object = await (await getReviews(shopid)).json()
+          const user_object = await(await getUserInfos()).json()
+          setUserid(user_object.user.ID)
+          if(reviews_object.reviews == null)
+          setreviewsData([])
           else
-            setreviewsData(reviews.reviews)
+          setreviewsData(reviews_object.reviews)
           
           if (response.ok){                                         
             const json_response = await response.json()
@@ -54,6 +58,7 @@ export default function Shop() {
           }
           setLoaded(true)
         }
+
         fetchData(shopid)
       }
     }
@@ -86,7 +91,7 @@ export default function Shop() {
                     <h1 className='text-2xl py-1 border-b border-slate-600 w-5/6'>Reviews</h1>
                   </div>
                   <div className="text-lg text-center w-3/4 font-bold leading-tight tracking-tight text-slate-300 break-words p-3 mx-5">
-                    <Reviews reviews={reviewsData} shopid={shopid}></Reviews>
+                    <Reviews reviews={reviewsData} shopid={shopid} userid={userid}></Reviews>
                   </div>
                   {/* leave a review */}
                   <div className='bg-slate-800 border-t border-slate-600 w-full sticky bottom-0'>
