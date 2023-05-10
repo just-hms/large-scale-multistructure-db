@@ -183,12 +183,12 @@ definitions:
         items:
           type: string
         type: array
-      id:
-        type: string
       rating:
         type: integer
       reported:
         type: boolean
+      reviewID:
+        type: string
       upVotes:
         items:
           type: string

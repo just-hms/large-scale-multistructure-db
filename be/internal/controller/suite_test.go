@@ -127,17 +127,17 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 
 	// create users
 	users := []*entity.User{
-		{Email: "correct@example.com", Password: "password", Type: entity.USER},
-		{Email: "another@example.com", Password: "password", Type: entity.USER},
-		{Email: "admin@example.com", Password: "password", Type: entity.ADMIN},
-		{Email: "to.filter@example.com", Password: "password", Type: entity.USER},
+		{Email: "correct@example.com", Password: "password", Type: entity.USER, Username: "correct"},
+		{Email: "another@example.com", Password: "password", Type: entity.USER, Username: "another"},
+		{Email: "admin@example.com", Password: "password", Type: entity.ADMIN, Username: "admin"},
+		{Email: "to.filter@example.com", Password: "password", Type: entity.USER, Username: "to.filter"},
 
 		{
-			Email: "barber1@example.com", Password: "password", Type: entity.BARBER,
+			Email: "barber1@example.com", Password: "password", Type: entity.BARBER, Username: "barber1",
 			OwnedShops: []*entity.BarberShop{{Name: shops[0].Name, ID: shops[0].ID}},
 		},
 		{
-			Email: "barber2@example.com", Password: "password", Type: entity.BARBER,
+			Email: "barber2@example.com", Password: "password", Type: entity.BARBER, Username: "barber2",
 			OwnedShops: []*entity.BarberShop{
 				{Name: shops[1].Name, ID: shops[1].ID},
 				{Name: shops[2].Name, ID: shops[2].ID},

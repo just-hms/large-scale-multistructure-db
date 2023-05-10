@@ -1638,14 +1638,14 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "id": {
-                    "type": "string"
-                },
                 "rating": {
                     "type": "integer"
                 },
                 "reported": {
                     "type": "boolean"
+                },
+                "reviewID": {
+                    "type": "string"
                 },
                 "upVotes": {
                     "type": "array",
