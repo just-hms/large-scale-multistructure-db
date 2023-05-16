@@ -66,19 +66,19 @@ export async function modifyShop(values, id){
 }
 
 export async function deleteShop (id){
-  const response = await fetch(url+`admin/barber_shop/`+id, {
+  const response = await fetch(url+`admin/barbershop/`+id, {
     method: 'DELETE',
     headers: headers(localStorage.getItem("token"))
   })
   return response;
 }
 
-export async function assignShop (id,barbershops_to_add){
+export async function assignShop (id,barbershop_to_add){
   const response = await fetch(url+`admin/user/`+id, {
     method: 'PUT',
     headers: headers(localStorage.getItem("token")),
     body: JSON.stringify({
-      "barbershopsId": barbershops_to_add
+      "barbershopsId": barbershop_to_add
     })
   })
   return response;

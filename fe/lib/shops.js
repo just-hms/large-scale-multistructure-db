@@ -56,9 +56,21 @@ export async function deleteVote(shopid, reviewid){
     headers: headers(localStorage.getItem("token"))
   })
 }
+
 export async function deleteReview(shopid, reviewid){
   await fetch(url+'barbershop/'+shopid+'/review/'+reviewid, {
     method: 'DELETE',
     headers: headers(localStorage.getItem("token"))
   })
 }
+
+export async function getAppointment(shopid,dateTime){
+  await fetch(url+'barbershop/'+shopid+'/appointment', {
+    method: 'POST',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "dateTime" : dateTime,
+    })
+  })
+}
+

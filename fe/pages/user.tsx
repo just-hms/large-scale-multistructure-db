@@ -1,14 +1,12 @@
 import Head from 'next/head'
-import { Inter } from '@next/font/google'
 import Navbar from '../components/navbar'
 import {useEffect, useState, useRef} from 'react';
 import UserInfos from '../components/user_components/account_infos';
 import AccountReservation from '../components/user_components/account_reservations';
 import Footer from '../components/footer';
-import {getReservation, getUserInfos}  from '../lib/user';
+import {getUserInfos}  from '../lib/user';
 import { useRouter } from 'next/router';
 
-const inter = Inter({ subsets: ['latin'] })
 
 export default function User() {
   const router = useRouter()
@@ -27,6 +25,7 @@ export default function User() {
         const userInfos = await (await getUserInfos()).json()
         setUserData(userInfos)
         setReservationData(userInfos.user.CurrentAppointment)
+        console.log(reservationData)
         setLoaded(true)
       }
       fetchData()

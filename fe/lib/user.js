@@ -71,3 +71,11 @@ export async function changePassword(values){
   }
   return response
 }
+
+export async function deleteAppointment(){
+  const response = await fetch(url+'user/self/appointment', {
+    method: 'DELETE',
+    headers: headers(localStorage.getItem("token"))
+  })
+  return response
+}

@@ -44,7 +44,7 @@ export default function Admin({reviewsData, accountsData}:any) {
     } else if(content == "create_shop"){
       displayed_element = <CreateShop accounts={users}/>;
     } else if(content == "manage_shops"){
-      displayed_element = <ManageShops shops={users}/>;
+      displayed_element = <ManageShops/>;
     }
   }
 

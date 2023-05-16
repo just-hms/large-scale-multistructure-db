@@ -39,7 +39,6 @@ export default function Search() {
         const response = await findShops(area)
         if(response.status == 200){
           const json = await response.json()
-          console.log(json.barberShops)
           setShops(json.barberShops)
         }
         setLoaded(true)

@@ -4,15 +4,18 @@ import React from "react"
 import { deleteUser } from "../../lib/admin";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import SingleAccountManagement from "./single_account_management";
 
 export default function ManageUsers({accounts}:any) {
 
   // change to useEffect triggered by onsubmit which changes the users shown
   const [query, setQuery] = useState('');
+  const [shopid, setShopid] = useState('');
   const searchFilter = (accounts:any) => {
     if(accounts){
       return accounts.filter(
         (el:any) => {
+          console.log(accounts)
           return el.Email.toLowerCase().includes(query.toLocaleLowerCase())
         }
       )
@@ -21,8 +24,17 @@ export default function ManageUsers({accounts}:any) {
   const filtered = searchFilter(accounts)
 
   //Handling the input on our search bar
-  const handleChange = (e:any) => {
+  const handleChangeQuery = (e:any) => {
     setQuery(e.target.value)
+  }
+  const handleChangeShopid = (e:any) => {
+    setShopid(e.target.value)
+  }  
+  const handlePasteShopid = (e:any) => {
+    setShopid(e.clipboardData.getData('Text'))
+  }
+  const assignShop = (e:any) => {
+    console.log(shopid)
   }
 
   return (
@@ -33,7 +45,6 @@ export default function ManageUsers({accounts}:any) {
               <div className="sticky top-0 bg-slate-700 w-full flex flex-col items-center justify-center border-b border-slate-600 px-5 pt-5">
                 <p className="text-2xl font-bold">Accounts</p> 
                 <div className="flex flex-col lg:p-0 lg:flex-row items-center justify-between ">
-                  {/* <GeneralDropdown elements={["Barber", "User"]} placeholder="Type" classname="px-1 py-2 hover:text-slate-500 rounded-full text-slate-200 bg-slate-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg"><></></GeneralDropdown> */}
                   {/* SEARCH BAR */}
                   <div className=" text-lg text-center font-bold leading-tight tracking-tight text-slate-300 break-words p-5">
                     <div className='w-full py-2 my-5 lg:m-5 flex items-center justify-center rounded-full bg-slate-800 bg-opacity-60 backdrop-blur-lg drop-shadow-lg'>
@@ -46,7 +57,7 @@ export default function ManageUsers({accounts}:any) {
                         type="text"
                         className="w-full font-bold text-slate-100 pl-5 bg-slate-700/0 bg-clip-padding rounded-full transition ease-in-out focus:outline-none" 
                         id="barberSearch" placeholder="Search"
-                        onChange={handleChange}
+                        onChange={handleChangeQuery}
                       />
                     </div>
                   </div>
@@ -55,29 +66,7 @@ export default function ManageUsers({accounts}:any) {
               <div className="p-3 bg-slate-800/80">
                 {
                 filtered.map((account:any)=>
-                <div key={account.ID} className="w-full text-slate-200 my-4 px-2 flex flex-col items-center justify-start">
-                    <div key={account.ID+"container"} className=" flex flex-col bg-slate-700 items-center justify-start w-full rounded-lg">
-                        <div className="flex w-full items-start justify-start">
-                            <div key={account.ID+"title"} className="flex flex-col px-3 items-center lg:items-start justify-start w-full text-left">
-                                  <div className="flex w-full items-center py-1 justify-between">
-                                    <p className=" text-xl font-bold">{account.Email}</p>
-                                    <button className="" type="button" id="search_button"
-                                    onClick={async ()  =>{
-                                      const response = await deleteUser(account.ID)
-                                      if(response.status === 202)
-                                        window.location.reload()
-                                    }}>        
-                                      <FontAwesomeIcon icon={faTrash} className="text-xl pr-1 text-slate-400 hover:text-slate-100"/>
-                                    </button>
-                                  </div>
-                                  <p className="w-full pb-1 border-b border-slate-500">Account type: {account.Type}</p>
-                                  <button className="px-4 py-2 my-2 bg-rose-800 text-slate-300 text-xs rounded-full focus:bg-rose-700 hover:bg-rose-700 focus:outline-none transition duration-150 ease-in-out " type="button" id="search_button">
-                                      Modify Permission
-                                  </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                  <SingleAccountManagement key={account.ID} userkey={account.ID} account={account}/>
                 )}
               </div>
             </div>
