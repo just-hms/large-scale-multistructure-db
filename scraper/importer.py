@@ -109,8 +109,8 @@ def makeShop(shopsCollection,shopData:dict)->int:
     shop["address"] = shop["location"]
     shop.pop("location")
     ##Prepare coordinates for Mongo usage
-    lat = shop["coordinates"].split(" ")[0]
-    lon = shop["coordinates"].split(" ")[1]
+    lat = float(shop["coordinates"].split(" ")[0])
+    lon = float(shop["coordinates"].split(" ")[1])
     shop.pop("coordinates")
     shop["location"] = {}
     shop["location"]["type"] = "Point"
