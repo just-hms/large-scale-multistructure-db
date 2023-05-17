@@ -17,6 +17,14 @@ from typing import Literal
 
 fake = Faker()
 
+#####################
+# UTILITY FUNCTIONS #
+#####################
+
+def roundUpDateTime(date:datetime, delta:timedelta):
+    """Round up a datetime to the nearest timedelta provided."""
+    return date + (datetime.min - date) % delta
+
 
 ##############
 #DB FUNCTIONS#
@@ -187,6 +195,8 @@ def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,m
         #Fake appointment date
         appointment["createdAt"] = fake.date_time_between(start_date=randomView["viewCreation"], end_date=randomView["viewCreation"]+timedelta(minutes=5))
         appointment["startDate"] = fake.date_time_between(start_date=appointment["createdAt"], end_date=appointment["createdAt"]+timedelta(days=5))
+        #Round datetime to the nearest half hour
+        appointment["startDate"] = roundUpDateTime(appointment["startDate"],timedelta(minutes=30))
         #Make a copy to be used for users
         userAppointment = appointment.copy()
         userAppointment["shopId"] = shopId
