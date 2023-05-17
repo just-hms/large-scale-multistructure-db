@@ -12,6 +12,8 @@ import json
 import random
 import time
 
+import bcrypt
+
 #Type hinting imports
 from typing import Literal
 
@@ -43,6 +45,8 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     user["username"] = userName
     user["email"] = f"{userName}@barbershop.com"
     user["password"] = f"{userName}1234"
+    #Hash and salt password
+    user["password"] = bcrypt.hashpw(user["password"], bcrypt.gensalt(12))
     user["type"] = type
     user["ownedShops"] = []
     user["currentAppointment"] = {}
