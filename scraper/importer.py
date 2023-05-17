@@ -209,7 +209,7 @@ def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,m
         #Round datetime to the nearest half hour
         appointment["startDate"] = roundUpDateTime(appointment["startDate"],timedelta(minutes=30))
         #Fake appointment status, with a small chance to cancel it
-        if appointment["startDate"] > datetime.datetime.utcnow():
+        if appointment["startDate"] > datetime.utcnow():
             appointment["status"] = "pending"
         else:
             appointment["status"] = "completed"
