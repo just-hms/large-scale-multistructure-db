@@ -101,6 +101,9 @@ def makeShop(shopsCollection,shopData:dict)->int:
     shop.pop("reviewData",None)
     ##Remove calendar
     shop.pop("calendar")
+    ##Rename location field
+    shop["address"] = shop["location"]
+    shop.pop("location")
     lat = shop["coordinates"].split(" ")[0]
     lon = shop["coordinates"].split(" ")[1]
     shop["latitude"] = float(lat)
