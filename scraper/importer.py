@@ -184,6 +184,8 @@ def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,m
 
     #Get a random amount 
     appointmentsAmount = random.randint(1,maxAppointmentsAmount)
+    #Set a normalized cancellation probability
+    cancelProbability = 0.05
 
     #Prepare list of data to be inserted in the DB
     shopAppointmentsList = []
@@ -197,6 +199,13 @@ def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,m
         appointment["startDate"] = fake.date_time_between(start_date=appointment["createdAt"], end_date=appointment["createdAt"]+timedelta(days=5))
         #Round datetime to the nearest half hour
         appointment["startDate"] = roundUpDateTime(appointment["startDate"],timedelta(minutes=30))
+        #Fake appointment status, with a small chance to cancel it
+        if appointment["startDate"] > datetime.datetime.utcnow():
+            appointment["status"] = "pending"
+        else:
+            appointment["status"] = "completed"
+        if random.random() < cancelProbability:
+            appointment["status"] = "canceled"
         #Make a copy to be used for users
         userAppointment = appointment.copy()
         userAppointment["shopId"] = shopId
