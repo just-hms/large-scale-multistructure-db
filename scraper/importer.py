@@ -46,7 +46,7 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     user["email"] = f"{userName}@barbershop.com"
     user["password"] = f"{userName}1234"
     #Hash and salt password
-    user["password"] = bcrypt.hashpw(user["password"], bcrypt.gensalt(12))
+    user["password"] = bcrypt.hashpw(user["password"].encode('utf-8'), bcrypt.gensalt(12))
     user["type"] = type
     user["ownedShops"] = []
     user["currentAppointment"] = {}
