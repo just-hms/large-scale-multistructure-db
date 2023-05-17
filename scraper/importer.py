@@ -118,7 +118,6 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downv
     review["userId"] = userId
     review["username"] = shopReview["username"].replace(" ", "")
     review["rating"] = shopReview["rating"]
-    review["reported"] = False
     review["content"] = shopReview["body"]
     review["upvotes"] = upvotesIdList
     review["downvotes"] = downvotesIdList
