@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, GEOSPHERE
 from pymongo.errors import DuplicateKeyError
 from bson.objectid import ObjectId
 
@@ -255,6 +255,8 @@ def main():
 
     #Make usernames unique
     usersCollectionMongo.create_index("username",unique=True)
+    #Prepare Mongo for geolocation
+    barberShopsCollectionMongo.create_index(["location",GEOSPHERE])
 
     #Load scraped data
     scrapedData = {}
