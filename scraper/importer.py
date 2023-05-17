@@ -260,7 +260,7 @@ def main():
     #Make usernames unique
     usersCollectionMongo.create_index("username",unique=True)
     #Prepare Mongo for geolocation
-    barberShopsCollectionMongo.create_index(["location",GEOSPHERE])
+    barberShopsCollectionMongo.create_index([("location",GEOSPHERE)])
 
     #Load scraped data
     scrapedData = {}
