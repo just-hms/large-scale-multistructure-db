@@ -104,11 +104,13 @@ def makeShop(shopsCollection,shopData:dict)->int:
     ##Rename location field
     shop["address"] = shop["location"]
     shop.pop("location")
+    ##Prepare coordinates for Mongo usage
     lat = shop["coordinates"].split(" ")[0]
     lon = shop["coordinates"].split(" ")[1]
-    shop["latitude"] = float(lat)
-    shop["longitude"] = float(lon)
     shop.pop("coordinates")
+    shop["location"] = {}
+    shop["location"]["type"] = "Point"
+    shop["location"]["coordinates"] = [lon,lat]
     ##Fake number of employees
     shop["employees"] = random.randint(1,3)
     ##Prepare fields
