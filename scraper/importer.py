@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, GEOSPHERE
 from pymongo.errors import DuplicateKeyError
 from bson.objectid import ObjectId
 
@@ -12,10 +12,20 @@ import json
 import random
 import time
 
+import bcrypt
+
 #Type hinting imports
 from typing import Literal
 
 fake = Faker()
+
+#####################
+# UTILITY FUNCTIONS #
+#####################
+
+def roundUpDateTime(date:datetime, delta:timedelta):
+    """Round up a datetime to the nearest timedelta provided."""
+    return date + (datetime.min - date) % delta
 
 
 ##############
@@ -35,6 +45,8 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     user["username"] = userName
     user["email"] = f"{userName}@barbershop.com"
     user["password"] = f"{userName}1234"
+    #Hash and salt password
+    user["password"] = bcrypt.hashpw(user["password"].encode('utf-8'), bcrypt.gensalt(12))
     user["type"] = type
     user["ownedShops"] = []
     user["currentAppointment"] = {}
@@ -93,11 +105,16 @@ def makeShop(shopsCollection,shopData:dict)->int:
     shop.pop("reviewData",None)
     ##Remove calendar
     shop.pop("calendar")
-    lat = shop["coordinates"].split(" ")[0]
-    lon = shop["coordinates"].split(" ")[1]
-    shop["latitude"] = float(lat)
-    shop["longitude"] = float(lon)
+    ##Rename location field
+    shop["address"] = shop["location"]
+    shop.pop("location")
+    ##Prepare coordinates for Mongo usage
+    lat = float(shop["coordinates"].split(" ")[0])
+    lon = float(shop["coordinates"].split(" ")[1])
     shop.pop("coordinates")
+    shop["location"] = {}
+    shop["location"]["type"] = "Point"
+    shop["location"]["coordinates"] = [lon,lat]
     ##Fake number of employees
     shop["employees"] = random.randint(1,3)
     ##Prepare fields
@@ -114,11 +131,10 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downv
     #Create the review dict structure
     review = {}
     #Generate an id for the review
-    review["reviewId"] = ObjectId()
+    review["_id"] = ObjectId()
     review["userId"] = userId
     review["username"] = shopReview["username"].replace(" ", "")
     review["rating"] = shopReview["rating"]
-    review["reported"] = False
     review["content"] = shopReview["body"]
     review["upvotes"] = upvotesIdList
     review["downvotes"] = downvotesIdList
@@ -177,6 +193,8 @@ def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,m
 
     #Get a random amount 
     appointmentsAmount = random.randint(1,maxAppointmentsAmount)
+    #Set a normalized cancellation probability
+    cancelProbability = 0.05
 
     #Prepare list of data to be inserted in the DB
     shopAppointmentsList = []
@@ -184,10 +202,19 @@ def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,m
         randomView = random.choice(viewsList)
         appointment = {}
         #Add id to appointment
-        appointment["appointmentId"] = ObjectId()
+        appointment["_id"] = ObjectId()
         #Fake appointment date
         appointment["createdAt"] = fake.date_time_between(start_date=randomView["viewCreation"], end_date=randomView["viewCreation"]+timedelta(minutes=5))
         appointment["startDate"] = fake.date_time_between(start_date=appointment["createdAt"], end_date=appointment["createdAt"]+timedelta(days=5))
+        #Round datetime to the nearest half hour
+        appointment["startDate"] = roundUpDateTime(appointment["startDate"],timedelta(minutes=30))
+        #Fake appointment status, with a small chance to cancel it
+        if appointment["startDate"] > datetime.utcnow():
+            appointment["status"] = "pending"
+        else:
+            appointment["status"] = "completed"
+        if random.random() < cancelProbability:
+            appointment["status"] = "canceled"
         #Make a copy to be used for users
         userAppointment = appointment.copy()
         userAppointment["shopId"] = shopId
@@ -232,6 +259,8 @@ def main():
 
     #Make usernames unique
     usersCollectionMongo.create_index("username",unique=True)
+    #Prepare Mongo for geolocation
+    barberShopsCollectionMongo.create_index([("location",GEOSPHERE)])
 
     #Load scraped data
     scrapedData = {}
