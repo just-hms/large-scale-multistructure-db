@@ -3,7 +3,7 @@ import barber_background from '../../public/barber_profile.jpg'
 import barber_propic from '../../public/barber_bg.png'
 import { useFormik } from 'formik';
 import { useEffect, useState, useRef } from 'react';
-import { json } from 'stream/consumers';
+import { modifyShopDescription } from '../../lib/barber';
 
 export default function ModifiedShop({ shopData }:any) {
   console.log(shopData)
@@ -13,10 +13,11 @@ export default function ModifiedShop({ shopData }:any) {
         description: shopData.Description,
     },
     onSubmit: async (values:any) => {
-      alert(JSON.stringify(values))
-      // const response = await submitReview(values)
+      // alert(JSON.stringify(values))
+      const response = await (await modifyShopDescription(shopData.ID,values)).json()
+      console.log(response)
       // if(response.ok){
-      //     window.location.reload()
+      //     // window.location.reload()
       // }
     },
   });

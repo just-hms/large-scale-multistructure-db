@@ -41,7 +41,7 @@ export default function User() {
   } else if (content == "modify_shop"){
     displayed_element = <ModifyShop shops={shopsData}/>;
   } else if (content == "reservations"){
-    displayed_element = <BarberReservations/>;
+    displayed_element = <BarberReservations shops={shopsData}/>;
   } else if (content == "analytics"){
     displayed_element = <></>;
   } else if (content == "calendar"){
