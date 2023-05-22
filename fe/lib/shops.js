@@ -65,12 +65,13 @@ export async function deleteReview(shopid, reviewid){
 }
 
 export async function getAppointment(shopid,dateTime){
-  await fetch(url+'barbershop/'+shopid+'/appointment', {
+  const response = await fetch(url+'barbershop/'+shopid+'/appointment', {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),
     body: JSON.stringify({
       "dateTime" : dateTime,
     })
   })
+  return response
 }
 

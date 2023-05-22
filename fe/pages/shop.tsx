@@ -46,7 +46,6 @@ export default function Shop() {
     },
   });
 
-  // query parameter
   useEffect(()=>{
     if(shopid != undefined){
       const token = localStorage.getItem('token')
@@ -85,6 +84,7 @@ export default function Shop() {
       }
     }
   },[shopid])
+
   if(!loaded){
     return <div></div>
   }
@@ -99,7 +99,7 @@ export default function Shop() {
             <path className='w-full fill-slate-900' d="M 0 90 C 480 0 600 0 720 10.7 C 840 21 960 43 1080 48 C 1200 53 1320 43 1380 37.3 L 1440 32 L 1440 0 L 1380 0 C 1320 0 1200 0 1080 0 C 960 0 840 0 720 0 C 600 0 480 0 360 0 C 240 0 120 0 60 0 L 0 0 Z"></path>
         </svg>
       </Navbar>
-      <div className='h-screen'>
+      <div className='h-full'>
         <div className='h-96 w-full'>
           <Image className="w-full h-full object-cover " src={barber_background} alt="barber salon"/>
         </div>
@@ -181,10 +181,17 @@ export default function Shop() {
                       events={[
                         {
                           title  : 'event2',
-                          start  : '2023-05-15T08:00:00',
-                          end    : '2023-05-15T10:00:00s'
+                          start  : '2023-05-22T08:00:00',
+                          end    : '2023-05-22T08:30:00'
                         }]}
                         allDaySlot={false}
+                        eventClick={
+                          async (info) => {
+                            // const response = await getAppointment(shopid,info.event.startStr)
+                            alert('start: ' + info.event.startStr);
+                            alert('end: ' + info.event.endStr);
+                          }
+                        }
                     />
                   </StyleWrapper>
                 </div>
