@@ -25,7 +25,6 @@ export default function User() {
         const userInfos = await (await getUserInfos()).json()
         setUserData(userInfos)
         setReservationData(userInfos.user.CurrentAppointment)
-        console.log(reservationData)
         setLoaded(true)
       }
       fetchData()

@@ -3,10 +3,9 @@ import {faStar, faMapLocationDot} from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import Link from "next/link";
 import barber_background from '../../public/barber_profile.jpg'
-import GeneralDropdown from "../general_dropdown";
+// import GeneralDropdown from "../general_dropdown";
 
 export default function ShopsFound({shops}:any) {
-    // console.log(shops)
     return (
         <>
         <div className="w-full flex-col text-xl justify-start items-center px-3 overflow-auto">

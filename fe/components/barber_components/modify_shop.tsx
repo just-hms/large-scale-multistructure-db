@@ -1,6 +1,4 @@
-import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
-import GeneralDropdown from '../general_dropdown';
 import ModifiedShop from './modified_shop';
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment} from 'react'
@@ -9,43 +7,17 @@ import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons'
 import React from 'react';
 
 export default function ModifyShop({shops}:any) {
-  // shops = [{name:id, name:id}]
-  const fake_shops = {"shop1":1111,"shop2":1112}
-  const [shopData,setShopData] = useState({"name":"pippo", "description":"cazzop"})
   // dropdown shenanigans
   let dropdownElements = []
-  for(var key in fake_shops){
-    dropdownElements.push(key)
+  for(var element in shops){
+    dropdownElements.push(shops[element])
   }
-  const [selectedShop,setSelectedShop] = useState("shop1")
-  const formik = useFormik({
-    initialValues: {
-        description: '',
-    },
-    onSubmit: async (values:any) => {
-      alert(JSON.stringify(values))
-      // const response = await submitReview(values)
-      // if(response.ok){
-      //     window.location.reload()
-      // }
-    },
-  });
-
-  useEffect(()=>{
-    // const token = localStorage.getItem('token')
-    // const fetchData = async () => {
-    //   const idToFetch = fake_shops[selectedShop]
-    //   if(idToFetch != undefined){
-    //     // TODO: fetch data with id and set them to shopData
-    //   }
-    //   // fetch single shop data
-    // }
-    // fetchData()
-  },[])
+  const [shopData,setShopData] = useState(dropdownElements[0])
+  const [selectedShop,setSelectedShop] = useState(dropdownElements[0].Name)
+  // const [show,setShow] = useState(false)
   return (
     <>
     <div className='flex flex-col items-end justify-start h-full w-full px-5'>
-        {/* <GeneralDropdown elements={dropdownElements} classname="px-1 py-2 rounded-full bg-slate-600 hover:bg-slate-500 my-3 hover:text-slate-500 text-slate-200"><></></GeneralDropdown> */}
         {/* DROPDOWN */}
         <div className="inline-block leading-none px-1 mr-4 py-2 rounded-full bg-slate-700 bg-opacity-60 backdrop-blur-lg drop-shadow-lg hover:bg-slate-700 my-3 hover:text-slate-500 text-slate-200">
           <Menu as="div" className="relative inline-block">
@@ -67,26 +39,17 @@ export default function ModifyShop({shops}:any) {
                   <Menu.Items className="absolute right-0 mt-3 w-56 origin-top-right divide-y divide-slate-600 rounded-md bg-slate-800 shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none z-10 shadow-md shadow-black/70">
                       <div  className="px-1 py-1">
                           {dropdownElements.map((element:any)=>
-                          <div key={`container-`+element}  className="px-1 py-1">
-                              <Menu.Item key={`item-`+element} >
+                          <div key={`container-`+element.ID}  className="px-1 py-1">
+                              <Menu.Item key={`item-`+element.ID} >
                                   {({ active }) => (
-                                  <button key={`button-`+element}  className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 `}
-                                  onClick={async event => {
-                                    setSelectedShop(element);
-                                    // TODO FETCH DATA
-                                    const token = localStorage.getItem('token')
-                                    const fetchData = async () => {
-                                      const idToFetch = fake_shops[element]
-                                      if(idToFetch != undefined){
-                                        // TODO: fetch data with id and set them to shopData
-                                      }
-                                      // fetch single shop data
-                                      // return shopdatafetched
-                                    }
-                                    fetchData()
-                                    setShopData({"name":"pluto", "description":"merdq"})
-                                    }}>
-                                      {element}
+                                  <button key={`button-`+element.ID}  className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 `}
+                                  onClick={async (e) => {  
+                                    console.log(element)
+                                    setShopData(element)
+                                    setSelectedShop(element.Name)
+                                    // setShow(true)
+                                  }}>
+                                      {element.Name}
                                   </button>
                                   )}
                               </Menu.Item>
@@ -97,8 +60,10 @@ export default function ModifyShop({shops}:any) {
               </Transition>
           </Menu>
       </div>
-      {/* shopData to be taken from GeneralDropdown */}
+      {/* element enabling the modification of the shop description */}
+      {/* {(show)? */}
       <ModifiedShop shopData={shopData}></ModifiedShop>
+       {/* :<></>} */}
     </div>
     </>
   );

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import GeneralDropdown from "../general_dropdown"
 import React from "react"
 import { deleteUser } from "../../lib/admin";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -8,7 +7,6 @@ import { assignShop } from "../../lib/admin";
 
 export default function SingleAccountManagement({account,userkey}:any) {
 
-  // change to useEffect triggered by onsubmit which changes the users shown
   const [shopid, setShopid] = useState('');
   const handleChangeShopid = (e:any) => {
     setShopid(e.target.value)

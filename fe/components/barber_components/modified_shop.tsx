@@ -6,10 +6,11 @@ import { useEffect, useState, useRef } from 'react';
 import { json } from 'stream/consumers';
 
 export default function ModifiedShop({ shopData }:any) {
+  console.log(shopData)
   const textAreaRef = useRef<any>();
   const formik = useFormik({
     initialValues: {
-        description: shopData.description,
+        description: shopData.Description,
     },
     onSubmit: async (values:any) => {
       alert(JSON.stringify(values))
@@ -21,8 +22,8 @@ export default function ModifiedShop({ shopData }:any) {
   });
 
   useEffect(()=>{
-    formik.values.description = shopData.description
-    textAreaRef.current.value = shopData.description
+    formik.values.description = shopData.Description
+    textAreaRef.current.value = shopData.Description
   },[shopData.description])
   return (
     <>
@@ -40,7 +41,7 @@ export default function ModifiedShop({ shopData }:any) {
                       <Image className="w-full h-full object-cover rounded-full " src={barber_propic} alt="barber salon"/>
                     </div>
                     <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-slate-200 border-b w-3/4 mb-2.5 pb-2.5 border-slate-500 ">
-                      {shopData.name}
+                      {shopData.Name}
                     </h1>
                     <div className='w-full h-40'>
                       <textarea ref={textAreaRef} name="description" id="description" onChange={formik.handleChange} value={formik.values.description} className="bg-slate-600 h-40 lg:h-full resize-y bg-opacity-60 backdrop-blur-lg drop-shadow-lg text-slate-200 focus:outline-none rounded-md p-1.5 text-sm break-words mt-1 w-full" />
@@ -51,21 +52,6 @@ export default function ModifiedShop({ shopData }:any) {
                   </form>
               </div>
             </div>
-            {/* CALENDAR
-            <div className="w-full h-1/3 mt-0 px-3 lg:py-3 transform -translate-y-20">
-              <div className="flex justify-center items-center">
-                <div className="w-full rounded-lg bg-slate-700 shadow-md shadow-black/70 mt-3 ">
-                  <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-slate-200 pt-5 ml-3 mr-3 break-words">
-                    Calendar
-                  </h1>
-                  <div className="text-lg text-justify font-bold leading-tight tracking-tight text-slate-300 break-words p-3">
-                    <div className='h-20 w-50 bg-white'>
-                    </div>
-                  </div>
-                  <div></div>
-                </div>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>

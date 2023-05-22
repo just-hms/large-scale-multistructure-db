@@ -24,10 +24,14 @@ export default function User() {
     }else{
       const fetchData = async () => {
         const retrievedData = await (await getUserInfos()).json() 
-        setUserData(retrievedData)
-        setShopsData(retrievedData.ownedShops)
-        // TODO: from here construct [{"name":id,"name":id}] for shops and give it to ModifyShop
-        setLoaded(true)
+        // if anyone tries to access without being a barber -> unauthorized
+        if(retrievedData.user.Type !== 'barber'){
+          router.push("/401")
+        }else{
+          setUserData(retrievedData)
+          setShopsData(retrievedData.user.OwnedShops)
+          setLoaded(true)
+        }
       }
       fetchData()
     }

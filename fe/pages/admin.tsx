@@ -7,9 +7,10 @@ import ReportedReviews from '../components/admin_components/reported_reviews';
 import { getAccountInfos } from '../lib/admin';
 import CreateShop from '../components/admin_components/create_shop';
 import { useRouter } from 'next/router';
+import { getUserInfos } from '../lib/user';
 import ManageShops from '../components/admin_components/manage_shops';
 
-export default function Admin({reviewsData, accountsData}:any) {
+export default function Admin() {
   const [content, setContent] = useState("manage_accounts");
   const router = useRouter()
   let displayed_element;
@@ -19,7 +20,14 @@ export default function Admin({reviewsData, accountsData}:any) {
   useEffect(()=>{
     const fetchAccountsData = async () => {
       const response = await (await getAccountInfos()).json()
-      setUsers(response.users)
+      const myself = await (await getUserInfos()).json()
+      // if anyone tries to access without being an admin -> unauthorized
+      if(myself.user.Type !== 'admin'){
+        router.push("/401")
+      }else{
+        setUsers(response.users)
+        setLoaded(true)
+      }
     }
     const token = localStorage.getItem('token')
     const type = localStorage.getItem("type")
@@ -28,7 +36,6 @@ export default function Admin({reviewsData, accountsData}:any) {
       router.push("/home")
     }else{
       fetchAccountsData()
-      setLoaded(true)
     }
   },[])
   // dynamic displaying content based on the menu selected output

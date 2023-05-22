@@ -23,7 +23,6 @@ export default function LoginForm() {
                 const fetchData = async () => {
                     const userData = (await (await getUserInfos()).json())
                     console.log(userData)
-                    // TODO ADMIN
                     localStorage.setItem("type", userData.user.Type)
                     return router.push("/home");
                   }

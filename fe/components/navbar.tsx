@@ -14,20 +14,7 @@ export default function Navbar({children, style}:any) {
                         Barber Shop
                     </Link>
                 </div>
-                {/* <div className="w-full block flex-grow flex items-center w-auto justify-between"> */}
-                    {/* <div className="text-sm lg:flex-grow collapse lg:visible">
-                        <Link href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-slate-200 hover:text-white mr-4">
-                        Option One
-                        </Link>
-                        <Link href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-slate-200 hover:text-white mr-4">
-                        Option Two
-                        </Link>
-                        <Link href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-slate-200 hover:text-white">
-                        Option Three
-                        </Link>
-                    </div> */}
-                    <Dropdown elements = {["Profile", "Log Out"]}/>
-                {/* </div> */}
+                <Dropdown elements = {["Profile", "Log Out"]}/>
             </div>
             {children}
         </div>

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import GeneralDropdown from "../general_dropdown"
+// import GeneralDropdown from "../general_dropdown"
 import React from "react"
-import { deleteUser } from "../../lib/admin";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { deleteUser } from "../../lib/admin";
+// import { faTrash } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SingleAccountManagement from "./single_account_management";
 
 export default function ManageUsers({accounts}:any) {
