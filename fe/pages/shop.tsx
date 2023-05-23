@@ -8,23 +8,23 @@ import barber_background from '../public/barber_profile.jpg'
 import barber_propic from '../public/barber_bg.png'
 import Footer from '../components/footer';
 import Reviews from '../components/shop_component/reviews';
+import Calendar from '../components/shop_component/calendar';
 import ReactStars from 'react-stars'
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
-import styled from "@emotion/styled";
-// Calendar
-import FullCalendar from '@fullcalendar/react' // must go before plugins
-import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
-import timeGridPlugin from '@fullcalendar/timegrid'
+// import styled from "@emotion/styled";
+// // Calendar
+// import FullCalendar from '@fullcalendar/react' // must go before plugins
+// import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
+// import timeGridPlugin from '@fullcalendar/timegrid'
 // style wrapper for the calendar
-export const StyleWrapper = styled.div`
-  .fc{
-    color: white;
-  }
-  .fc-day-today {
-    background: none !important;
-} 
-`
+// export const StyleWrapper = styled.div`
+//   .fc{
+//     color: white;
+//   }
+//   .fc-day-today {
+//     background: none !important;
+// } `
 
 export default function Shop() {
   const [loaded,setLoaded] = useState(false)
@@ -33,6 +33,7 @@ export default function Shop() {
   const { shopid } = router.query
   const [reviewsData, setreviewsData] = useState<any[]>([])
   const [userid, setUserid] = useState<string>('')
+  const [shopAppointments, setShopAppointments] = useState<any[]>([])
   const formik = useFormik({
     initialValues: {
         content: '',
@@ -53,30 +54,26 @@ export default function Shop() {
         router.push("/")
       }else{
         const fetchData = async (shopid:any) => {
+          // get basic shop data
           const response = await getShopData(shopid)
-          const calendar = (await (await shopCalendar(shopid)).json()).calendar.Slots
-          console.log(calendar)
-          const reviews_object = await (await getReviews(shopid)).json()
-          // console.log(reviews_object)
-          const user_object = await(await getUserInfos()).json()
-          setUserid(user_object.user.ID)
-          if(reviews_object.reviews == null)
-          setreviewsData([])
-          else
-          setreviewsData(reviews_object.reviews)
-          
           if (response.ok){                                         
             const json_response = await response.json()
             setshopData(json_response.barbershop)
           }else{
             router.push("/404")
           }
-          // fill elements
-          calendar.forEach((element:any) => {
-            console.log(element)
-          });
-          // const appointment_response = await getAppointment(shopid,"2023-05-15T23:00:00Z")
-          // console.log(appointment_response)
+          // get shop calendar
+          const calendar = (await (await shopCalendar(shopid)).json()).calendar.Slots
+          setShopAppointments(calendar)
+          // get reviews
+          const reviews_object = await (await getReviews(shopid)).json()
+          if(reviews_object.reviews == null)
+            setreviewsData([])
+          else
+            setreviewsData(reviews_object.reviews)
+          // get current user ID
+          const user_object = await(await getUserInfos()).json()
+          setUserid(user_object.user.ID)
           setLoaded(true)
         }
 
@@ -166,37 +163,7 @@ export default function Shop() {
               </div>
             </div>
             {/* CALENDAR */}
-            <div className="w-full lg:w-5/6 h-1/3 mt-0 px-3 lg:py-3 transform -translate-y-20">
-              <div className="flex justify-center items-center">
-                <div className="w-full rounded-lg bg-slate-700 shadow-md shadow-black/70 p-3 ">
-                  <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-slate-200 pt-5 ml-3 mr-3 break-words">
-                    Free time Slots
-                  </h1>
-                  <StyleWrapper>
-                    <FullCalendar
-                      plugins={[ dayGridPlugin , timeGridPlugin]}
-                      initialView="timeGridDay"
-                      slotMinTime="08:00:00"
-                      slotMaxTime="20:00:00"
-                      events={[
-                        {
-                          title  : 'event2',
-                          start  : '2023-05-22T08:00:00',
-                          end    : '2023-05-22T08:30:00'
-                        }]}
-                        allDaySlot={false}
-                        eventClick={
-                          async (info) => {
-                            // const response = await getAppointment(shopid,info.event.startStr)
-                            alert('start: ' + info.event.startStr);
-                            alert('end: ' + info.event.endStr);
-                          }
-                        }
-                    />
-                  </StyleWrapper>
-                </div>
-              </div>
-            </div>
+            <Calendar shopid={shopid} calendar={shopAppointments}></Calendar>
           </div>
         </div>
         <Footer/>

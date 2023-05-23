@@ -44,7 +44,6 @@ export default function ModifyShop({shops}:any) {
                                   {({ active }) => (
                                   <button key={`button-`+element.ID}  className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 `}
                                   onClick={async (e) => {  
-                                    console.log(element)
                                     setShopData(element)
                                     setSelectedShop(element.Name)
                                     // setShow(true)

@@ -30,7 +30,7 @@ export default function UserInfos({userdata}:any) {
               localStorage.clear()
               return router.push("/")
             }else{
-              console.log(response)
+              // console.log(response)
             }
           }}>
         Delete Account

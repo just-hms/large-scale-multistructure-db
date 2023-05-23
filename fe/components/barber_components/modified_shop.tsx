@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from 'react';
 import { modifyShopDescription } from '../../lib/barber';
 
 export default function ModifiedShop({ shopData }:any) {
-  console.log(shopData)
+  // console.log(shopData)
   const textAreaRef = useRef<any>();
   const formik = useFormik({
     initialValues: {
@@ -16,9 +16,7 @@ export default function ModifiedShop({ shopData }:any) {
       // alert(JSON.stringify(values))
       const response = await (await modifyShopDescription(shopData.ID,values)).json()
       console.log(response)
-      // if(response.ok){
-      //     // window.location.reload()
-      // }
+
     },
   });
 

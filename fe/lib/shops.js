@@ -27,7 +27,6 @@ export async function shopCalendar(id){
 
 
 export async function submitReview(id,values){
-  console.log(values)
   const response = await fetch(url+'barbershop/'+id+'/review', {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),

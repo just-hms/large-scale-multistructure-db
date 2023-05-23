@@ -12,7 +12,7 @@ export default function BarberReservations({shops}:any) {
             shopsArray.push(shop)
         });
         setShopsInfo(shopsArray)
-        console.log(shopsArray)
+        // console.log(shopsArray)
       },[])
     return (
         <>
