@@ -62,10 +62,13 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 		return err
 	}
 
+	// Add back the UserID for debugging purposes
+	appointment.UserID = userID
+
 	return err
 }
 
-func (r *AppointmentRepo) CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error {
+func (r *AppointmentRepo) SetStatusFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error {
 	if appointment == nil {
 		return errors.New("you must provide an appointment")
 	}
@@ -81,14 +84,14 @@ func (r *AppointmentRepo) CancelFromUser(ctx context.Context, userID string, app
 	}
 
 	filter := bson.M{"_id": shopID, "appointments._id": appointment.ID}
-	update := bson.M{"$set": bson.M{"appointments.$.status": "canceled"}}
+	update := bson.M{"$set": bson.M{"appointments.$.status": appointment.Status}}
 
 	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
 
 	return err
 }
 
-func (r *AppointmentRepo) CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error {
+func (r *AppointmentRepo) SetStatusFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error {
 	if appointment == nil {
 		return errors.New("you must provide an appointment")
 	}
@@ -96,7 +99,7 @@ func (r *AppointmentRepo) CancelFromShop(ctx context.Context, shopID string, app
 	userID := appointment.UserID
 	// Remove the appointment from the shop
 	filter := bson.M{"_id": shopID, "appointments._id": appointment.ID}
-	update := bson.M{"$set": bson.M{"appointments.$.status": "canceled"}}
+	update := bson.M{"$set": bson.M{"appointments.$.status": appointment.Status}}
 
 	_, err := r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
 
