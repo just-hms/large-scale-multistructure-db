@@ -134,14 +134,11 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 
 		{
 			Email: "barber1@example.com", Password: "password", Type: entity.BARBER, Username: "barber1",
-			OwnedShops: []*entity.BarberShop{{Name: shops[0].Name, ID: shops[0].ID}},
+			OwnedShops: []string{shops[0].ID},
 		},
 		{
 			Email: "barber2@example.com", Password: "password", Type: entity.BARBER, Username: "barber2",
-			OwnedShops: []*entity.BarberShop{
-				{Name: shops[1].Name, ID: shops[1].ID},
-				{Name: shops[2].Name, ID: shops[2].ID},
-			},
+			OwnedShops: []string{shops[1].ID, shops[2].ID},
 		},
 	}
 	userUsecase := ucs[usecase.USER].(usecase.User)

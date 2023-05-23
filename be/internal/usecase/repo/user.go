@@ -108,29 +108,7 @@ func (r *UserRepo) GetByEmail(ctx context.Context, email string) (*entity.User, 
 
 func (r *UserRepo) EditShopsByIDs(ctx context.Context, user *entity.User, IDs []string) error {
 
-	ownedShops := []*entity.BarberShop{}
-
-	// TODO:
-	//	- this is slow af
-	//	- maybe receieve all the data in the modify user request
-
-	for _, barbershopID := range IDs {
-
-		barbershop := &entity.BarberShop{}
-		err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": barbershopID}).Decode(&barbershop)
-
-		if err != nil {
-			return err
-		}
-
-		ownedShops = append(
-			ownedShops,
-			&entity.BarberShop{
-				ID:   barbershopID,
-				Name: barbershop.Name,
-			},
-		)
-	}
+	ownedShops := IDs
 
 	userType := entity.USER
 	if len(ownedShops) > 0 {

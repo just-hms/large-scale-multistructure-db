@@ -3,7 +3,6 @@ package controller_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -543,7 +542,6 @@ func (s *ControllerSuite) TestUserModify() {
 				err = json.Unmarshal(body, &res)
 				s.Require().Nil(err)
 
-				fmt.Println("kek", res.User)
 				s.Require().Len(res.User.OwnedShops, tc.barberShopsLen)
 			}
 
