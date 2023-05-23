@@ -143,7 +143,7 @@ func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"error": "Shop or Appointment not found"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Shop or Appointment not found"})
 		return
 	}
 
