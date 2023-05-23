@@ -178,9 +178,10 @@ func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
 	}
 
 	err := br.barberShopUseCase.ModifyByID(ctx, ID, &entity.BarberShop{
-		Name:      input.Name,
-		Location:  entity.NewLocation(input.Latitude, input.Longitude),
-		Employees: input.Employees,
+		Name:        input.Name,
+		Location:    entity.NewLocation(input.Latitude, input.Longitude),
+		Employees:   input.Employees,
+		Description: input.Description,
 	})
 
 	if err != nil {
