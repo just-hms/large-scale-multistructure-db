@@ -60,7 +60,8 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 }
 
 func (uc *AppointmentUseCase) CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error {
-	err := uc.appointmentRepo.CancelFromUser(ctx, userID, appointment)
+	appointment.Status = "canceled"
+	err := uc.appointmentRepo.SetStatusFromUser(ctx, userID, appointment)
 	if err != nil {
 		return err
 	}
@@ -69,7 +70,18 @@ func (uc *AppointmentUseCase) CancelFromUser(ctx context.Context, userID string,
 }
 
 func (uc *AppointmentUseCase) CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error {
-	err := uc.appointmentRepo.CancelFromShop(ctx, shopID, appointment)
+	appointment.Status = "canceled"
+	err := uc.appointmentRepo.SetStatusFromShop(ctx, shopID, appointment)
+	if err != nil {
+		return err
+	}
+
+	return uc.cache.Cancel(ctx, appointment)
+}
+
+func (uc *AppointmentUseCase) SetCompletedFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error {
+	appointment.Status = "completed"
+	err := uc.appointmentRepo.SetStatusFromShop(ctx, shopID, appointment)
 	if err != nil {
 		return err
 	}
