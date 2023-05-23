@@ -100,7 +100,8 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	err = appointmentRepo.Book(context.Background(), appointment)
 	s.Require().NoError(err)
 
-	err = appointmentRepo.CancelFromUser(context.Background(), user.ID, appointment)
+	appointment.Status = "canceled"
+	err = appointmentRepo.SetStatusFromUser(context.Background(), user.ID, appointment)
 	s.Require().NoError(err)
 
 	// check that the appointment was correctly cancelled
@@ -121,7 +122,8 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	err = appointmentRepo.Book(context.Background(), appointment)
 	s.Require().NoError(err)
 
-	err = appointmentRepo.CancelFromShop(context.Background(), shop.ID, appointment)
+	appointment.Status = "canceled"
+	err = appointmentRepo.SetStatusFromShop(context.Background(), shop.ID, appointment)
 	s.Require().NoError(err)
 
 	// check that the appointment was correctly cancelled
@@ -138,7 +140,8 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	s.Require().Equal(shop.Appointments[1].Status, "canceled")
 }
 
-func (s *RepoSuite) TestAppointmentGetByIDs() {
+func (s *RepoSuite) TestAppointmentComplete() {
+
 	user := &entity.User{Username: "giovanni"}
 	shop := &entity.BarberShop{Name: "brownies"}
 
@@ -161,7 +164,20 @@ func (s *RepoSuite) TestAppointmentGetByIDs() {
 	err = appointmentRepo.Book(context.Background(), appointment)
 	s.Require().NoError(err)
 
-	res, err := appointmentRepo.GetByIDs(context.Background(), shop.ID, appointment.ID)
+	appointment.Status = "completed"
+	err = appointmentRepo.SetStatusFromShop(context.Background(), shop.ID, appointment)
 	s.Require().NoError(err)
-	s.Require().Equal(appointment, res)
+
+	// check that the appointment was correctly cancelled
+
+	// in the user collection
+	user, err = userRepo.GetByID(context.Background(), user.ID)
+	s.Require().NoError(err)
+	s.Require().Nil(user.CurrentAppointment)
+
+	// in the barbershop collection
+	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
+	s.Require().NoError(err)
+	s.Require().Len(shop.Appointments, 1)
+	s.Require().Equal(shop.Appointments[0].Status, "completed")
 }
