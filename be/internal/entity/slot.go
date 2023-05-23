@@ -4,6 +4,6 @@ import "time"
 
 type Slot struct {
 	Start                time.Time
-	BookedAppoIntments   int
+	BookedAppointments   int
 	UnavailableEmployees int
 }

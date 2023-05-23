@@ -21,9 +21,9 @@ var (
 func (s *RepoSuite) TestSlotGetByBarberShopID() {
 	slotRepo := repo.NewSlotRepo(s.cache)
 	appointments := []*entity.Appointment{
-		{BarbershopID: mockShop1ID, UserID: mockUser1ID, Start: mockDate1},
-		{BarbershopID: mockShop1ID, UserID: mockUser2ID, Start: mockDate1},
-		{BarbershopID: mockShop1ID, UserID: mockUser3ID, Start: mockDate2},
+		{BarbershopID: mockShop1ID, UserID: mockUser1ID, StartDate: mockDate1},
+		{BarbershopID: mockShop1ID, UserID: mockUser2ID, StartDate: mockDate1},
+		{BarbershopID: mockShop1ID, UserID: mockUser3ID, StartDate: mockDate2},
 	}
 
 	for _, app := range appointments {
@@ -35,8 +35,8 @@ func (s *RepoSuite) TestSlotGetByBarberShopID() {
 	s.Require().NoError(err)
 	s.Require().Len(slots, 2)
 
-	s.Require().Equal(2, slots[0].BookedAppoIntments)
-	s.Require().Equal(1, slots[1].BookedAppoIntments)
+	s.Require().Equal(2, slots[0].BookedAppointments)
+	s.Require().Equal(1, slots[1].BookedAppointments)
 }
 
 func (s *RepoSuite) TestSlotBook() {
@@ -44,7 +44,7 @@ func (s *RepoSuite) TestSlotBook() {
 	app := &entity.Appointment{
 		BarbershopID: mockShop1ID,
 		UserID:       mockUser1ID,
-		Start:        mockDate1,
+		StartDate:    mockDate1,
 	}
 	slotRepo.Book(context.Background(), app)
 
@@ -59,7 +59,7 @@ func (s *RepoSuite) TestSlotCancel() {
 	app := &entity.Appointment{
 		BarbershopID: mockShop1ID,
 		UserID:       mockUser1ID,
-		Start:        mockDate1,
+		StartDate:    mockDate1,
 	}
 
 	// the cache is empty so the cancel should return an error
@@ -75,7 +75,7 @@ func (s *RepoSuite) TestSlotCancel() {
 	slots, err := slotRepo.GetByBarberShopID(context.Background(), mockShop1ID)
 	s.Require().NoError(err)
 	s.Require().Len(slots, 1)
-	s.Require().Equal(slots[0].BookedAppoIntments, 0)
+	s.Require().Equal(slots[0].BookedAppointments, 0)
 
 }
 

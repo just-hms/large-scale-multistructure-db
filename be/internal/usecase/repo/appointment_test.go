@@ -34,7 +34,7 @@ func (s *RepoSuite) TestAppointmentBook() {
 			name:        "Correctly inserted",
 			expectedErr: false,
 			input: &entity.Appointment{
-				Start:        time.Now().Add(1 * time.Hour),
+				StartDate:    time.Now().Add(1 * time.Hour),
 				UserID:       user.ID,
 				BarbershopID: shop.ID,
 			},
@@ -43,7 +43,7 @@ func (s *RepoSuite) TestAppointmentBook() {
 			name:        "The shop does not exists",
 			expectedErr: true,
 			input: &entity.Appointment{
-				Start:        time.Now().Add(1 * time.Hour),
+				StartDate:    time.Now().Add(1 * time.Hour),
 				UserID:       user2.ID,
 				BarbershopID: "fake_id",
 			},

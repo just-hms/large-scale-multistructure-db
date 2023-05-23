@@ -62,19 +62,19 @@ func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment) er
 		return errors.New("barberShopID not specified")
 	}
 
-	slot, err := r.get(appointment.BarbershopID, appointment.Start)
+	slot, err := r.get(appointment.BarbershopID, appointment.StartDate)
 
 	if err != nil {
 		slot = &entity.Slot{
-			Start:                appointment.Start,
-			BookedAppoIntments:   1,
+			Start:                appointment.StartDate,
+			BookedAppointments:   1,
 			UnavailableEmployees: 0,
 		}
 	} else {
-		slot.BookedAppoIntments += 1
+		slot.BookedAppointments += 1
 	}
 
-	return r.set(appointment.BarbershopID, appointment.Start, slot)
+	return r.set(appointment.BarbershopID, appointment.StartDate, slot)
 }
 
 func (r *SlotRepo) Get(ctx context.Context, shopID string, date time.Time) (*entity.Slot, error) {
@@ -82,7 +82,7 @@ func (r *SlotRepo) Get(ctx context.Context, shopID string, date time.Time) (*ent
 	if err != nil {
 		return &entity.Slot{
 			Start:                date,
-			BookedAppoIntments:   0,
+			BookedAppointments:   0,
 			UnavailableEmployees: 0,
 		}, nil
 	}
@@ -91,17 +91,17 @@ func (r *SlotRepo) Get(ctx context.Context, shopID string, date time.Time) (*ent
 
 func (r *SlotRepo) Cancel(ctx context.Context, appointment *entity.Appointment) error {
 
-	slot, err := r.get(appointment.BarbershopID, appointment.Start)
+	slot, err := r.get(appointment.BarbershopID, appointment.StartDate)
 
 	if err != nil {
 		return errors.New("the slot does not exists")
 	}
 
-	if slot.BookedAppoIntments > 0 {
-		slot.BookedAppoIntments -= 1
+	if slot.BookedAppointments > 0 {
+		slot.BookedAppointments -= 1
 	}
 
-	return r.set(appointment.BarbershopID, appointment.Start, slot)
+	return r.set(appointment.BarbershopID, appointment.StartDate, slot)
 }
 
 func (r *SlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error {
@@ -114,7 +114,7 @@ func (r *SlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time
 	}
 
 	if err == nil {
-		newSlot.BookedAppoIntments = slot.BookedAppoIntments
+		newSlot.BookedAppointments = slot.BookedAppointments
 	}
 
 	return r.set(shopID, date, newSlot)

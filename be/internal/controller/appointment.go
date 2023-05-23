@@ -12,16 +12,16 @@ import (
 )
 
 type AppointmentRoutes struct {
-	appoinmentUseCase usecase.Appointment
-	userUseCase       usecase.User
-	tokenUseCase      usecase.Token
+	appointmentUseCase usecase.Appointment
+	userUseCase        usecase.User
+	tokenUseCase       usecase.Token
 }
 
 func NewAppointmentRoutes(uc usecase.Appointment, us usecase.User, t usecase.Token) *AppointmentRoutes {
 	return &AppointmentRoutes{
-		appoinmentUseCase: uc,
-		userUseCase:       us,
-		tokenUseCase:      t,
+		appointmentUseCase: uc,
+		userUseCase:        us,
+		tokenUseCase:       t,
 	}
 }
 
@@ -61,8 +61,8 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 
 	ID := ctx.Param("shopid")
 
-	err = ur.appoinmentUseCase.Book(ctx, &entity.Appointment{
-		Start:        input.DateTime,
+	err = ur.appointmentUseCase.Book(ctx, &entity.Appointment{
+		StartDate:    input.DateTime,
 		BarbershopID: ID,
 		UserID:       tokenID,
 	})
@@ -104,7 +104,7 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 		return
 	}
 
-	err = ur.appoinmentUseCase.Cancel(ctx, user.CurrentAppointment)
+	err = ur.appointmentUseCase.Cancel(ctx, user.CurrentAppointment)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -130,7 +130,7 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 // @Router /barbershop/{shopid}/appointment/{appointmentid} [delete]
 func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 
-	appointment, err := ur.appoinmentUseCase.GetByIDs(
+	appointment, err := ur.appointmentUseCase.GetByIDs(
 		ctx,
 		ctx.Param("shopid"),
 		ctx.Param("appointmentid"),
@@ -141,7 +141,7 @@ func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 		return
 	}
 
-	err = ur.appoinmentUseCase.Cancel(ctx, appointment)
+	err = ur.appointmentUseCase.Cancel(ctx, appointment)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

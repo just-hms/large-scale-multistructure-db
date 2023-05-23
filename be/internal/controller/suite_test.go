@@ -204,7 +204,7 @@ func InitFixture(ucs map[byte]usecase.Usecase) (map[byte]string, error) {
 
 	appointments := []*entity.Appointment{
 		{
-			Start:        time.Now().Add(time.Hour * 2),
+			StartDate:    time.Now().Add(time.Hour * 2),
 			UserID:       fixture[USER1_ID],
 			BarbershopID: fixture[SHOP1_ID],
 		},
