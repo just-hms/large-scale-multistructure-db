@@ -113,7 +113,8 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	// in the barbershop collection
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
-	s.Require().Len(shop.Appointments, 0)
+	s.Require().Len(shop.Appointments, 1)
+	s.Require().Equal(shop.Appointments[0].Status, "canceled")
 
 	// Test that Cancel also works from the Shop
 
@@ -133,7 +134,8 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	// in the barbershop collection
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
-	s.Require().Len(shop.Appointments, 0)
+	s.Require().Len(shop.Appointments, 2)
+	s.Require().Equal(shop.Appointments[1].Status, "canceled")
 }
 
 func (s *RepoSuite) TestAppointmentGetByIDs() {

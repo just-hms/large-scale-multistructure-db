@@ -30,6 +30,7 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 
 	appointment.ID = uuid.NewString()
 	appointment.BarbershopName = barbershop.Name
+	appointment.Status = "pending"
 
 	// Store appointment fields before removing unused fields in the BarberShop's Appointment
 	userID := appointment.UserID
@@ -79,8 +80,8 @@ func (r *AppointmentRepo) CancelFromUser(ctx context.Context, userID string, app
 		return err
 	}
 
-	filter := bson.M{"_id": shopID}
-	update := bson.M{"$pull": bson.M{"appointments": bson.M{"_id": appointment.ID}}}
+	filter := bson.M{"_id": shopID, "appointments._id": appointment.ID}
+	update := bson.M{"$set": bson.M{"appointments.$.status": "canceled"}}
 
 	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
 
@@ -93,9 +94,9 @@ func (r *AppointmentRepo) CancelFromShop(ctx context.Context, shopID string, app
 	}
 
 	userID := appointment.UserID
-	// Remove the appointment from the user
-	filter := bson.M{"_id": shopID}
-	update := bson.M{"$pull": bson.M{"appointments": bson.M{"_id": appointment.ID}}}
+	// Remove the appointment from the shop
+	filter := bson.M{"_id": shopID, "appointments._id": appointment.ID}
+	update := bson.M{"$set": bson.M{"appointments.$.status": "canceled"}}
 
 	_, err := r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
 
