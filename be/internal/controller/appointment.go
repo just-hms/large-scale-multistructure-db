@@ -104,7 +104,10 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 		return
 	}
 
-	err = ur.appointmentUseCase.Cancel(ctx, user.CurrentAppointment)
+	if user.CurrentAppointment == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User does not have a current appointment"})
+		return
+	}
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
