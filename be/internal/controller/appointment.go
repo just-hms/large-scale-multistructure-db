@@ -75,7 +75,8 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{})
 }
 
-// DeleteSelfAppointment deletes the current appointment of an user
+// DeleteSelfAppointment deletes the appointment from the current user
+// and sets it to "complete" in the BarberShop
 //
 // @Summary Deletes the current user's appointment
 // @Description Deletes the appointment of the current user
@@ -120,7 +121,8 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 }
 
-// DeleteAppointment deletes the appointment of the specified user
+// DeleteAppointment deletes the appointment from the specified user
+// and sets it to "complete" in the BarberShop
 //
 // @Summary Deletes an appointment
 // @Description Deletes an appointment at a specific barbershop
