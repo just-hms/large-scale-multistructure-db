@@ -6,6 +6,7 @@ type Appointment struct {
 	ID        string    `bson:"_id"`
 	CreatedAt time.Time `bson:"createdAt"`
 	StartDate time.Time `bson:"startDate"`
+	Status    string    `bson:"status"`
 
 	UserID         string `bson:"userID,omitempty"`
 	BarbershopID   string `bson:"shopID,omitempty"`
