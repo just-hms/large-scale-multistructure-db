@@ -158,3 +158,41 @@ func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusAccepted, gin.H{})
 }
+
+// CompleteAppointment deletes the appointment from the specified user
+// and sets it to "complete" in the BarberShop
+//
+// @Summary Completes an appointment
+// @Description Completes an appointment at a specific barbershop
+// @Tags Appointment
+// @Accept json
+// @Produce json
+// @Param shopid path string true "ID of the barbershop"
+// @Param appointmentid path string true "ID of the appointment"
+// @Success 202 {object} string ""
+// @Failure 400 {object} string "Bad Request"
+// @Failure 401 {object}  string "Unauthorized"
+// @Router /barbershop/{shopid}/appointment/{appointmentid} [put]
+func (ur *AppointmentRoutes) CompleteAppointment(ctx *gin.Context) {
+
+	shopID := ctx.Param("shopid")
+	appointment, err := ur.appointmentUseCase.GetByIDs(
+		ctx,
+		shopID,
+		ctx.Param("appointmentid"),
+	)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Shop or Appointment not found"})
+		return
+	}
+
+	err = ur.appointmentUseCase.SetCompletedFromShop(ctx, shopID, appointment)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusAccepted, gin.H{})
+}

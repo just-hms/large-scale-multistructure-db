@@ -117,6 +117,7 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		barberShop.PUT("/:shopid", mr.RequireBarber, br.Modify)
 
 		barberShop.DELETE("/:shopid/appointment/:appointmentid", mr.RequireBarber, ar.DeleteAppointment)
+		barberShop.PUT("/:shopid/appointment/:appointmentid", mr.RequireBarber, ar.CompleteAppointment)
 		barberShop.POST("/:shopid/appointment", ar.Book)
 
 		barberShop.POST("/:shopid/review", rr.Store)
