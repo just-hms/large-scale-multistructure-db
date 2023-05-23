@@ -59,8 +59,17 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 	return err
 }
 
-func (uc *AppointmentUseCase) Cancel(ctx context.Context, appointment *entity.Appointment) error {
-	err := uc.appointmentRepo.Cancel(ctx, appointment)
+func (uc *AppointmentUseCase) CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error {
+	err := uc.appointmentRepo.CancelFromUser(ctx, userID, appointment)
+	if err != nil {
+		return err
+	}
+
+	return uc.cache.Cancel(ctx, appointment)
+}
+
+func (uc *AppointmentUseCase) CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error {
+	err := uc.appointmentRepo.CancelFromShop(ctx, shopID, appointment)
 	if err != nil {
 		return err
 	}

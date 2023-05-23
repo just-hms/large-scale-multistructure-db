@@ -109,6 +109,8 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 		return
 	}
 
+	err = ur.appointmentUseCase.CancelFromUser(ctx, tokenID, user.CurrentAppointment)
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -133,18 +135,19 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 // @Router /barbershop/{shopid}/appointment/{appointmentid} [delete]
 func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 
+	shopID := ctx.Param("shopid")
 	appointment, err := ur.appointmentUseCase.GetByIDs(
 		ctx,
-		ctx.Param("shopid"),
+		shopID,
 		ctx.Param("appointmentid"),
 	)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadGateway, gin.H{"error": "Shop or Appointment not found"})
 		return
 	}
 
-	err = ur.appointmentUseCase.Cancel(ctx, appointment)
+	err = ur.appointmentUseCase.CancelFromShop(ctx, shopID, appointment)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -64,11 +64,37 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 	return err
 }
 
-func (r *AppointmentRepo) Cancel(ctx context.Context, appointment *entity.Appointment) error {
+func (r *AppointmentRepo) CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error {
 	if appointment == nil {
 		return errors.New("you must provide an appointment")
 	}
-	filter := bson.M{"_id": appointment.BarbershopID}
+
+	shopID := appointment.BarbershopID
+	// Remove the appointment from the user
+	userFilter := bson.M{"_id": userID}
+	userUpdate := bson.M{"$unset": bson.M{"currentAppointment": ""}}
+	_, err := r.DB.Collection("users").UpdateOne(ctx, userFilter, userUpdate)
+
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": shopID}
+	update := bson.M{"$pull": bson.M{"appointments": bson.M{"_id": appointment.ID}}}
+
+	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
+
+	return err
+}
+
+func (r *AppointmentRepo) CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error {
+	if appointment == nil {
+		return errors.New("you must provide an appointment")
+	}
+
+	userID := appointment.UserID
+	// Remove the appointment from the user
+	filter := bson.M{"_id": shopID}
 	update := bson.M{"$pull": bson.M{"appointments": bson.M{"_id": appointment.ID}}}
 
 	_, err := r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
@@ -79,9 +105,13 @@ func (r *AppointmentRepo) Cancel(ctx context.Context, appointment *entity.Appoin
 
 	// remove the appoinment from the user
 
-	userFilter := bson.M{"_id": appointment.UserID}
+	userFilter := bson.M{"_id": userID}
 	userUpdate := bson.M{"$unset": bson.M{"currentAppointment": ""}}
 	_, err = r.DB.Collection("users").UpdateOne(ctx, userFilter, userUpdate)
+
+	// Add the BarberShopID field for the slot repo
+	appointment.BarbershopID = shopID
+
 	return err
 }
 

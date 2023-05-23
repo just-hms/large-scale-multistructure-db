@@ -51,7 +51,8 @@ type (
 
 	Appointment interface {
 		Book(ctx context.Context, appointment *entity.Appointment) error
-		Cancel(ctx context.Context, appointment *entity.Appointment) error
+		CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
+		CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
 		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
 	}
 
@@ -131,7 +132,8 @@ type (
 
 	AppointmentRepo interface {
 		Book(ctx context.Context, appointment *entity.Appointment) error
-		Cancel(ctx context.Context, appointment *entity.Appointment) error
+		CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
+		CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
 		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
 	}
 
