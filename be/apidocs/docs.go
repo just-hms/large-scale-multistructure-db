@@ -72,62 +72,6 @@ const docTemplate = `{
             }
         },
         "/admin/barbershop/{shopid}": {
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Modifies details of a barbershop for the given shop ID.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Barbershop"
-                ],
-                "summary": "Modify details of a barbershop",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "The ID of the barbershop",
-                        "name": "shopid",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "The updated barbershop details",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controller.ModifyBarberShopInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "202": {
-                        "description": "Accepted",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "security": [
                     {
@@ -462,6 +406,62 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Modifies details of a barbershop for the given shop ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Barbershop"
+                ],
+                "summary": "Modify details of a barbershop",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The updated barbershop details",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.ModifyBarberShopInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "string"
                         }
@@ -1638,14 +1638,14 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "id": {
+                    "type": "string"
+                },
                 "rating": {
                     "type": "integer"
                 },
                 "reported": {
                     "type": "boolean"
-                },
-                "reviewID": {
-                    "type": "string"
                 },
                 "upVotes": {
                     "type": "array",

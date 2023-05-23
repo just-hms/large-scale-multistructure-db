@@ -183,12 +183,12 @@ definitions:
         items:
           type: string
         type: array
+      id:
+        type: string
       rating:
         type: integer
       reported:
         type: boolean
-      reviewID:
-        type: string
       upVotes:
         items:
           type: string
@@ -294,42 +294,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete a barbershop by ID
-      tags:
-      - Barbershop
-    put:
-      consumes:
-      - application/json
-      description: Modifies details of a barbershop for the given shop ID.
-      parameters:
-      - description: The ID of the barbershop
-        in: path
-        name: shopid
-        required: true
-        type: string
-      - description: The updated barbershop details
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/controller.ModifyBarberShopInput'
-      produces:
-      - application/json
-      responses:
-        "202":
-          description: Accepted
-          schema:
-            type: string
-        "400":
-          description: Bad request
-          schema:
-            type: string
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-      security:
-      - ApiKeyAuth: []
-      summary: Modify details of a barbershop
       tags:
       - Barbershop
   /admin/user:
@@ -527,6 +491,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Retrieve details of a barbershop
+      tags:
+      - Barbershop
+    put:
+      consumes:
+      - application/json
+      description: Modifies details of a barbershop for the given shop ID.
+      parameters:
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: The updated barbershop details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ModifyBarberShopInput'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Modify details of a barbershop
       tags:
       - Barbershop
   /barbershop/{shopid}/appointment:

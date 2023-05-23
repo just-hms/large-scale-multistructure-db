@@ -166,7 +166,7 @@ type ModifyBarberShopInput struct {
 // @Success 202 {object} string ""
 // @Failure 400 {object} string "Bad request"
 // @Failure 401 {object} string "Unauthorized"
-// @Router /admin/barbershop/{shopid} [put]
+// @Router /barbershop/{shopid} [put]
 func (br *BarberShopRoutes) Modify(ctx *gin.Context) {
 
 	ID := ctx.Param("shopid")
