@@ -21,16 +21,25 @@ func NewAppointmentRepo(m *mongo.Mongo) *AppointmentRepo {
 
 func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointment) error {
 
-	err := r.DB.Collection("barbershops").
-		FindOne(ctx, bson.M{"_id": appointment.BarbershopID}).Err()
+	var barbershop entity.BarberShop
+	err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": appointment.BarbershopID}).Decode(&barbershop)
 
 	if err != nil {
 		return errors.New("the specified shop does not exists")
 	}
 
 	appointment.ID = uuid.NewString()
+	appointment.BarbershopName = barbershop.Name
 
-	filter := bson.M{"_id": appointment.BarbershopID}
+	// Store appointment fields before removing unused fields in the BarberShop's Appointment
+	userID := appointment.UserID
+	shopID := appointment.BarbershopID
+	shopName := appointment.BarbershopName
+	appointment.BarbershopID = ""
+	appointment.BarbershopName = ""
+
+	// Add the Appointment to the Shop
+	filter := bson.M{"_id": shopID}
 	update := bson.M{"$push": bson.M{"appointments": appointment}}
 
 	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
@@ -39,8 +48,13 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 		return err
 	}
 
-	// add the appointment
-	userFilter := bson.M{"_id": appointment.UserID}
+	// Replace previously removed fields and remove unused field in the User's Appointment
+	appointment.BarbershopID = shopID
+	appointment.BarbershopName = shopName
+	appointment.UserID = ""
+
+	// Add the appointment to the User
+	userFilter := bson.M{"_id": userID}
 	userUpdate := bson.M{"$set": bson.M{"currentAppointment": appointment}}
 	_, err = r.DB.Collection("users").UpdateOne(ctx, userFilter, userUpdate)
 	if err != nil {
