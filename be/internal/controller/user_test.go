@@ -3,7 +3,6 @@ package controller_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -323,13 +322,19 @@ func (s *ControllerSuite) TestUserShowOwned() {
 		{
 			name:   "Not a barber",
 			token:  s.fixture[USER1_TOKEN],
-			status: http.StatusUnauthorized,
+			status: http.StatusBadRequest,
 		},
 		{
-			name:        "Correctly shown owned Shops",
+			name:        "Correctly shown owned Shop",
 			token:       s.fixture[BARBER1_TOKEN],
 			status:      http.StatusOK,
 			resultCount: 1,
+		},
+		{
+			name:        "Correctly shown multiple owned Shops",
+			token:       s.fixture[BARBER2_TOKEN],
+			status:      http.StatusOK,
+			resultCount: 2,
 		},
 	}
 
@@ -369,8 +374,7 @@ func (s *ControllerSuite) TestUserShowOwned() {
 				s.Require().Nil(err)
 
 				// assert that the number of returned user is as expected
-				//s.Require().Equal(tc.resultCount, len(res.Users))
-				fmt.Print(len(res.Shops))
+				s.Require().Equal(tc.resultCount, len(res.Shops))
 			}
 		})
 

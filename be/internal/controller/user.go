@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
@@ -175,14 +174,13 @@ func (ur *UserRoutes) ShowAll(ctx *gin.Context) {
 // @Param id path string true "User ID"
 // @Success 200 {object} map[string]entity.BarberShop
 // @Failure 401 {object} string	"Unauthorized"
-// @Failure 404 {object} map[string]string
+// @Failure 400 {object} map[string]string
 // @Router /user/self/ownedshops [get]
 func (ur *UserRoutes) ShowOwnedShops(ctx *gin.Context) {
 
 	token := middleware.ExtractTokenFromRequest(ctx)
 	tokenID, err := ur.tokenUseCase.ExtractTokenID(token)
 
-	fmt.Printf("%+v\n", tokenID)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -191,14 +189,14 @@ func (ur *UserRoutes) ShowOwnedShops(ctx *gin.Context) {
 	user, err := ur.userUseCase.GetByID(ctx, tokenID)
 
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
 
 	barberShops, err := ur.barberShopUseCase.GetOwnedShops(ctx, user)
 
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User is not a Barber or no Shops were found"})
 		return
 	}
 

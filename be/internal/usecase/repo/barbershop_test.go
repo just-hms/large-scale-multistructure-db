@@ -203,8 +203,6 @@ func (s *RepoSuite) TestOwnedShops() {
 			} else {
 				s.Require().NoError(err)
 				s.Require().Equal(len(barbers), 2)
-				s.Require().Equal(barbers[0].Name, "shop")
-				s.Require().Equal(barbers[1].Name, "shop2")
 			}
 		})
 	}

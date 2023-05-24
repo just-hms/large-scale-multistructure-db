@@ -104,6 +104,10 @@ func (r *BarberShopRepo) GetByID(ctx context.Context, ID string) (*entity.Barber
 
 func (r *BarberShopRepo) GetOwnedShops(ctx context.Context, user *entity.User) ([]*entity.BarberShop, error) {
 
+	if user.Type != entity.BARBER {
+		return nil, fmt.Errorf("user is not a Barber")
+	}
+
 	filter := bson.M{"_id": bson.M{"$in": user.OwnedShops}}
 
 	cur, err := r.DB.Collection("barbershops").Find(ctx, filter)
