@@ -66,6 +66,7 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 	)
 	ur := NewUserRoutes(
 		ucs[usecase.USER].(usecase.User),
+		ucs[usecase.BARBER_SHOP].(usecase.BarberShop),
 		ucs[usecase.TOKEN].(usecase.Token),
 	)
 
@@ -102,6 +103,7 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		user.POST("/login", ur.Login)
 		user.GET("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Show)
 		user.DELETE("/self", mr.RequireAuth, mr.MarkWithAuthID, ur.Delete)
+		user.GET("/self/ownedshops", mr.RequireAuth, ur.ShowOwnedShops)
 		user.POST("/lostpassword", ur.LostPassword)
 		user.POST("/resetpassword/:resettoken", ur.ResetPassword)
 

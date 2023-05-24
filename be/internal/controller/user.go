@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller/middleware"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
 
@@ -10,14 +12,16 @@ import (
 )
 
 type UserRoutes struct {
-	userUseCase  usecase.User
-	tokenUseCase usecase.Token
+	userUseCase       usecase.User
+	barberShopUseCase usecase.BarberShop
+	tokenUseCase      usecase.Token
 }
 
-func NewUserRoutes(uc usecase.User, t usecase.Token) *UserRoutes {
+func NewUserRoutes(uc usecase.User, sc usecase.BarberShop, t usecase.Token) *UserRoutes {
 	return &UserRoutes{
-		userUseCase:  uc,
-		tokenUseCase: t,
+		userUseCase:       uc,
+		barberShopUseCase: sc,
+		tokenUseCase:      t,
 	}
 }
 
@@ -157,6 +161,46 @@ func (ur *UserRoutes) ShowAll(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"users": users})
+}
+
+// ShowOwnedShops Returns the list of  the current user's OwnedBarbershops
+//
+// @Summary Returns the list of  the current user's OwnedBarbershops
+// @Description Returns the list of  the current user's OwnedBarbershops
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} map[string]entity.BarberShop
+// @Failure 401 {object} string	"Unauthorized"
+// @Failure 404 {object} map[string]string
+// @Router /user/self/ownedshops [get]
+func (ur *UserRoutes) ShowOwnedShops(ctx *gin.Context) {
+
+	token := middleware.ExtractTokenFromRequest(ctx)
+	tokenID, err := ur.tokenUseCase.ExtractTokenID(token)
+
+	fmt.Printf("%+v\n", tokenID)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	user, err := ur.userUseCase.GetByID(ctx, tokenID)
+
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	barberShops, err := ur.barberShopUseCase.GetOwnedShops(ctx, user)
+
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"barbershops": barberShops})
 }
 
 // Delete deletes a user with the given ID.
