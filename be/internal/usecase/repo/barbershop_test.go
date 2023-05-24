@@ -145,6 +145,69 @@ func (s *RepoSuite) TestBarberShopGetByID() {
 	}
 }
 
+func (s *RepoSuite) TestOwnedShops() {
+
+	userRepo := repo.NewUserRepo(s.db)
+	shopRepo := repo.NewBarberShopRepo(s.db)
+
+	shop := &entity.BarberShop{
+		Name: "shop",
+	}
+	err := shopRepo.Store(context.Background(), shop)
+	s.Require().NoError(err)
+	shop2 := &entity.BarberShop{
+		Name: "shop2",
+	}
+	err = shopRepo.Store(context.Background(), shop2)
+	s.Require().NoError(err)
+
+	user := &entity.User{
+		Username: "barber",
+	}
+	userRepo.Store(context.Background(), user)
+
+	user2 := &entity.User{
+		Username: "user",
+	}
+	userRepo.Store(context.Background(), user2)
+
+	err = userRepo.EditShopsByIDs(context.Background(), user, []string{shop.ID, shop2.ID})
+	s.Require().NoError(err)
+
+	user, err = userRepo.GetByID(context.Background(), user.ID)
+	s.Require().NoError(err)
+
+	testCases := []struct {
+		name      string
+		user      *entity.User
+		expectErr bool
+	}{
+		{
+			name:      "get a barber shops",
+			user:      user,
+			expectErr: false,
+		},
+		{
+			name:      "get a user shops",
+			user:      user2,
+			expectErr: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			barbers, err := shopRepo.GetOwnedShops(context.Background(), tc.user)
+
+			if tc.expectErr {
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+				s.Require().Equal(len(barbers), 2)
+			}
+		})
+	}
+}
+
 func (s *RepoSuite) TestBarberShopDeleteByID() {
 
 	shopRepo := repo.NewBarberShopRepo(s.db)

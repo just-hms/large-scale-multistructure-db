@@ -77,9 +77,12 @@ definitions:
         type: string
       password:
         type: string
+      username:
+        type: string
     required:
     - email
     - password
+    - username
     type: object
   controller.ReviewVoteInput:
     properties:
@@ -111,11 +114,15 @@ definitions:
     properties:
       barbershopID:
         type: string
+      barbershopName:
+        type: string
       createdAt:
         type: string
       id:
         type: string
-      start:
+      startDate:
+        type: string
+      status:
         type: string
       userID:
         type: string
@@ -183,12 +190,12 @@ definitions:
         items:
           type: string
         type: array
+      id:
+        type: string
       rating:
         type: integer
       reported:
         type: boolean
-      reviewID:
-        type: string
       upVotes:
         items:
           type: string
@@ -200,7 +207,7 @@ definitions:
     type: object
   entity.Slot:
     properties:
-      bookedAppoIntments:
+      bookedAppointments:
         type: integer
       start:
         type: string
@@ -217,7 +224,7 @@ definitions:
         type: string
       ownedShops:
         items:
-          $ref: '#/definitions/entity.BarberShop'
+          type: string
         type: array
       type:
         type: string
@@ -294,42 +301,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete a barbershop by ID
-      tags:
-      - Barbershop
-    put:
-      consumes:
-      - application/json
-      description: Modifies details of a barbershop for the given shop ID.
-      parameters:
-      - description: The ID of the barbershop
-        in: path
-        name: shopid
-        required: true
-        type: string
-      - description: The updated barbershop details
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/controller.ModifyBarberShopInput'
-      produces:
-      - application/json
-      responses:
-        "202":
-          description: Accepted
-          schema:
-            type: string
-        "400":
-          description: Bad request
-          schema:
-            type: string
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-      security:
-      - ApiKeyAuth: []
-      summary: Modify details of a barbershop
       tags:
       - Barbershop
   /admin/user:
@@ -529,6 +500,42 @@ paths:
       summary: Retrieve details of a barbershop
       tags:
       - Barbershop
+    put:
+      consumes:
+      - application/json
+      description: Modifies details of a barbershop for the given shop ID.
+      parameters:
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: The updated barbershop details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ModifyBarberShopInput'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Modify details of a barbershop
+      tags:
+      - Barbershop
   /barbershop/{shopid}/appointment:
     post:
       consumes:
@@ -598,6 +605,39 @@ paths:
           schema:
             type: string
       summary: Deletes an appointment
+      tags:
+      - Appointment
+    put:
+      consumes:
+      - application/json
+      description: Completes an appointment at a specific barbershop
+      parameters:
+      - description: ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      - description: ID of the appointment
+        in: path
+        name: appointmentid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Completes an appointment
       tags:
       - Appointment
   /barbershop/{shopid}/calendar:
@@ -1117,6 +1157,39 @@ paths:
       summary: Deletes the current user's appointment
       tags:
       - Appointment
+  /user/self/ownedshops:
+    get:
+      consumes:
+      - application/json
+      description: Returns the list of  the current user's OwnedBarbershops
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/entity.BarberShop'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Returns the list of  the current user's OwnedBarbershops
+      tags:
+      - User
 schemes:
 - http
 swagger: "2.0"

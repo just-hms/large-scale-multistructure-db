@@ -81,14 +81,10 @@ def addOwnedShopToBarber(shopsCollection,usersCollection,userId,shopId):
         print("Only barbers can own shops!")
         return
 
-    shop = {}
-    shop["shopId"] = shopId
-    shop["name"] = shopsCollection.find_one({"_id":shopId})["name"]
-
     usersCollection.update_one({
         "_id": userId
     },{
-        "$push": {"ownedShops":shop}
+        "$push": {"ownedShops":shopId}
     })
 
 def makeShop(shopsCollection,shopData:dict)->int:

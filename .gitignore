@@ -3,7 +3,8 @@ scraper/__pycache__/
 scraper/*.json
 scraper/mapsApiKey.txt
 .vscode/
-# .env
 .idea/
 
 .env
+
+notes.txt

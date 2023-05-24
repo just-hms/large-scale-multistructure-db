@@ -45,6 +45,10 @@ func (uc *BarberShopUseCase) GetByID(ctx context.Context, viewerID string, ID st
 
 }
 
+func (uc *BarberShopUseCase) GetOwnedShops(ctx context.Context, user *entity.User) ([]*entity.BarberShop, error) {
+	return uc.shopRepo.GetOwnedShops(ctx, user)
+}
+
 func (uc *BarberShopUseCase) Store(ctx context.Context, shop *entity.BarberShop) error {
 	return uc.shopRepo.Store(ctx, shop)
 }

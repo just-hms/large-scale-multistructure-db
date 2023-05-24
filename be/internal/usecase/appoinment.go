@@ -41,9 +41,9 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 	}
 
 	minus := 0
-	slot, err := uc.cache.Get(ctx, appointment.BarbershopID, appointment.Start)
+	slot, err := uc.cache.Get(ctx, appointment.BarbershopID, appointment.StartDate)
 	if err == nil {
-		minus = slot.BookedAppoIntments + slot.UnavailableEmployees
+		minus = slot.BookedAppointments + slot.UnavailableEmployees
 	}
 
 	if shop.Employees-minus <= 0 {
@@ -59,8 +59,29 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 	return err
 }
 
-func (uc *AppointmentUseCase) Cancel(ctx context.Context, appointment *entity.Appointment) error {
-	err := uc.appointmentRepo.Cancel(ctx, appointment)
+func (uc *AppointmentUseCase) CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error {
+	appointment.Status = "canceled"
+	err := uc.appointmentRepo.SetStatusFromUser(ctx, userID, appointment)
+	if err != nil {
+		return err
+	}
+
+	return uc.cache.Cancel(ctx, appointment)
+}
+
+func (uc *AppointmentUseCase) CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error {
+	appointment.Status = "canceled"
+	err := uc.appointmentRepo.SetStatusFromShop(ctx, shopID, appointment)
+	if err != nil {
+		return err
+	}
+
+	return uc.cache.Cancel(ctx, appointment)
+}
+
+func (uc *AppointmentUseCase) SetCompletedFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error {
+	appointment.Status = "completed"
+	err := uc.appointmentRepo.SetStatusFromShop(ctx, shopID, appointment)
 	if err != nil {
 		return err
 	}

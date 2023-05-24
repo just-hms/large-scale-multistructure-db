@@ -34,7 +34,7 @@ func (s *RepoSuite) TestAppointmentBook() {
 			name:        "Correctly inserted",
 			expectedErr: false,
 			input: &entity.Appointment{
-				Start:        time.Now().Add(1 * time.Hour),
+				StartDate:    time.Now().Add(1 * time.Hour),
 				UserID:       user.ID,
 				BarbershopID: shop.ID,
 			},
@@ -43,7 +43,7 @@ func (s *RepoSuite) TestAppointmentBook() {
 			name:        "The shop does not exists",
 			expectedErr: true,
 			input: &entity.Appointment{
-				Start:        time.Now().Add(1 * time.Hour),
+				StartDate:    time.Now().Add(1 * time.Hour),
 				UserID:       user2.ID,
 				BarbershopID: "fake_id",
 			},
@@ -100,7 +100,8 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	err = appointmentRepo.Book(context.Background(), appointment)
 	s.Require().NoError(err)
 
-	err = appointmentRepo.Cancel(context.Background(), appointment)
+	appointment.Status = "canceled"
+	err = appointmentRepo.SetStatusFromUser(context.Background(), user.ID, appointment)
 	s.Require().NoError(err)
 
 	// check that the appointment was correctly cancelled
@@ -113,10 +114,34 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	// in the barbershop collection
 	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
 	s.Require().NoError(err)
-	s.Require().Len(shop.Appointments, 0)
+	s.Require().Len(shop.Appointments, 1)
+	s.Require().Equal(shop.Appointments[0].Status, "canceled")
+
+	// Test that Cancel also works from the Shop
+
+	err = appointmentRepo.Book(context.Background(), appointment)
+	s.Require().NoError(err)
+
+	appointment.Status = "canceled"
+	err = appointmentRepo.SetStatusFromShop(context.Background(), shop.ID, appointment)
+	s.Require().NoError(err)
+
+	// check that the appointment was correctly cancelled
+
+	// in the user collection
+	user, err = userRepo.GetByID(context.Background(), user.ID)
+	s.Require().NoError(err)
+	s.Require().Nil(user.CurrentAppointment)
+
+	// in the barbershop collection
+	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
+	s.Require().NoError(err)
+	s.Require().Len(shop.Appointments, 2)
+	s.Require().Equal(shop.Appointments[1].Status, "canceled")
 }
 
-func (s *RepoSuite) TestAppointmentGetByIDs() {
+func (s *RepoSuite) TestAppointmentComplete() {
+
 	user := &entity.User{Username: "giovanni"}
 	shop := &entity.BarberShop{Name: "brownies"}
 
@@ -139,7 +164,20 @@ func (s *RepoSuite) TestAppointmentGetByIDs() {
 	err = appointmentRepo.Book(context.Background(), appointment)
 	s.Require().NoError(err)
 
-	res, err := appointmentRepo.GetByIDs(context.Background(), shop.ID, appointment.ID)
+	appointment.Status = "completed"
+	err = appointmentRepo.SetStatusFromShop(context.Background(), shop.ID, appointment)
 	s.Require().NoError(err)
-	s.Require().Equal(appointment, res)
+
+	// check that the appointment was correctly cancelled
+
+	// in the user collection
+	user, err = userRepo.GetByID(context.Background(), user.ID)
+	s.Require().NoError(err)
+	s.Require().Nil(user.CurrentAppointment)
+
+	// in the barbershop collection
+	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
+	s.Require().NoError(err)
+	s.Require().Len(shop.Appointments, 1)
+	s.Require().Equal(shop.Appointments[0].Status, "completed")
 }

@@ -59,7 +59,7 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 	userRepo := repo.NewUserRepo(m)
 	barberShopRepo := repo.NewBarberShopRepo(m)
 	viewShopRepo := repo.NewShopViewRepo(m)
-	appintmentRepo := repo.NewAppointmentRepo(m)
+	appointmentRepo := repo.NewAppointmentRepo(m)
 	reviewRepo := repo.NewReviewRepo(m)
 	voteRepo := repo.NewVoteRepo(m)
 	slotRepo := repo.NewSlotRepo(r)
@@ -76,7 +76,7 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password, tokenapi)
 	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
 	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(
-		appintmentRepo,
+		appointmentRepo,
 		slotRepo,
 		userRepo,
 		barberShopRepo,

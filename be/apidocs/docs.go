@@ -72,62 +72,6 @@ const docTemplate = `{
             }
         },
         "/admin/barbershop/{shopid}": {
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Modifies details of a barbershop for the given shop ID.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Barbershop"
-                ],
-                "summary": "Modify details of a barbershop",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "The ID of the barbershop",
-                        "name": "shopid",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "The updated barbershop details",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controller.ModifyBarberShopInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "202": {
-                        "description": "Accepted",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "security": [
                     {
@@ -467,6 +411,62 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Modifies details of a barbershop for the given shop ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Barbershop"
+                ],
+                "summary": "Modify details of a barbershop",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "The updated barbershop details",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.ModifyBarberShopInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/barbershop/{shopid}/appointment": {
@@ -528,6 +528,55 @@ const docTemplate = `{
             }
         },
         "/barbershop/{shopid}/appointment/{appointmentid}": {
+            "put": {
+                "description": "Completes an appointment at a specific barbershop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Appointment"
+                ],
+                "summary": "Completes an appointment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the appointment",
+                        "name": "appointmentid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Deletes an appointment at a specific barbershop",
                 "consumes": [
@@ -1354,6 +1403,56 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/self/ownedshops": {
+            "get": {
+                "description": "Returns the list of  the current user's OwnedBarbershops",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Returns the list of  the current user's OwnedBarbershops",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/entity.BarberShop"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1470,13 +1569,17 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "email",
-                "password"
+                "password",
+                "username"
             ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -1528,13 +1631,19 @@ const docTemplate = `{
                 "barbershopID": {
                     "type": "string"
                 },
+                "barbershopName": {
+                    "type": "string"
+                },
                 "createdAt": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "start": {
+                "startDate": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "userID": {
@@ -1638,14 +1747,14 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "id": {
+                    "type": "string"
+                },
                 "rating": {
                     "type": "integer"
                 },
                 "reported": {
                     "type": "boolean"
-                },
-                "reviewID": {
-                    "type": "string"
                 },
                 "upVotes": {
                     "type": "array",
@@ -1664,7 +1773,7 @@ const docTemplate = `{
         "entity.Slot": {
             "type": "object",
             "properties": {
-                "bookedAppoIntments": {
+                "bookedAppointments": {
                     "type": "integer"
                 },
                 "start": {
@@ -1690,7 +1799,7 @@ const docTemplate = `{
                 "ownedShops": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entity.BarberShop"
+                        "type": "string"
                     }
                 },
                 "type": {
