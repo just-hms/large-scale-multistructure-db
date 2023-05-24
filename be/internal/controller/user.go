@@ -73,6 +73,7 @@ func (ur *UserRoutes) Login(ctx *gin.Context) {
 
 type RegisterInput struct {
 	Email    string `json:"email" binding:"required,email"`
+	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -98,6 +99,7 @@ func (ur *UserRoutes) Register(ctx *gin.Context) {
 
 	err := ur.userUseCase.Store(ctx, &entity.User{
 		Password: input.Password,
+		Username: input.Username,
 		Email:    input.Email,
 		Type:     entity.USER,
 	})

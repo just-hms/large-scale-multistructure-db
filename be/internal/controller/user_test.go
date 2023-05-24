@@ -83,17 +83,22 @@ func (s *ControllerSuite) TestRegister() {
 	}{
 		{
 			name:         "Already exists",
-			creationUser: &controller.RegisterInput{Email: "correct@example.com", Password: "password"},
+			creationUser: &controller.RegisterInput{Email: "correct@example.com", Username: "correct", Password: "password"},
 			status:       http.StatusUnauthorized,
 		},
 		{
 			name:         "Invalid input",
+			creationUser: &controller.RegisterInput{Email: "not_an_email", Username: "not", Password: "password"},
+			status:       http.StatusBadRequest,
+		},
+		{
+			name:         "Missing Username",
 			creationUser: &controller.RegisterInput{Email: "not_an_email", Password: "password"},
 			status:       http.StatusBadRequest,
 		},
 		{
 			name:         "Correctly Created",
-			creationUser: &controller.RegisterInput{Email: "new@example.com", Password: "password"},
+			creationUser: &controller.RegisterInput{Email: "new@example.com", Username: "new", Password: "password"},
 			status:       http.StatusCreated,
 		},
 	}
