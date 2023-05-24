@@ -102,6 +102,29 @@ func (r *BarberShopRepo) GetByID(ctx context.Context, ID string) (*entity.Barber
 	return barber, nil
 }
 
+func (r *BarberShopRepo) GetOwnedShops(ctx context.Context, user *entity.User) ([]*entity.BarberShop, error) {
+
+	filter := bson.M{"_id": bson.M{"$in": user.OwnedShops}}
+
+	cur, err := r.DB.Collection("barbershops").Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cur.Close(ctx)
+
+	shops := []*entity.BarberShop{}
+
+	for cur.Next(ctx) {
+		shop := entity.BarberShop{}
+		if err := cur.Decode(&shop); err != nil {
+			return nil, err
+		}
+		shops = append(shops, &shop)
+	}
+	return shops, nil
+}
+
 func (r *BarberShopRepo) ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error {
 
 	update := bson.M{}
