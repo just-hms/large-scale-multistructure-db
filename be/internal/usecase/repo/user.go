@@ -106,9 +106,7 @@ func (r *UserRepo) GetByEmail(ctx context.Context, email string) (*entity.User, 
 	return user, nil
 }
 
-func (r *UserRepo) EditShopsByIDs(ctx context.Context, user *entity.User, IDs []string) error {
-
-	ownedShops := IDs
+func (r *UserRepo) EditShopsByIDs(ctx context.Context, user *entity.User, ownedShops []string) error {
 
 	userType := entity.USER
 	if len(ownedShops) > 0 {
