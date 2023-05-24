@@ -40,6 +40,7 @@ type (
 	BarberShop interface {
 		Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error)
 		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)
+		GetOwnedShops(ctx context.Context, user *entity.User) ([]*entity.BarberShop, error)
 		Store(ctx context.Context, shop *entity.BarberShop) error
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error
@@ -115,6 +116,7 @@ type (
 		Store(ctx context.Context, shop *entity.BarberShop) error
 		Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error)
 		GetByID(ctx context.Context, ID string) (*entity.BarberShop, error)
+		GetOwnedShops(ctx context.Context, user *entity.User) ([]*entity.BarberShop, error)
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error
 	}
