@@ -88,7 +88,7 @@ func (s *RepoSuite) TestSlotSetHoliday() {
 	slots, err := slotRepo.GetByBarberShopID(context.Background(), mockShop1ID)
 	s.Require().NoError(err)
 	s.Require().Len(slots, 1)
-	s.Require().Equal(slots[0].UnavailableEmployees, 5)
+	s.Require().Equal(slots[0].AvailableEmployees, 5)
 }
 
 // TODO

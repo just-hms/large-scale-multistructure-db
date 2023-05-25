@@ -43,7 +43,7 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 	minus := 0
 	slot, err := uc.cache.Get(ctx, appointment.BarbershopID, appointment.StartDate)
 	if err == nil {
-		minus = slot.BookedAppointments + slot.UnavailableEmployees
+		minus = slot.BookedAppointments + slot.AvailableEmployees
 	}
 
 	if shop.Employees-minus <= 0 {

@@ -53,12 +53,21 @@ func (uc *BarberShopUseCase) Store(ctx context.Context, shop *entity.BarberShop)
 	return uc.shopRepo.Store(ctx, shop)
 }
 
-// TODO
-// - add check for not enough workes in the calendar
-// - unavailableEmployees cannot be higher then the actual employes
-
 func (uc *BarberShopUseCase) ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error {
-	return uc.shopRepo.ModifyByID(ctx, ID, shop)
+
+	//Update the Shop info
+	err := uc.shopRepo.ModifyByID(ctx, ID, shop)
+	if err != nil {
+		return err
+	}
+
+	//If the Employees number got updated, check if any existing Redis Slot needs to be updated
+	if shop.Employees != -1 {
+
+	}
+
+	return err
+
 }
 func (uc *BarberShopUseCase) DeleteByID(ctx context.Context, ID string) error {
 	return uc.shopRepo.DeleteByID(ctx, ID)
