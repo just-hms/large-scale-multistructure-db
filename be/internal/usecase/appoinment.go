@@ -35,15 +35,17 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 		return errors.New("cannot book two appointments")
 	}
 
-	shop, err := uc.shopRepo.GetByID(ctx, appointment.BarbershopID)
+	slot, err := uc.cache.Get(ctx, appointment.BarbershopID, appointment.StartDate)
 	if err != nil {
 		return err
 	}
-
-	minus := 0
-	slot, err := uc.cache.Get(ctx, appointment.BarbershopID, appointment.StartDate)
-	if err == nil {
-		minus = slot.BookedAppointments + slot.AvailableEmployees
+	//If the slot didn't exist, fill the number of available employees
+	if slot.Employees == -1 {
+		shop, err := uc.shopRepo.GetByID(ctx, appointment.BarbershopID)
+		if err != nil {
+			return err
+		}
+		slot.Employees = shop.Employees
 	}
 
 	err = uc.cache.Book(ctx, appointment, slot)

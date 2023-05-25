@@ -74,7 +74,7 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 	}
 	ucs := map[byte]usecase.Usecase{}
 	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password, tokenapi)
-	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo)
+	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo, slotRepo)
 	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(
 		appointmentRepo,
 		slotRepo,

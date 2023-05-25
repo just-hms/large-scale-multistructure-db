@@ -99,18 +99,29 @@ func (r *SlotRepo) Cancel(ctx context.Context, appointment *entity.Appointment) 
 
 func (r *SlotRepo) SetEmployees(ctx context.Context, shopID string, availableEmployees int) error {
 
-	slot, err := r.get(shopID, date)
+	keys, slots, err := r.GetByBarberShopID(ctx, shopID)
 
-	newSlot := &entity.Slot{
-		Start:     date,
-		Employees: availableEmployees,
+	if len(keys) != len(slots) {
+		return errors.New("key and slot length don't match")
 	}
 
-	if err == nil {
-		newSlot.BookedAppointments = slot.BookedAppointments
+	for i := 0; i < len(keys); i++ {
+		slots[i].Employees = availableEmployees
+		expTime := time.Until(slots[i].Start.Add(time.Hour * 24))
+		content, err := json.Marshal(slots[i])
+
+		if err != nil {
+			return err
+		}
+
+		err = r.Client.Set(keys[i], content, expTime).Err()
+
+		if err != nil {
+			return err
+		}
 	}
 
-	return r.set(shopID, date, newSlot)
+	return err
 }
 
 func (r *SlotRepo) get(barberShopID string, date time.Time) (*entity.Slot, error) {

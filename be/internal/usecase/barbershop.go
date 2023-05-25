@@ -9,12 +9,14 @@ import (
 type BarberShopUseCase struct {
 	shopRepo BarberShopRepo
 	viewRepo ShopViewRepo
+	cache    SlotRepo
 }
 
-func NewBarberShopUseCase(shopRepo BarberShopRepo, viewRepo ShopViewRepo) *BarberShopUseCase {
+func NewBarberShopUseCase(shopRepo BarberShopRepo, viewRepo ShopViewRepo, cache SlotRepo) *BarberShopUseCase {
 	return &BarberShopUseCase{
 		shopRepo: shopRepo,
 		viewRepo: viewRepo,
+		cache:    cache,
 	}
 }
 
@@ -62,8 +64,11 @@ func (uc *BarberShopUseCase) ModifyByID(ctx context.Context, ID string, shop *en
 	}
 
 	//If the Employees number got updated, check if any existing Redis Slot needs to be updated
-	if shop.Employees != -1 {
-
+	if shop.Employees > -1 {
+		err = uc.cache.SetEmployees(ctx, ID, shop.Employees)
+		if err != nil {
+			return err
+		}
 	}
 
 	return err
