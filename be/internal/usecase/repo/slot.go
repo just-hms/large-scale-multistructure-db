@@ -68,7 +68,7 @@ func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment) er
 		slot = &entity.Slot{
 			Start:              appointment.StartDate,
 			BookedAppointments: 1,
-			AvailableEmployees: -1,
+			Employees:          -1,
 		}
 	} else {
 		slot.BookedAppointments += 1
@@ -83,7 +83,7 @@ func (r *SlotRepo) Get(ctx context.Context, shopID string, date time.Time) (*ent
 		return &entity.Slot{
 			Start:              date,
 			BookedAppointments: 0,
-			AvailableEmployees: -1,
+			Employees:          -1,
 		}, nil
 	}
 	return slot, nil
@@ -109,8 +109,8 @@ func (r *SlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time
 	slot, err := r.get(shopID, date)
 
 	newSlot := &entity.Slot{
-		Start:              date,
-		AvailableEmployees: availableEmployees,
+		Start:     date,
+		Employees: availableEmployees,
 	}
 
 	if err == nil {
