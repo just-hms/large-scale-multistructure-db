@@ -20,19 +20,18 @@ func NewSlotRepo(r *redis.Redis) *SlotRepo {
 	return &SlotRepo{r}
 }
 
-func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]*entity.Slot, error) {
+func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]string, []*entity.Slot, error) {
 
 	key := fmt.Sprintf("barbershop:%s:slots:*", ID)
 
 	keys, err := r.Client.Keys(key).Result()
 
-	// TODO: add an ordered index??
 	sort.Slice(keys, func(i, j int) bool {
 		return keys[i] < keys[j]
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	slots := make([]*entity.Slot, 0, len(keys))
@@ -41,18 +40,18 @@ func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]*entity.
 
 		data, err := r.Client.Get(key).Result()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		var slot entity.Slot
 		if err := json.Unmarshal([]byte(data), &slot); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		slots = append(slots, &slot)
 	}
 
-	return slots, nil
+	return keys, slots, nil
 }
 
 // add entry if not exists
