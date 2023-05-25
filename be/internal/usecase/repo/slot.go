@@ -20,19 +20,18 @@ func NewSlotRepo(r *redis.Redis) *SlotRepo {
 	return &SlotRepo{r}
 }
 
-func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]*entity.Slot, error) {
+func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]string, []*entity.Slot, error) {
 
 	key := fmt.Sprintf("barbershop:%s:slots:*", ID)
 
 	keys, err := r.Client.Keys(key).Result()
 
-	// TODO: add an ordered index??
 	sort.Slice(keys, func(i, j int) bool {
 		return keys[i] < keys[j]
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	slots := make([]*entity.Slot, 0, len(keys))
@@ -41,37 +40,31 @@ func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]*entity.
 
 		data, err := r.Client.Get(key).Result()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		var slot entity.Slot
 		if err := json.Unmarshal([]byte(data), &slot); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		slots = append(slots, &slot)
 	}
 
-	return slots, nil
+	return keys, slots, nil
 }
 
 // add entry if not exists
-func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment) error {
+func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment, slot *entity.Slot) error {
 
 	if appointment.BarbershopID == "" {
 		return errors.New("barberShopID not specified")
 	}
 
-	slot, err := r.get(appointment.BarbershopID, appointment.StartDate)
+	slot.BookedAppointments += 1
 
-	if err != nil {
-		slot = &entity.Slot{
-			Start:                appointment.StartDate,
-			BookedAppointments:   1,
-			UnavailableEmployees: 0,
-		}
-	} else {
-		slot.BookedAppointments += 1
+	if slot.BookedAppointments >= slot.Employees {
+		return errors.New("cannot book because this slot is full")
 	}
 
 	return r.set(appointment.BarbershopID, appointment.StartDate, slot)
@@ -81,9 +74,9 @@ func (r *SlotRepo) Get(ctx context.Context, shopID string, date time.Time) (*ent
 	slot, err := r.get(shopID, date)
 	if err != nil {
 		return &entity.Slot{
-			Start:                date,
-			BookedAppointments:   0,
-			UnavailableEmployees: 0,
+			Start:              date,
+			BookedAppointments: 0,
+			Employees:          -1,
 		}, nil
 	}
 	return slot, nil
@@ -104,20 +97,31 @@ func (r *SlotRepo) Cancel(ctx context.Context, appointment *entity.Appointment) 
 	return r.set(appointment.BarbershopID, appointment.StartDate, slot)
 }
 
-func (r *SlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error {
+func (r *SlotRepo) SetEmployees(ctx context.Context, shopID string, availableEmployees int) error {
 
-	slot, err := r.get(shopID, date)
+	keys, slots, err := r.GetByBarberShopID(ctx, shopID)
 
-	newSlot := &entity.Slot{
-		Start:                date,
-		UnavailableEmployees: unavailableEmployees,
+	if len(keys) != len(slots) {
+		return errors.New("key and slot length don't match")
 	}
 
-	if err == nil {
-		newSlot.BookedAppointments = slot.BookedAppointments
+	for i := 0; i < len(keys); i++ {
+		slots[i].Employees = availableEmployees
+		expTime := time.Until(slots[i].Start.Add(time.Hour * 24))
+		content, err := json.Marshal(slots[i])
+
+		if err != nil {
+			return err
+		}
+
+		err = r.Client.Set(keys[i], content, expTime).Err()
+
+		if err != nil {
+			return err
+		}
 	}
 
-	return r.set(shopID, date, newSlot)
+	return err
 }
 
 func (r *SlotRepo) get(barberShopID string, date time.Time) (*entity.Slot, error) {

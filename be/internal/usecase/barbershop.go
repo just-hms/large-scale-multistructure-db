@@ -9,12 +9,14 @@ import (
 type BarberShopUseCase struct {
 	shopRepo BarberShopRepo
 	viewRepo ShopViewRepo
+	cache    SlotRepo
 }
 
-func NewBarberShopUseCase(shopRepo BarberShopRepo, viewRepo ShopViewRepo) *BarberShopUseCase {
+func NewBarberShopUseCase(shopRepo BarberShopRepo, viewRepo ShopViewRepo, cache SlotRepo) *BarberShopUseCase {
 	return &BarberShopUseCase{
 		shopRepo: shopRepo,
 		viewRepo: viewRepo,
+		cache:    cache,
 	}
 }
 
@@ -53,12 +55,24 @@ func (uc *BarberShopUseCase) Store(ctx context.Context, shop *entity.BarberShop)
 	return uc.shopRepo.Store(ctx, shop)
 }
 
-// TODO
-// - add check for not enough workes in the calendar
-// - unavailableEmployees cannot be higher then the actual employes
-
 func (uc *BarberShopUseCase) ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error {
-	return uc.shopRepo.ModifyByID(ctx, ID, shop)
+
+	//Update the Shop info
+	err := uc.shopRepo.ModifyByID(ctx, ID, shop)
+	if err != nil {
+		return err
+	}
+
+	//If the Employees number got updated, check if any existing Redis Slot needs to be updated
+	if shop.Employees > -1 {
+		err = uc.cache.SetEmployees(ctx, ID, shop.Employees)
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+
 }
 func (uc *BarberShopUseCase) DeleteByID(ctx context.Context, ID string) error {
 	return uc.shopRepo.DeleteByID(ctx, ID)

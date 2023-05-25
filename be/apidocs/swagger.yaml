@@ -96,13 +96,6 @@ definitions:
     required:
     - area
     type: object
-  controller.SetHolidaysInput:
-    properties:
-      date:
-        type: string
-      unavailableEmployees:
-        type: integer
-    type: object
   controller.StoreReviewInput:
     properties:
       content:
@@ -209,10 +202,10 @@ definitions:
     properties:
       bookedAppointments:
         type: integer
+      employees:
+        type: integer
       start:
         type: string
-      unavailableEmployees:
-        type: integer
     type: object
   entity.User:
     properties:
@@ -675,41 +668,6 @@ paths:
       summary: Get the calendar for a barbershop by ID
       tags:
       - Barbershop
-  /barbershop/{shopid}/holiday:
-    post:
-      consumes:
-      - application/json
-      description: Set holiday for a given Barber Shop
-      parameters:
-      - description: Barber Shop ID
-        in: path
-        name: shopid
-        required: true
-        type: string
-      - description: Set Holidays Input
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/controller.SetHolidaysInput'
-      produces:
-      - application/json
-      responses:
-        "202":
-          description: Accepted
-          schema:
-            type: string
-        "400":
-          description: Bad request
-          schema:
-            type: string
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-      summary: Set holiday
-      tags:
-      - Holiday
   /barbershop/{shopid}/review:
     get:
       consumes:

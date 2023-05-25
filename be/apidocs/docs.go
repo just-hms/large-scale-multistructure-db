@@ -682,59 +682,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/barbershop/{shopid}/holiday": {
-            "post": {
-                "description": "Set holiday for a given Barber Shop",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Holiday"
-                ],
-                "summary": "Set holiday",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Barber Shop ID",
-                        "name": "shopid",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Set Holidays Input",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controller.SetHolidaysInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "202": {
-                        "description": "Accepted",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/barbershop/{shopid}/review": {
             "get": {
                 "description": "ShowByShop retrieves all the Reviews in a given BarberShop",
@@ -1603,17 +1550,6 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.SetHolidaysInput": {
-            "type": "object",
-            "properties": {
-                "date": {
-                    "type": "string"
-                },
-                "unavailableEmployees": {
-                    "type": "integer"
-                }
-            }
-        },
         "controller.StoreReviewInput": {
             "type": "object",
             "properties": {
@@ -1776,11 +1712,11 @@ const docTemplate = `{
                 "bookedAppointments": {
                     "type": "integer"
                 },
+                "employees": {
+                    "type": "integer"
+                },
                 "start": {
                     "type": "string"
-                },
-                "unavailableEmployees": {
-                    "type": "integer"
                 }
             }
         },
