@@ -55,22 +55,16 @@ func (r *SlotRepo) GetByBarberShopID(ctx context.Context, ID string) ([]string, 
 }
 
 // add entry if not exists
-func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment) error {
+func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment, slot *entity.Slot) error {
 
 	if appointment.BarbershopID == "" {
 		return errors.New("barberShopID not specified")
 	}
 
-	slot, err := r.get(appointment.BarbershopID, appointment.StartDate)
+	slot.BookedAppointments += 1
 
-	if err != nil {
-		slot = &entity.Slot{
-			Start:              appointment.StartDate,
-			BookedAppointments: 1,
-			Employees:          -1,
-		}
-	} else {
-		slot.BookedAppointments += 1
+	if slot.BookedAppointments >= slot.Employees {
+		return errors.New("cannot book because this slot is full")
 	}
 
 	return r.set(appointment.BarbershopID, appointment.StartDate, slot)

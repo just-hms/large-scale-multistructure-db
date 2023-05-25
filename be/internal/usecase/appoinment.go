@@ -46,11 +46,7 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 		minus = slot.BookedAppointments + slot.AvailableEmployees
 	}
 
-	if shop.Employees-minus <= 0 {
-		return errors.New("cannot book because this slot is full")
-	}
-
-	err = uc.cache.Book(ctx, appointment)
+	err = uc.cache.Book(ctx, appointment, slot)
 	if err != nil {
 		return err
 	}
