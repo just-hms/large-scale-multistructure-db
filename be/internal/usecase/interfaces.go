@@ -40,6 +40,7 @@ type (
 	BarberShop interface {
 		Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error)
 		GetByID(ctx context.Context, viewerID string, ID string) (*entity.BarberShop, error)
+		GetOwnedShops(ctx context.Context, user *entity.User) ([]*entity.BarberShop, error)
 		Store(ctx context.Context, shop *entity.BarberShop) error
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error
@@ -51,7 +52,9 @@ type (
 
 	Appointment interface {
 		Book(ctx context.Context, appointment *entity.Appointment) error
-		Cancel(ctx context.Context, appointment *entity.Appointment) error
+		CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
+		CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
+		SetCompletedFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
 		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
 	}
 
@@ -113,6 +116,7 @@ type (
 		Store(ctx context.Context, shop *entity.BarberShop) error
 		Find(ctx context.Context, lat float64, lon float64, name string, radius float64) ([]*entity.BarberShop, error)
 		GetByID(ctx context.Context, ID string) (*entity.BarberShop, error)
+		GetOwnedShops(ctx context.Context, user *entity.User) ([]*entity.BarberShop, error)
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error
 	}
@@ -131,7 +135,8 @@ type (
 
 	AppointmentRepo interface {
 		Book(ctx context.Context, appointment *entity.Appointment) error
-		Cancel(ctx context.Context, appointment *entity.Appointment) error
+		SetStatusFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
+		SetStatusFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
 		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
 	}
 

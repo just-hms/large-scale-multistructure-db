@@ -186,6 +186,58 @@ func (s *ControllerSuite) TestCancelAppointment() {
 	}
 }
 
+func (s *ControllerSuite) TestCompleteAppointment() {
+
+	testCases := []struct {
+		name    string
+		token   string
+		status  int
+		ID      string
+		SHOP_ID string
+	}{
+		{
+			name:    "Require Login",
+			status:  http.StatusUnauthorized,
+			ID:      s.fixture[USER1_SHOP1_APPOINTMENT_ID],
+			SHOP_ID: s.fixture[SHOP1_ID],
+		},
+		{
+			name:    "Require barber",
+			token:   s.fixture[USER1_TOKEN],
+			status:  http.StatusUnauthorized,
+			ID:      s.fixture[USER1_SHOP1_APPOINTMENT_ID],
+			SHOP_ID: s.fixture[SHOP1_ID],
+		},
+		{
+			name:    "Correctly completed",
+			token:   s.fixture[BARBER1_TOKEN],
+			status:  http.StatusAccepted,
+			ID:      s.fixture[USER1_SHOP1_APPOINTMENT_ID],
+			SHOP_ID: s.fixture[SHOP1_ID],
+		},
+	}
+
+	for _, tc := range testCases {
+
+		s.Run(tc.name, func() {
+
+			// create a request for the register endpoint
+			req, _ := http.NewRequest("PUT", "/api/barbershop/"+tc.SHOP_ID+"/appointment/"+tc.ID, nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Add("Authorization", "Bearer "+tc.token)
+
+			// serve the request to the test server
+			w := httptest.NewRecorder()
+			s.srv.ServeHTTP(w, req)
+
+			// assert that the response status code is as expected
+			s.Require().Equal(tc.status, w.Code)
+
+		})
+
+	}
+}
+
 func (s *ControllerSuite) TestBookAfterCancel() {
 
 	// delete an appointment from USER1

@@ -119,7 +119,7 @@ func (mr *MiddlewareRoutes) RequireBarber(ctx *gin.Context) {
 
 	// check if the barber is in ones that the barber owns
 	for _, b := range user.OwnedShops {
-		if b.ID == barberShopID {
+		if b == barberShopID {
 			ctx.Next()
 			return
 		}

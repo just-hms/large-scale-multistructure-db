@@ -40,7 +40,7 @@ func (uc *HolidayUseCase) Set(ctx context.Context, shopID string, date time.Time
 		return err
 	}
 
-	if shop.Employees-slot.BookedAppoIntments < unavailableEmployees {
+	if shop.Employees-slot.BookedAppointments < unavailableEmployees {
 		return errors.New("cannot add more unavailableEmployees then the number of available Employees")
 	}
 	return uc.cache.SetHoliday(ctx, shopID, date, unavailableEmployees)

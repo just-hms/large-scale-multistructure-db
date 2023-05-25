@@ -3,7 +3,6 @@ package controller_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -83,17 +82,22 @@ func (s *ControllerSuite) TestRegister() {
 	}{
 		{
 			name:         "Already exists",
-			creationUser: &controller.RegisterInput{Email: "correct@example.com", Password: "password"},
+			creationUser: &controller.RegisterInput{Email: "correct@example.com", Username: "correct", Password: "password"},
 			status:       http.StatusUnauthorized,
 		},
 		{
 			name:         "Invalid input",
+			creationUser: &controller.RegisterInput{Email: "not_an_email", Username: "not", Password: "password"},
+			status:       http.StatusBadRequest,
+		},
+		{
+			name:         "Missing Username",
 			creationUser: &controller.RegisterInput{Email: "not_an_email", Password: "password"},
 			status:       http.StatusBadRequest,
 		},
 		{
 			name:         "Correctly Created",
-			creationUser: &controller.RegisterInput{Email: "new@example.com", Password: "password"},
+			creationUser: &controller.RegisterInput{Email: "new@example.com", Username: "new", Password: "password"},
 			status:       http.StatusCreated,
 		},
 	}
@@ -296,6 +300,81 @@ func (s *ControllerSuite) TestUserShowAll() {
 
 				// assert that the number of returned user is as expected
 				s.Require().Equal(tc.resultCount, len(res.Users))
+			}
+		})
+
+	}
+}
+
+func (s *ControllerSuite) TestUserShowOwned() {
+
+	testCases := []struct {
+		name        string
+		token       string
+		resultCount int
+		status      int
+	}{
+		{
+			name:   "Wrongly formatted token",
+			token:  "wrong_token",
+			status: http.StatusUnauthorized,
+		},
+		{
+			name:   "Not a barber",
+			token:  s.fixture[USER1_TOKEN],
+			status: http.StatusBadRequest,
+		},
+		{
+			name:        "Correctly shown owned Shop",
+			token:       s.fixture[BARBER1_TOKEN],
+			status:      http.StatusOK,
+			resultCount: 1,
+		},
+		{
+			name:        "Correctly shown multiple owned Shops",
+			token:       s.fixture[BARBER2_TOKEN],
+			status:      http.StatusOK,
+			resultCount: 2,
+		},
+	}
+
+	for _, tc := range testCases {
+
+		s.Run(tc.name, func() {
+
+			// create a request for the self endpoint
+			var req *http.Request
+
+			req, _ = http.NewRequest("GET", "/api/user/self/ownedshops", nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Add("Authorization", "Bearer "+tc.token)
+
+			// serve the request to the test server
+			w := httptest.NewRecorder()
+			s.srv.ServeHTTP(w, req)
+
+			// assert that the response status code is as expected
+			s.Require().Equal(tc.status, w.Code)
+
+			// check for user len if the request was accepted
+			if w.Code == http.StatusOK {
+
+				body, err := io.ReadAll(w.Body)
+
+				// require no error in reading the response
+				s.Require().Nil(err)
+
+				type response struct {
+					Shops []entity.BarberShop `json:"barbershops"`
+				}
+
+				var res response
+
+				err = json.Unmarshal(body, &res)
+				s.Require().Nil(err)
+
+				// assert that the number of returned user is as expected
+				s.Require().Equal(tc.resultCount, len(res.Shops))
 			}
 		})
 
@@ -543,7 +622,6 @@ func (s *ControllerSuite) TestUserModify() {
 				err = json.Unmarshal(body, &res)
 				s.Require().Nil(err)
 
-				fmt.Println("kek", res.User)
 				s.Require().Len(res.User.OwnedShops, tc.barberShopsLen)
 			}
 

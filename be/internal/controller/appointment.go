@@ -12,16 +12,16 @@ import (
 )
 
 type AppointmentRoutes struct {
-	appoinmentUseCase usecase.Appointment
-	userUseCase       usecase.User
-	tokenUseCase      usecase.Token
+	appointmentUseCase usecase.Appointment
+	userUseCase        usecase.User
+	tokenUseCase       usecase.Token
 }
 
 func NewAppointmentRoutes(uc usecase.Appointment, us usecase.User, t usecase.Token) *AppointmentRoutes {
 	return &AppointmentRoutes{
-		appoinmentUseCase: uc,
-		userUseCase:       us,
-		tokenUseCase:      t,
+		appointmentUseCase: uc,
+		userUseCase:        us,
+		tokenUseCase:       t,
 	}
 }
 
@@ -61,8 +61,8 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 
 	ID := ctx.Param("shopid")
 
-	err = ur.appoinmentUseCase.Book(ctx, &entity.Appointment{
-		Start:        input.DateTime,
+	err = ur.appointmentUseCase.Book(ctx, &entity.Appointment{
+		StartDate:    input.DateTime,
 		BarbershopID: ID,
 		UserID:       tokenID,
 	})
@@ -75,7 +75,8 @@ func (ur *AppointmentRoutes) Book(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{})
 }
 
-// DeleteSelfAppointment deletes the current appointment of an user
+// DeleteSelfAppointment deletes the appointment from the current user
+// and sets it to "complete" in the BarberShop
 //
 // @Summary Deletes the current user's appointment
 // @Description Deletes the appointment of the current user
@@ -104,7 +105,12 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 		return
 	}
 
-	err = ur.appoinmentUseCase.Cancel(ctx, user.CurrentAppointment)
+	if user.CurrentAppointment == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User does not have a current appointment"})
+		return
+	}
+
+	err = ur.appointmentUseCase.CancelFromUser(ctx, tokenID, user.CurrentAppointment)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -115,7 +121,8 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 
 }
 
-// DeleteAppointment deletes the appointment of the specified user
+// DeleteAppointment deletes the appointment from the specified user
+// and sets it to "complete" in the BarberShop
 //
 // @Summary Deletes an appointment
 // @Description Deletes an appointment at a specific barbershop
@@ -130,18 +137,57 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 // @Router /barbershop/{shopid}/appointment/{appointmentid} [delete]
 func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 
-	appointment, err := ur.appoinmentUseCase.GetByIDs(
+	shopID := ctx.Param("shopid")
+	appointment, err := ur.appointmentUseCase.GetByIDs(
 		ctx,
-		ctx.Param("shopid"),
+		shopID,
 		ctx.Param("appointmentid"),
 	)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Shop or Appointment not found"})
+		return
+	}
+
+	err = ur.appointmentUseCase.CancelFromShop(ctx, shopID, appointment)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = ur.appoinmentUseCase.Cancel(ctx, appointment)
+	ctx.JSON(http.StatusAccepted, gin.H{})
+}
+
+// CompleteAppointment deletes the appointment from the specified user
+// and sets it to "complete" in the BarberShop
+//
+// @Summary Completes an appointment
+// @Description Completes an appointment at a specific barbershop
+// @Tags Appointment
+// @Accept json
+// @Produce json
+// @Param shopid path string true "ID of the barbershop"
+// @Param appointmentid path string true "ID of the appointment"
+// @Success 202 {object} string ""
+// @Failure 400 {object} string "Bad Request"
+// @Failure 401 {object}  string "Unauthorized"
+// @Router /barbershop/{shopid}/appointment/{appointmentid} [put]
+func (ur *AppointmentRoutes) CompleteAppointment(ctx *gin.Context) {
+
+	shopID := ctx.Param("shopid")
+	appointment, err := ur.appointmentUseCase.GetByIDs(
+		ctx,
+		shopID,
+		ctx.Param("appointmentid"),
+	)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Shop or Appointment not found"})
+		return
+	}
+
+	err = ur.appointmentUseCase.SetCompletedFromShop(ctx, shopID, appointment)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

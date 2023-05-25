@@ -3,10 +3,12 @@ package entity
 import "time"
 
 type Appointment struct {
-	ID        string `bson:"_id"`
-	CreatedAt time.Time
-	Start     time.Time
+	ID        string    `bson:"_id"`
+	CreatedAt time.Time `bson:"createdAt"`
+	StartDate time.Time `bson:"startDate"`
+	Status    string    `bson:"status"`
 
-	UserID       string
-	BarbershopID string
+	UserID         string `bson:"userID,omitempty"`
+	BarbershopID   string `bson:"shopID,omitempty"`
+	BarbershopName string `bson:"shopName,omitempty"`
 }
