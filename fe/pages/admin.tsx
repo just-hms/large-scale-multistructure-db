@@ -31,8 +31,7 @@ export default function Admin() {
     }
     const token = localStorage.getItem('token')
     const type = localStorage.getItem("type")
-    // TODO CHANGE TO ADMIN !!!!!
-    if(!token ){//|| type !== "admin"){
+    if(!token ){
       router.push("/home")
     }else{
       fetchAccountsData()

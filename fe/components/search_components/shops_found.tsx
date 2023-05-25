@@ -30,11 +30,6 @@ export default function ShopsFound({shops}:any) {
                                 </div>
                                 <div className="flex w-full lg:w-2/3 flex-col lg:flex-row items-start lg:items-center justify-between">
                                     <div className="w-full">{shop.description}</div>
-                                    {/* TODO DISTANCE */}
-                                    {/* <div className="flex items-center justify-start">
-                                        <FontAwesomeIcon key={shop.ID+"locationIcon"} icon={faMapLocationDot} className="text-sm pr-2"/>
-                                        <div className="font-bold ">{shop.distance} km</div>
-                                    </div> */}
                                 </div>
                             </div>
                         </div>

@@ -53,6 +53,7 @@ export const StyleWrapper = styled.div`
 
 // this creates the calendar slots based on the already booked appointments
 // must return an array of objects with: title, start, end
+// TODO: CHECK IF SLOT IS ALREADY OCCUPIED
 export const craftEventObject = ({index,calendar}:any) =>{
     const start_date = moment()
     const date = moment().add(30*index, 'm')
