@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -266,44 +267,78 @@ func (s *ControllerSuite) TestBarberShopStore() {
 }
 func (s *ControllerSuite) TestBarberShopModifyByID() {
 	testCases := []struct {
-		name   string
-		token  string
-		ID     string
-		input  *controller.ModifyBarberShopInput
-		status int
+		name           string
+		token          string
+		ID             string
+		input          *controller.ModifyBarberShopInput
+		shouldTestSlot bool
+		status         int
 	}{
 		{
-			name:   "Require login",
-			input:  &controller.ModifyBarberShopInput{Employees: 2},
-			ID:     "genericID",
-			status: http.StatusUnauthorized,
+			name:           "Require login",
+			input:          &controller.ModifyBarberShopInput{Employees: 2},
+			ID:             "genericID",
+			shouldTestSlot: false,
+			status:         http.StatusUnauthorized,
 		},
 		{
-			name:   "Require barber",
-			token:  s.fixture[USER1_ID],
-			input:  &controller.ModifyBarberShopInput{Employees: 3},
-			status: http.StatusUnauthorized,
-			ID:     "genericID",
+			name:           "Require barber",
+			token:          s.fixture[USER1_ID],
+			input:          &controller.ModifyBarberShopInput{Employees: 3},
+			status:         http.StatusUnauthorized,
+			shouldTestSlot: false,
+			ID:             "genericID",
 		},
 		{
-			name:   "Require to be a barber in that shop",
-			token:  s.fixture[BARBER1_TOKEN],
-			input:  &controller.ModifyBarberShopInput{Employees: 1},
-			status: http.StatusUnauthorized,
-			ID:     s.fixture[SHOP2_ID],
+			name:           "Require to be a barber in that shop",
+			token:          s.fixture[BARBER1_TOKEN],
+			input:          &controller.ModifyBarberShopInput{Employees: 1},
+			status:         http.StatusUnauthorized,
+			shouldTestSlot: false,
+			ID:             s.fixture[SHOP2_ID],
 		},
 		{
-			name:   "Correctly Modified",
-			token:  s.fixture[BARBER1_TOKEN],
-			input:  &controller.ModifyBarberShopInput{Employees: 2},
-			status: http.StatusAccepted,
-			ID:     s.fixture[SHOP1_ID],
+			name:           "Correctly Modified",
+			token:          s.fixture[BARBER1_TOKEN],
+			input:          &controller.ModifyBarberShopInput{Employees: 2},
+			status:         http.StatusAccepted,
+			shouldTestSlot: false,
+			ID:             s.fixture[SHOP1_ID],
+		},
+		{
+			name:           "Correctly Modified Slot",
+			token:          s.fixture[BARBER1_TOKEN],
+			input:          &controller.ModifyBarberShopInput{Employees: 5},
+			status:         http.StatusAccepted,
+			shouldTestSlot: true,
+			ID:             s.fixture[SHOP1_ID],
 		},
 	}
 
 	for _, tc := range testCases {
 
 		s.Run(tc.name, func() {
+
+			// Check that Slot Employees modifying also works
+			if tc.shouldTestSlot {
+
+				app := controller.BookAppointmentInput{
+					DateTime: time.Now().Add(time.Hour),
+				}
+
+				bookingJson, _ := json.Marshal(app)
+
+				// create a request for the register endpoint
+				req, _ := http.NewRequest("POST", "/api/barbershop/"+tc.ID+"/appointment", bytes.NewBuffer(bookingJson))
+				req.Header.Set("Content-Type", "application/json")
+				req.Header.Add("Authorization", "Bearer "+s.fixture[USER2_TOKEN])
+
+				// serve the request to the test server
+				w := httptest.NewRecorder()
+				s.srv.ServeHTTP(w, req)
+
+				s.Require().Equal(http.StatusCreated, w.Code)
+			}
 
 			editBarberShopJson, _ := json.Marshal(tc.input)
 

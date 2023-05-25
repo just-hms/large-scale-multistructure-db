@@ -18,6 +18,30 @@ var (
 	mockDate2 = time.Now().Add(time.Hour * 2)
 )
 
+func (s *RepoSuite) TestSlotBook() {
+	slotRepo := repo.NewSlotRepo(s.cache)
+	app := &entity.Appointment{
+		BarbershopID: mockShop1ID,
+		UserID:       mockUser1ID,
+		StartDate:    mockDate1,
+	}
+	slot, err := slotRepo.Get(context.Background(), app.BarbershopID, app.StartDate)
+	s.Require().NoError(err)
+	s.Require().Equal(slot.Employees, -1)
+	slot.Employees = 3
+	err = slotRepo.Book(context.Background(), app, slot)
+	s.Require().NoError(err)
+
+	slot, err = slotRepo.Get(context.Background(), app.BarbershopID, app.StartDate)
+	s.Require().NoError(err)
+	s.Require().Equal(slot.Employees, 3)
+	s.Require().Equal(slot.BookedAppointments, 1)
+
+	slot.Employees = 0
+	err = slotRepo.Book(context.Background(), app, slot)
+	s.Require().Error(err)
+}
+
 func (s *RepoSuite) TestSlotGetByBarberShopID() {
 	slotRepo := repo.NewSlotRepo(s.cache)
 	appointments := []*entity.Appointment{
@@ -27,30 +51,21 @@ func (s *RepoSuite) TestSlotGetByBarberShopID() {
 	}
 
 	for _, app := range appointments {
-		err := slotRepo.Book(context.Background(), app)
+		slot, err := slotRepo.Get(context.Background(), app.BarbershopID, app.StartDate)
+		s.Require().NoError(err)
+		if slot.Employees == -1 {
+			slot.Employees = 3
+		}
+		err = slotRepo.Book(context.Background(), app, slot)
 		s.Require().NoError(err)
 	}
 
-	slots, err := slotRepo.GetByBarberShopID(context.Background(), mockShop1ID)
+	_, slots, err := slotRepo.GetByBarberShopID(context.Background(), mockShop1ID)
 	s.Require().NoError(err)
 	s.Require().Len(slots, 2)
 
 	s.Require().Equal(2, slots[0].BookedAppointments)
 	s.Require().Equal(1, slots[1].BookedAppointments)
-}
-
-func (s *RepoSuite) TestSlotBook() {
-	slotRepo := repo.NewSlotRepo(s.cache)
-	app := &entity.Appointment{
-		BarbershopID: mockShop1ID,
-		UserID:       mockUser1ID,
-		StartDate:    mockDate1,
-	}
-	slotRepo.Book(context.Background(), app)
-
-	slots, err := slotRepo.GetByBarberShopID(context.Background(), mockShop1ID)
-	s.Require().NoError(err)
-	s.Require().Len(slots, 1)
 }
 
 func (s *RepoSuite) TestSlotCancel() {
@@ -66,14 +81,19 @@ func (s *RepoSuite) TestSlotCancel() {
 	err := slotRepo.Cancel(context.Background(), app)
 	s.Require().Error(err)
 
-	err = slotRepo.Book(context.Background(), app)
+	slot, err := slotRepo.Get(context.Background(), app.BarbershopID, app.StartDate)
+	s.Require().NoError(err)
+	s.Require().Equal(slot.Employees, -1)
+	slot.Employees = 3
+	err = slotRepo.Book(context.Background(), app, slot)
 	s.Require().NoError(err)
 
 	err = slotRepo.Cancel(context.Background(), app)
 	s.Require().NoError(err)
 
-	slots, err := slotRepo.GetByBarberShopID(context.Background(), mockShop1ID)
+	keys, slots, err := slotRepo.GetByBarberShopID(context.Background(), mockShop1ID)
 	s.Require().NoError(err)
+	s.Require().Equal(len(slots), len(keys))
 	s.Require().Len(slots, 1)
 	s.Require().Equal(slots[0].BookedAppointments, 0)
 
@@ -82,14 +102,24 @@ func (s *RepoSuite) TestSlotCancel() {
 func (s *RepoSuite) TestSlotSetHoliday() {
 	slotRepo := repo.NewSlotRepo(s.cache)
 
-	err := slotRepo.SetHoliday(context.Background(), mockShop1ID, mockDate1, 5)
+	app := &entity.Appointment{
+		BarbershopID: mockShop1ID,
+		UserID:       mockUser1ID,
+		StartDate:    mockDate1,
+	}
+
+	slot, err := slotRepo.Get(context.Background(), app.BarbershopID, app.StartDate)
+	s.Require().NoError(err)
+	s.Require().Equal(slot.Employees, -1)
+	slot.Employees = 3
+	err = slotRepo.Book(context.Background(), app, slot)
 	s.Require().NoError(err)
 
-	slots, err := slotRepo.GetByBarberShopID(context.Background(), mockShop1ID)
+	err = slotRepo.SetEmployees(context.Background(), mockShop1ID, 5)
+	s.Require().NoError(err)
+
+	_, slots, err := slotRepo.GetByBarberShopID(context.Background(), mockShop1ID)
 	s.Require().NoError(err)
 	s.Require().Len(slots, 1)
 	s.Require().Equal(slots[0].Employees, 5)
 }
-
-// TODO
-// - test expiration in some way ???
