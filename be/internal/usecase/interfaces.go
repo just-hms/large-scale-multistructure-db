@@ -58,10 +58,6 @@ type (
 		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
 	}
 
-	Holiday interface {
-		Set(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error
-	}
-
 	Review interface {
 		Store(ctx context.Context, review *entity.Review, shopID string) error
 		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
@@ -126,7 +122,7 @@ type (
 		Book(ctx context.Context, appointment *entity.Appointment, slot *entity.Slot) error
 		Get(ctx context.Context, shopID string, date time.Time) (*entity.Slot, error)
 		Cancel(ctx context.Context, appointment *entity.Appointment) error
-		SetHoliday(ctx context.Context, shopID string, date time.Time, unavailableEmployees int) error
+		SetEmployees(ctx context.Context, shopID string, availableEmployees int) error
 	}
 
 	ShopViewRepo interface {

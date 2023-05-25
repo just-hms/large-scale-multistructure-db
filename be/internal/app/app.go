@@ -83,7 +83,6 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 	)
 	ucs[usecase.REVIEW] = usecase.NewReviewUseCase(reviewRepo, voteRepo)
 	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
-	ucs[usecase.HOLIDAY] = usecase.NewHolidayUseCase(slotRepo, barberShopRepo)
 	ucs[usecase.GEOCODING] = usecase.NewGeocodingUseCase(search_api)
 
 	ucs[usecase.TOKEN] = usecase.NewTokenUsecase(tokenapi)

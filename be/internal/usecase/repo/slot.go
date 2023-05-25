@@ -97,7 +97,7 @@ func (r *SlotRepo) Cancel(ctx context.Context, appointment *entity.Appointment) 
 	return r.set(appointment.BarbershopID, appointment.StartDate, slot)
 }
 
-func (r *SlotRepo) SetHoliday(ctx context.Context, shopID string, date time.Time, availableEmployees int) error {
+func (r *SlotRepo) SetEmployees(ctx context.Context, shopID string, availableEmployees int) error {
 
 	slot, err := r.get(shopID, date)
 
