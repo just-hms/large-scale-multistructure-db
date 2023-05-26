@@ -9,6 +9,8 @@ export default function UserInfos({userdata}:any) {
       <h1 className='text-2xl w-3/4 border-b border-slate-500 py-1 text-center'>My account</h1>
       <p className='pt-2 pb-2 w-full lg:w-1/2'>Email</p>
       <div className='border border-slate-500 rounded-md p-2 w-full lg:w-1/2 overflow-auto'>{userdata.user.Email}</div>
+      <p className='pt-2 pb-2 w-full lg:w-1/2'>Username</p>
+      <div className='border border-slate-500 rounded-md p-2 w-full lg:w-1/2 overflow-auto'>{userdata.user.Username}</div>
       <p className='pt-2 pb-2 w-full lg:w-1/2'>Password</p>
       <div className='flex flex-col lg:flex-row w-full lg:w-1/2 justify-start items-center pb-5'>
         <div className='border border-slate-500 rounded-md p-2 mr-2 w-full lg:w-2/3 overflow-auto'>●●●●●●●●●●</div>

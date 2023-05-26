@@ -12,26 +12,13 @@ import Calendar from '../components/shop_component/calendar';
 import ReactStars from 'react-stars'
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
-// import styled from "@emotion/styled";
-// // Calendar
-// import FullCalendar from '@fullcalendar/react' // must go before plugins
-// import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
-// import timeGridPlugin from '@fullcalendar/timegrid'
-// style wrapper for the calendar
-// export const StyleWrapper = styled.div`
-//   .fc{
-//     color: white;
-//   }
-//   .fc-day-today {
-//     background: none !important;
-// } `
 
 export default function Shop() {
   const [loaded,setLoaded] = useState(false)
   const router = useRouter()
   const [shopData, setshopData] = useState<any>('')
   const { shopid } = router.query
-  const [reviewsData, setreviewsData] = useState<any[]>([])
+  // const [reviewsData, setreviewsData] = useState<any[]>([])
   const [userid, setUserid] = useState<string>('')
   const [shopAppointments, setShopAppointments] = useState<any[]>([])
   const formik = useFormik({
@@ -65,18 +52,10 @@ export default function Shop() {
           // get shop calendar
           const calendar = (await (await shopCalendar(shopid)).json()).calendar.Slots
           setShopAppointments(calendar)
-          // get reviews
-          const reviews_object = await (await getReviews(shopid)).json()
-          if(reviews_object.reviews == null)
-            setreviewsData([])
-          else
-            setreviewsData(reviews_object.reviews)
-          // get current user ID
           const user_object = await(await getUserInfos()).json()
           setUserid(user_object.user.ID)
           setLoaded(true)
         }
-
         fetchData(shopid)
       }
     }
@@ -110,7 +89,7 @@ export default function Shop() {
                     <h1 className='text-2xl py-1 border-b border-slate-600 w-5/6'>Reviews</h1>
                   </div>
                   <div className="text-lg text-center w-3/4 font-bold leading-tight tracking-tight text-slate-300 break-words p-3 mx-5">
-                    <Reviews reviews={reviewsData} shopid={shopid} userid={userid}></Reviews>
+                    <Reviews shopid={shopid} userid={userid}></Reviews>
                   </div>
                   {/* leave a review */}
                   <div className='bg-slate-800 border-t border-slate-600 w-full sticky bottom-0'>

@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from 'react';
 import { modifyShopDescription } from '../../lib/barber';
 
 export default function ModifiedShop({ shopData }:any) {
-  // console.log(shopData)
+  console.log(shopData)
   const textAreaRef = useRef<any>();
   const formik = useFormik({
     initialValues: {
@@ -14,16 +14,19 @@ export default function ModifiedShop({ shopData }:any) {
     },
     onSubmit: async (values:any) => {
       // alert(JSON.stringify(values))
-      const response = await (await modifyShopDescription(shopData.ID,values)).json()
-      console.log(response)
-
+      const response = await modifyShopDescription(shopData.ID,values)
+      if(response.status == 202){
+          alert("description changed")
+      }else{
+        alert("there was an error")
+      }
     },
   });
 
   useEffect(()=>{
     formik.values.description = shopData.Description
     textAreaRef.current.value = shopData.Description
-  },[shopData.description])
+  },[shopData.Description])
   return (
     <>
       <div className='h-full w-full lg:px-5'>

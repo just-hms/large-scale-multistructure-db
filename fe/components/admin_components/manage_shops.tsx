@@ -61,7 +61,7 @@ export default function ManageShops() {
                                     </button>
                                   </div>
                                   <p className="w-full pb-1 border-b border-slate-500">Shop Id: {shop.ID}</p>
-                                  <p className="w-full pb-1 border-b border-slate-500">Shop Owner: {}</p>
+                                  <p className="w-full pb-1 border-b border-slate-500">Shop Owner: {shop.Owner}</p>
                             </div>
                         </div>
                     </div>

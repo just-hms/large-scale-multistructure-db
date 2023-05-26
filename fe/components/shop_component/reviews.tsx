@@ -1,17 +1,31 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown, faStar, faTrash} from "@fortawesome/free-solid-svg-icons";
 import { deleteVote, submitVote, deleteReview } from "../../lib/shops";
+import { useEffect, useState } from "react";
+import { getReviews } from "../../lib/shops";
 
-export default function Reviews({reviews,shopid, userid}:any) {
-    // console.log(reviews)
-    // console.log(userid)
+export default function Reviews({shopid, userid}:any) {
+
+    const [reviews, setreviewsData] = useState<any[]>([])
+    const [reload, setReload] = useState(false)
+    useEffect(()=>{
+        const fetchData = async (shopid:any) => {
+            const reviews_object = await (await getReviews(shopid)).json()
+            if(reviews_object.reviews == null)
+                setreviewsData([])
+            else
+                setreviewsData(reviews_object.reviews)
+        }
+        fetchData(shopid)
+      },[reload])
+
     const handleVote = async (review:any,vote:boolean) =>{
         if(review.UpVotes.includes(userid) || review.DownVotes.includes(userid)){
             await deleteVote(shopid,review.ID)
         }else{
             await submitVote(shopid, review.ID, vote)
         }
-        window.location.reload()
+        setReload(!reload)
     }
 
     return (
@@ -23,7 +37,6 @@ export default function Reviews({reviews,shopid, userid}:any) {
                         <div key={review.ID+"name"} className="text-md w-full text-left font-normal">{review.Username}</div>
                         <div key={review.ID+"title"} className="text-xl mb-3 font-bold flex items-center justify-between w-full text-left">
                             <div className="flex items-center">
-                                {/* <p className="pr-2">{review.title}</p> */}
                                 {[...Array(review.Rating)].map((_,index)=><FontAwesomeIcon key={index} icon={faStar} className="text-sm"/>)}
                             </div>
                             <div className="flex items-center">
@@ -33,9 +46,6 @@ export default function Reviews({reviews,shopid, userid}:any) {
                                 <button key={review.ID+"arrowDown"} className="hover: text-white mr-3 text-sm" onClick={(e)=>handleVote(review,false)}>
                                     <FontAwesomeIcon key={review.ID+"arrowDownIcon"}  icon={faArrowDown} className={(review.DownVotes.includes(userid))?"text-orange-500":""}/>
                                 </button>
-                                        {/* {(review.UserID === userid)?<button key={review.ID+"trashbin"} className="hover: text-white mr-3 text-sm" onClick={(e)=>deleteReview(shopid, review.ID)}>
-                                            <FontAwesomeIcon key={review.ID+"trashbin"}  icon={faTrash}/>
-                                        </button>:<></>} */}
                                 <div className={`text-sm ${(review.UpVotes.length - review.DownVotes.length) >= 0 ? "text-green-700" : "text-rose-600"}`}> {((review.UpVotes.length - review.DownVotes.length) >= 0) ? "+": "-"}{review.UpVotes.length - review.DownVotes.length}</div>
                             </div>
                         </div>

@@ -15,11 +15,12 @@ export default function SingleAccountManagement({account,userkey}:any) {
     setShopid(e.clipboardData.getData('Text'))
   }
   const addShop = async (e:any) => {
+    // TODO
     let shops:any = []
     // iterate through already owned shops
     if(account.OwnedShops){
       account.OwnedShops.forEach((shop:any) => {
-        shops.push(shop.ID)
+        shops.push(shop)
     });
       shops.push(shopid)
     }else{
@@ -37,7 +38,7 @@ export default function SingleAccountManagement({account,userkey}:any) {
         <div key={userkey+"main_container"} className="flex w-full items-start justify-start">
             <div key={userkey+"title"} className="flex flex-col px-3 items-center lg:items-start justify-start w-full text-left">
                   <div key={userkey+"container"} className="flex w-full items-center py-1 justify-between">
-                    <p key={userkey+"email"} className=" text-xl font-bold">{account.Email}</p>
+                    <p key={userkey+"email"} className=" text-xl font-bold">{(account.Username)?<>{account.Username} |</>:<></>} {account.Email}</p>
                     <button key={userkey+"delete_button"} type="button" id="delete_button"
                     onClick={async ()  =>{
                       const response = await deleteUser(account.ID)
@@ -49,8 +50,9 @@ export default function SingleAccountManagement({account,userkey}:any) {
                   </div>
 
                   <p key={userkey+"account_type"} className="w-full pb-1 border-b border-slate-500">Account type: {account.Type}</p>
+                  {/* TODO OWNED SHOPS */}
                   {(account.OwnedShops)?<><div key={userkey+"owned_shop"} className="w-full pb-1 border-b border-slate-500">Owned Shops:{
-                    account.OwnedShops.map((shop:any)=><div key={userkey+"-"+shop.ID}>- {shop.Name}</div>)
+                    account.OwnedShops.map((shop:any)=><div key={userkey+"-"+shop}>- {shop}</div>)
                     }</div></>:<></>}
                   <label key={userkey+"shop_to_assign"} htmlFor="shoptoassign">Shop To Assign:</label>
                   <input key={userkey+"shop_input"} id={"shoptoassign-"+account.ID} type="text" placeholder="shopID" className="w-1/2 my-2 font-bold text-slate-100 px-3 py-1 bg-slate-600 bg-clip-padding rounded-full transition ease-in-out focus:outline-none"

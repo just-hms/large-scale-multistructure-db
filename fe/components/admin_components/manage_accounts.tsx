@@ -3,7 +3,7 @@ import React from "react"
 import SingleAccountManagement from "./single_account_management";
 
 export default function ManageUsers({accounts}:any) {
-
+  console.log(accounts)
   // change to useEffect triggered by onsubmit which changes the users shown
   const [query, setQuery] = useState('');
   const [shopid, setShopid] = useState('');
@@ -11,7 +11,6 @@ export default function ManageUsers({accounts}:any) {
     if(accounts){
       return accounts.filter(
         (el:any) => {
-          // console.log(accounts)
           return el.Email.toLowerCase().includes(query.toLocaleLowerCase())
         }
       )

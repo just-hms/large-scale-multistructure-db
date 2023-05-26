@@ -23,6 +23,7 @@ export async function signup(values){
     method: 'POST',
     headers: headers(),
     body: JSON.stringify({
+            "username": values.username,
             "email": values.email,
             "password":values.password
     })

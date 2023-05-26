@@ -10,3 +10,11 @@ export async function modifyShopDescription (shopid,values){
   })
   return response;
 }
+
+export async function getOwnedShops (){
+  const response = await fetch(url+`user/self/ownedshops`, {
+    method: 'GET',
+    headers: headers(localStorage.getItem("token"))
+  })
+  return response;
+}

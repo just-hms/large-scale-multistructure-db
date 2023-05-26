@@ -3,7 +3,7 @@ import Navbar from '../components/navbar'
 import {useEffect, useState, useRef} from 'react';
 import UserInfos from '../components/user_components/account_infos';
 import Footer from '../components/footer';
-import {getReservations} from '../lib/barber'
+import {getReservations, getOwnedShops} from '../lib/barber'
 import ModifyShop from '../components/barber_components/modify_shop';
 import BarberReservations from '../components/barber_components/barber_reservations';
 import { useRouter } from 'next/router';
@@ -29,7 +29,8 @@ export default function User() {
           router.push("/401")
         }else{
           setUserData(retrievedData)
-          setShopsData(retrievedData.user.OwnedShops)
+          const ownedShops = await (await getOwnedShops()).json()
+          setShopsData(ownedShops.barbershops)
           setLoaded(true)
         }
       }
@@ -47,6 +48,7 @@ export default function User() {
   } else if (content == "calendar"){
     displayed_element = <></>;
   }
+  
   if(!loaded){
     return <div></div> 
   }

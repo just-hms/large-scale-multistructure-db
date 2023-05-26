@@ -7,8 +7,8 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 // Confirm
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import moment from "moment";
-
+import moment from 'moment-timezone';
+import { DateEnv } from "@fullcalendar/core/internal";
 // confirm pop-up
 const submit = ({shopid, info}:any) => {
 confirmAlert({
@@ -24,13 +24,14 @@ confirmAlert({
                         onClick={async (e) => {
                             // alert((new Date(info.event.startStr)).toISOString())
                             // alert(info.event.startStr)
-                            const response = await getAppointment(shopid,info.event.startStr)
-                            if(response.status == 201){
-                                alert("Slot booked correctly!")
-                            }else{
-                                alert((await response.json()).error)
-                            }
-                            // onClose()
+                            // const response = await getAppointment(shopid,info.event.startStr)
+                            // if(response.status == 201){
+                            //     alert("Slot booked correctly!")
+                            // }else{
+                            //     alert((await response.json()).error)
+                            // }
+                            alert(parseInt((new Date(info.event.startStr).getTime() / 1000).toFixed(0)))
+                            onClose()
                         }}
                         >
                         Yes, Book it!
@@ -55,12 +56,15 @@ export const StyleWrapper = styled.div`
 // must return an array of objects with: title, start, end
 // TODO: CHECK IF SLOT IS ALREADY OCCUPIED
 export const craftEventObject = ({index,calendar}:any) =>{
-    const start_date = moment()
-    const date = moment().add(30*index, 'm')
-    if(date.hours() > 20 || date.hours() < 7 ){
+    const date = moment().add(30*index, 'm').add(1,'d')
+    if(date.hours() > 20|| date.hours() < 7 ){
         return null
     }
-    // console.log(calendar)
+    for(var i in calendar){
+        // console.log(date.toDate().getTime())
+        if((new Date(calendar[i].Start)).getTime() === date.toDate().getTime())
+            return null
+    }
     if (date.minutes() > 30){
         date.set('hour',date.hours()+1)
         date.set('minute',0)
@@ -77,16 +81,15 @@ export const craftEventObject = ({index,calendar}:any) =>{
 }
 
 export const fillCalendar = (calendar:any)=>{
+    console.log(calendar)
+
     let events = []
     for(let index = 0; index < 48*30; index+=1){
         var event = craftEventObject({index,calendar})
         if(event){
-            events.push(
-                craftEventObject({index,calendar}) 
-            )
+            events.push(event)
         }
     }
-    // console.log(events)
     return events
 }
 

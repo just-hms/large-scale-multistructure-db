@@ -22,7 +22,6 @@ export default function LoginForm() {
                 localStorage.setItem("token", response_json.token)
                 const fetchData = async () => {
                     const userData = (await (await getUserInfos()).json())
-                    // console.log(userData)
                     localStorage.setItem("type", userData.user.Type)
                     return router.push("/home");
                   }

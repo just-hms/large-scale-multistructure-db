@@ -3,7 +3,6 @@ import Navbar from '../components/navbar'
 import {useEffect, useState, useRef} from 'react';
 import Footer from '../components/footer';
 import ManageUsers from '../components/admin_components/manage_accounts';
-import ReportedReviews from '../components/admin_components/reported_reviews';
 import { getAccountInfos } from '../lib/admin';
 import CreateShop from '../components/admin_components/create_shop';
 import { useRouter } from 'next/router';
@@ -19,18 +18,17 @@ export default function Admin() {
   // fetch account datas and check if user is logged and admin
   useEffect(()=>{
     const fetchAccountsData = async () => {
-      const response = await (await getAccountInfos()).json()
+      const users_response = await (await getAccountInfos()).json()
       const myself = await (await getUserInfos()).json()
       // if anyone tries to access without being an admin -> unauthorized
       if(myself.user.Type !== 'admin'){
         router.push("/401")
       }else{
-        setUsers(response.users)
+        setUsers(users_response.users)
         setLoaded(true)
       }
     }
     const token = localStorage.getItem('token')
-    const type = localStorage.getItem("type")
     if(!token ){
       router.push("/home")
     }else{
@@ -43,8 +41,6 @@ export default function Admin() {
   }else{
     if (content == "manage_accounts") {
       displayed_element = <ManageUsers accounts={users}/>;
-    // } else if (content == "reported_reviews"){
-    //   displayed_element = <ReportedReviews reported_reviews={reviewsData}/>
     } else if(content == "view_analytics"){
       displayed_element = <></>;
     } else if(content == "create_shop"){
@@ -71,9 +67,6 @@ export default function Admin() {
                 <li>
                     <button className={`hover:text-white focus:outline-none ${content == "manage_accounts" ? "font-bold" : ""}`} onClick={event => {setContent("manage_accounts")}}>Manage Accounts</button>
                 </li>
-                {/* <li>
-                    <button className={`hover:text-white focus:outline-none ${content == "reported_reviews" ? "font-bold" : ""}`} onClick={event => {setContent("reported_reviews")}}>Reported Reviews</button>
-                </li> */}
                 <li>
                     <button className={`hover:text-white focus:outline-none ${content == "view_analytics" ? "font-bold" : ""}`} onClick={event => {setContent("view_analytics")}}>View Analytics</button>
                 </li>

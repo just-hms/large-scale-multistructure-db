@@ -12,6 +12,7 @@ export default function SignupForm() {
     const [error,setError] = useState("")
     const formik = useFormik({
         initialValues: {
+            username: '',
             email: '',
             password: '',
             repeatPassword: '',
@@ -48,6 +49,10 @@ export default function SignupForm() {
                                 <div>
                                     <label htmlFor="email" className="block mb-2 text-sm font-medium text-slate-300">Your email</label>
                                     <input type="email" name="email" id="email" onChange={formik.handleChange} value={formik.values.email} className="border sm:text-sm rounded-lg block w-full p-2.5 bg-slate-700 border-slate-600 placeholder-slate-400 text-slate-300 focus:ring-slate-500 focus:border-slate-500" placeholder="name@company.com" required />
+                                </div>
+                                <div>
+                                    <label htmlFor="username" className="block mb-2 text-sm font-medium text-slate-300">Your username</label>
+                                    <input type="username" name="username" id="username" onChange={formik.handleChange} value={formik.values.username} className="border sm:text-sm rounded-lg block w-full p-2.5 bg-slate-700 border-slate-600 placeholder-slate-400 text-slate-300 focus:ring-slate-500 focus:border-slate-500" placeholder="Username" required />
                                 </div>
                                 <div>
                                     <label htmlFor="password" className="block mb-2 text-sm font-medium text-slate-300">Password</label>
