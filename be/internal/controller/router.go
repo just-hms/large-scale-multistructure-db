@@ -82,10 +82,6 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		ucs[usecase.TOKEN].(usecase.Token),
 	)
 
-	hr := NewHolidayRoutes(
-		ucs[usecase.HOLIDAY].(usecase.Holiday),
-	)
-
 	rr := NewReviewRoutes(
 		ucs[usecase.REVIEW].(usecase.Review),
 		ucs[usecase.TOKEN].(usecase.Token),
@@ -130,7 +126,6 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		barberShop.DELETE("/:shopid/review/:reviewid/vote", rr.RemoveVote)
 
 		barberShop.GET("/:shopid/calendar", br.Calendar)
-		barberShop.POST("/:shopid/holiday", mr.RequireBarber, hr.Set)
 	}
 
 	admin := api.Group("/admin")

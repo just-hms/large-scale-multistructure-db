@@ -150,7 +150,7 @@ func (r *BarberShopRepo) ModifyByID(ctx context.Context, ID string, shop *entity
 
 	res, err := r.DB.Collection("barbershops").UpdateOne(ctx, bson.M{"_id": ID}, bson.M{"$set": update})
 	if res.MatchedCount == 0 {
-		return errors.New("user not found")
+		return errors.New("shop not found")
 	}
 	return err
 }
