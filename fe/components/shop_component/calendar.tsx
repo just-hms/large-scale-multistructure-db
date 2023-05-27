@@ -10,6 +10,7 @@ import "react-confirm-alert/src/react-confirm-alert.css";
 import moment from 'moment-timezone';
 import { DateEnv } from "@fullcalendar/core/internal";
 // confirm pop-up
+
 const submit = ({shopid, info}:any) => {
 confirmAlert({
     customUI: ({ onClose }) => {
@@ -29,7 +30,7 @@ confirmAlert({
                                 alert("Slot booked correctly!")
                             }else{
                                 alert((await response.json()).error)
-                            }
+                            }   
                             // alert(parseInt((new Date(info.event.startStr).getTime() / 1000).toFixed(0)))
                             onClose()
                         }}
@@ -54,16 +55,12 @@ export const StyleWrapper = styled.div`
 
 // this creates the calendar slots based on the already booked appointments
 // must return an array of objects with: title, start, end
-// TODO: CHECK IF SLOT IS ALREADY OCCUPIED
-export const craftEventObject = ({index,calendar}:any) =>{
+export const craftEventObject = (index:any,calendar:any) =>{
+    // console.log(calendar)
     const date = moment().add(30*index, 'm')
+
     if(date.hours() > 20|| date.hours() < 7 ){
         return null
-    }
-    for(var i in calendar){
-        // console.log(date.toDate().getTime())
-        if((new Date(calendar[i].Start)).getTime() === date.toDate().getTime())
-            return null
     }
     if (date.minutes() > 30){
         date.set('hour',date.hours()+1)
@@ -73,6 +70,13 @@ export const craftEventObject = ({index,calendar}:any) =>{
     }
     date.set('second',0)
     date.set('millisecond',0)
+    // TODO TAKE THIS OUTSIDE
+    for(var i in calendar){
+        if((new Date(calendar[i].Start)).getTime() === date.toDate().getTime()){
+            if(calendar[i].BookedAppointmens >= calendar[i].Employees)
+                return null
+        }
+    }
     return {
         'title' : "Slot Disponibile",
         'start' : date.toDate().toISOString(),
@@ -81,11 +85,14 @@ export const craftEventObject = ({index,calendar}:any) =>{
 }
 
 export const fillCalendar = (calendar:any)=>{
-    console.log(calendar)
-
+    // var fullSlots = []
+    // for( var i in  calendar){
+    //     if(calendar[i].BookedAppointmens >= calendar[i].Employees)
+    //         fullSlots.push((new Date(calendar[i].Start)).getTime())
+    // }
     let events = []
     for(let index = 0; index < 48*30; index+=1){
-        var event = craftEventObject({index,calendar})
+        var event = craftEventObject(index,calendar)
         if(event){
             events.push(event)
         }

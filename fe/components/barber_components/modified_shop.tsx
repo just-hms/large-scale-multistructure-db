@@ -6,23 +6,21 @@ import { useEffect, useState, useRef } from 'react';
 import { modifyShopDescription } from '../../lib/barber';
 
 export default function ModifiedShop({ shopData }:any) {
-  console.log(shopData)
   const textAreaRef = useRef<any>();
   const formik = useFormik({
     initialValues: {
         description: shopData.Description,
     },
     onSubmit: async (values:any) => {
-      // alert(JSON.stringify(values))
       const response = await modifyShopDescription(shopData.ID,values)
       if(response.status == 202){
-          alert("description changed")
+        alert("description changed")
+        shopData.Description = values.description
       }else{
         alert("there was an error")
       }
     },
   });
-
   useEffect(()=>{
     formik.values.description = shopData.Description
     textAreaRef.current.value = shopData.Description
@@ -53,6 +51,12 @@ export default function ModifiedShop({ shopData }:any) {
                     </button> 
                   </form>
               </div>
+              {/* TODO HOLIDAYS */}
+              <button type="submit" className="px-3 py-1 mx-2 bg-rose-900 bg-opacity-70 text-slate-300 text-xs rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out " onClick={(e)=>{
+                // console.log(shopData.ID)
+              }}>
+                  Start Holiday
+              </button> 
             </div>
           </div>
         </div>

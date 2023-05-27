@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react"
 import { deleteUser } from "../../lib/admin";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { assignShop } from "../../lib/admin";
+import { getShopData } from "../../lib/shops";
 
 export default function SingleAccountManagement({account,userkey}:any) {
 
   const [shopid, setShopid] = useState('');
+  const [ownedShopsNames, setOwnedShopsNames] = useState<any[]>([])
   const handleChangeShopid = (e:any) => {
     setShopid(e.target.value)
   }  
@@ -15,7 +17,6 @@ export default function SingleAccountManagement({account,userkey}:any) {
     setShopid(e.clipboardData.getData('Text'))
   }
   const addShop = async (e:any) => {
-    // TODO
     let shops:any = []
     // iterate through already owned shops
     if(account.OwnedShops){
@@ -31,6 +32,18 @@ export default function SingleAccountManagement({account,userkey}:any) {
     if(response.status == 202)
         window.location.reload()
   }
+  useEffect(()=>{
+    const fetchData = async()=>{
+      let shops = []
+      for(var i in account.OwnedShops){
+        var infos = await(await getShopData(account.OwnedShops[i])).json()
+        console.log(infos)
+        shops.push(infos.barbershop.Name)
+      }
+      setOwnedShopsNames(shops)
+    }
+    fetchData()
+  },[])
 
   return (
     <div key={userkey} className="w-full text-slate-200 my-4 px-2 flex flex-col items-center justify-start">
@@ -50,10 +63,12 @@ export default function SingleAccountManagement({account,userkey}:any) {
                   </div>
 
                   <p key={userkey+"account_type"} className="w-full pb-1 border-b border-slate-500">Account type: {account.Type}</p>
-                  {/* TODO OWNED SHOPS */}
+                    {/* GET SHOPS NAMES AND SHOW */}
                   {(account.OwnedShops)?<><div key={userkey+"owned_shop"} className="w-full pb-1 border-b border-slate-500">Owned Shops:{
-                    account.OwnedShops.map((shop:any)=><div key={userkey+"-"+shop}>- {shop}</div>)
-                    }</div></>:<></>}
+                    ownedShopsNames.map( (shop:any)=>{
+                    return <div key={userkey+"-"+shop}>- {shop}</div>
+                    })
+                  }</div></>:<></>}
                   <label key={userkey+"shop_to_assign"} htmlFor="shoptoassign">Shop To Assign:</label>
                   <input key={userkey+"shop_input"} id={"shoptoassign-"+account.ID} type="text" placeholder="shopID" className="w-1/2 my-2 font-bold text-slate-100 px-3 py-1 bg-slate-600 bg-clip-padding rounded-full transition ease-in-out focus:outline-none"
                   onChange={handleChangeShopid}

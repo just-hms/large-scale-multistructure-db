@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ModifiedShop from './modified_shop';
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment} from 'react'
@@ -46,7 +46,6 @@ export default function ModifyShop({shops}:any) {
                                   onClick={async (e) => {  
                                     setShopData(element)
                                     setSelectedShop(element.Name)
-                                    // setShow(true)
                                   }}>
                                       {element.Name}
                                   </button>

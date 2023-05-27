@@ -4,30 +4,29 @@ import barber_background from '../../public/barber_profile.jpg'
 import { useEffect, useState } from "react";
 
 export default function BarberReservations({shops}:any) {
-    //TODO: show reservations per shop
-    const [shopsInfo,setShopsInfo] = useState<any[]>([])
-    useEffect(()=>{
-        var shopsArray:any = []
-        shops.forEach((shop:any) => {
-            shopsArray.push(shop)
-        });
-        setShopsInfo(shopsArray)
-        // console.log(shopsArray)
-      },[])
     return (
         <>
         <div className="w-full flex flex-col text-xl justify-center items-center px-3">
-            {/* {reservations.map((reservation:any)=>
-            <div key={reservation.id} className="w-full lg:w-3/4 rounded-2xl bg-slate-700 shadow-sm shadow-black/70 text-slate-200 px-2 my-2 flex flex-col items-center justify-center">
-                <div key={reservation.id+"container"} className="flex flex-col items-start justify-start w-full rounded-lg py-2.5">
-                    <p>{reservation.user}</p>
-                    <div key={reservation.id+"title"} className="text-lg flex items-center lg:items-start justify-center w-full text-left">
-                        <h1 key={reservation.id+"name"} className="text-left pr-3">{reservation.date}</h1>
-                        <p className="w-full">{reservation.time}</p>
+            {shops.map((shop:any)=>{
+                if(shop.Appointments){
+                    return shop.Appointments.map((appointment:any)=>{
+                    // TODO: SHOW USERNAME, SHOW CONFIRM APPOINTMENTS
+                    return <>
+                    <div key={appointment.ID} className="w-full lg:w-3/4 rounded-2xl bg-slate-700 shadow-sm shadow-black/70 text-slate-200 px-2 my-2 flex flex-col items-center justify-center">
+                        <p className="font-bold py-2" key={appointment.ID+"shopname"}>Barber shop: {shop.Name}</p>
+                        <div key={appointment.ID+"container"} className="flex flex-col items-start justify-center text-justify py-2">
+                            <p>User: {appointment.UserID}</p>
+                            <p key={appointment.ID+"name"} className="text-left pr-3">Date: {new Date(appointment.StartDate).toLocaleDateString()} {new Date(appointment.StartDate).toLocaleTimeString()}</p>
+                        </div>
                     </div>
-                </div>
-            </div>
-            )} */}
+                    </>
+                    })
+                }
+                else{
+                    return<></>
+                }  
+            }
+            )}
         </div>
         </>
     );
