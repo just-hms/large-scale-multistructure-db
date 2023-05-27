@@ -24,13 +24,13 @@ confirmAlert({
                         onClick={async (e) => {
                             // alert((new Date(info.event.startStr)).toISOString())
                             // alert(info.event.startStr)
-                            // const response = await getAppointment(shopid,info.event.startStr)
-                            // if(response.status == 201){
-                            //     alert("Slot booked correctly!")
-                            // }else{
-                            //     alert((await response.json()).error)
-                            // }
-                            alert(parseInt((new Date(info.event.startStr).getTime() / 1000).toFixed(0)))
+                            const response = await getAppointment(shopid,info.event.startStr)
+                            if(response.status == 201){
+                                alert("Slot booked correctly!")
+                            }else{
+                                alert((await response.json()).error)
+                            }
+                            // alert(parseInt((new Date(info.event.startStr).getTime() / 1000).toFixed(0)))
                             onClose()
                         }}
                         >
@@ -56,7 +56,7 @@ export const StyleWrapper = styled.div`
 // must return an array of objects with: title, start, end
 // TODO: CHECK IF SLOT IS ALREADY OCCUPIED
 export const craftEventObject = ({index,calendar}:any) =>{
-    const date = moment().add(30*index, 'm').add(1,'d')
+    const date = moment().add(30*index, 'm')
     if(date.hours() > 20|| date.hours() < 7 ){
         return null
     }
