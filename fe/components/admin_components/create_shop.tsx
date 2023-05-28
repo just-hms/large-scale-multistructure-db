@@ -22,7 +22,7 @@ export default function CreateShop({accounts}:any) {
         setMessage(resp_text.error)
       }
     },
-});
+  });
 return (
     <>
      <div className='flex flex-col items-center justify-start text-left text-slate-300 text-lg w-full'>

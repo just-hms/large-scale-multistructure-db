@@ -3,13 +3,15 @@ import barber_background from '../../public/barber_profile.jpg'
 import barber_propic from '../../public/barber_bg.png'
 import { useFormik } from 'formik';
 import { useEffect, useState, useRef } from 'react';
-import { modifyShopDescription } from '../../lib/barber';
+import { modifyShopDescription, modifyShopEmployees } from '../../lib/barber';
+import Holidays from './holiday';
 
 export default function ModifiedShop({ shopData }:any) {
   const textAreaRef = useRef<any>();
   const formik = useFormik({
     initialValues: {
         description: shopData.Description,
+        employees: shopData.Employees,
     },
     onSubmit: async (values:any) => {
       const response = await modifyShopDescription(shopData.ID,values)
@@ -46,17 +48,12 @@ export default function ModifiedShop({ shopData }:any) {
                     <div className='w-full h-40'>
                       <textarea ref={textAreaRef} name="description" id="description" onChange={formik.handleChange} value={formik.values.description} className="bg-slate-600 h-40 lg:h-full resize-y bg-opacity-60 backdrop-blur-lg drop-shadow-lg text-slate-200 focus:outline-none rounded-md p-1.5 text-sm break-words mt-1 w-full" />
                     </div>
-                    <button type="submit" className="px-3 py-1 mx-2 my-4 bg-rose-900 bg-opacity-70 text-slate-300 text-xs rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out ">
+                    <button type="submit" className="px-3 py-1 mx-2 my-4 bg-rose-800 bg-opacity-70 text-slate-300 text-xs rounded-full focus:bg-red-700 hover:bg-red-700 focus:outline-none transition duration-150 ease-in-out ">
                         Submit Changes
                     </button> 
                   </form>
               </div>
-              {/* TODO HOLIDAYS */}
-              <button type="submit" className="px-3 py-1 mx-2 bg-rose-900 bg-opacity-70 text-slate-300 text-xs rounded-full focus:bg-red-800 hover:bg-red-800 focus:outline-none transition duration-150 ease-in-out " onClick={(e)=>{
-                // console.log(shopData.ID)
-              }}>
-                  Start Holiday
-              </button> 
+              <Holidays shopData={shopData}></Holidays>
             </div>
           </div>
         </div>

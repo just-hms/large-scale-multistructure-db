@@ -84,23 +84,25 @@ export const craftEventObject = (index:any,calendar:any) =>{
     }
 }
 
-export const fillCalendar = (calendar:any)=>{
+export const fillCalendar = (calendar:any, employees:any)=>{
     // var fullSlots = []
     // for( var i in  calendar){
     //     if(calendar[i].BookedAppointmens >= calendar[i].Employees)
     //         fullSlots.push((new Date(calendar[i].Start)).getTime())
     // }
     let events = []
-    for(let index = 0; index < 48*30; index+=1){
-        var event = craftEventObject(index,calendar)
-        if(event){
-            events.push(event)
+    if(employees != 0){
+        for(let index = 0; index < 48*30; index+=1){
+            var event = craftEventObject(index,calendar)
+            if(event){
+                events.push(event)
+            }
         }
     }
     return events
 }
 
-export default function Calendar({shopid,calendar}:any) {
+export default function Calendar({shopid,calendar, employees}:any) {
     return (
         <>
         <div className="w-full lg:w-5/6 h-1/3 mt-0 px-3 lg:py-3 transform -translate-y-20">
@@ -115,7 +117,7 @@ export default function Calendar({shopid,calendar}:any) {
                         initialView="timeGridDay"
                         slotMinTime="08:00:00"
                         slotMaxTime="20:00:00"
-                        events={fillCalendar(calendar)}
+                        events={fillCalendar(calendar, employees)}
                         allDaySlot={false}
                         eventClick={
                             async (info) => {

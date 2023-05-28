@@ -37,7 +37,6 @@ export default function SingleAccountManagement({account,userkey}:any) {
       let shops = []
       for(var i in account.OwnedShops){
         var infos = await(await getShopData(account.OwnedShops[i])).json()
-        console.log(infos)
         shops.push(infos.barbershop.Name)
       }
       setOwnedShopsNames(shops)

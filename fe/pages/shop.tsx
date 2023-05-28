@@ -18,7 +18,6 @@ export default function Shop() {
   const router = useRouter()
   const [shopData, setshopData] = useState<any>('')
   const { shopid } = router.query
-  // const [reviewsData, setreviewsData] = useState<any[]>([])
   const [userid, setUserid] = useState<string>('')
   const [shopAppointments, setShopAppointments] = useState<any[]>([])
   const formik = useFormik({
@@ -142,7 +141,7 @@ export default function Shop() {
               </div>
             </div>
             {/* CALENDAR */}
-            <Calendar shopid={shopid} calendar={shopAppointments}></Calendar>
+            <Calendar shopid={shopid} calendar={shopAppointments} employees={shopData.Employees}></Calendar>
           </div>
         </div>
         <Footer/>

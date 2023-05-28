@@ -10,6 +10,16 @@ export async function modifyShopDescription (shopid,values){
   })
   return response;
 }
+export async function modifyShopEmployees (shopid,values){
+  const response = await fetch(url+`barbershop/`+shopid, {
+    method: 'PUT',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "employees": values.employeesNumber
+    })
+  })
+  return response;
+}
 
 export async function getOwnedShops (){
   const response = await fetch(url+`user/self/ownedshops`, {
