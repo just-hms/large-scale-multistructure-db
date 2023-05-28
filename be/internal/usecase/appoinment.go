@@ -35,6 +35,9 @@ func (uc *AppointmentUseCase) Book(ctx context.Context, appointment *entity.Appo
 		return errors.New("cannot book two appointments")
 	}
 
+	//Add the Username to the Appointment
+	appointment.Username = us.Username
+
 	slot, err := uc.cache.Get(ctx, appointment.BarbershopID, appointment.StartDate)
 	if err != nil {
 		return err

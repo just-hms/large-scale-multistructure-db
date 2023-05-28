@@ -1,8 +1,5 @@
 from pymongo import MongoClient, GEOSPHERE
 from pymongo.errors import DuplicateKeyError
-from bson.objectid import ObjectId
-
-import redis
 
 from faker import Faker
 
@@ -13,6 +10,7 @@ import random
 import time
 
 import bcrypt
+import uuid
 
 #Type hinting imports
 from typing import Literal
@@ -42,6 +40,7 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     userName = userName.replace(" ", "")
     #Create the user dict structure
     user = {}
+    user["_id"] = str(uuid.uuid4())
     user["username"] = userName
     user["email"] = f"{userName}@barbershop.com"
     user["password"] = f"{userName}1234"
@@ -94,6 +93,8 @@ def makeShop(shopsCollection,shopData:dict)->int:
     shop = shopData.copy()
 
     #Modify the shop dict to suit our needs
+    shop["_id"] = str(uuid.uuid4())
+    shop["description"] = f"Welcome to {shop['name']}"
     ## Fix phone field
     if shop["phone"] == []:
         shop["phone"] = ""
@@ -127,7 +128,7 @@ def addReviewToShop(shopsCollection,shopId,userId,shopReview,upvotesIdList,downv
     #Create the review dict structure
     review = {}
     #Generate an id for the review
-    review["_id"] = ObjectId()
+    review["_id"] = str(uuid.uuid4())
     review["userId"] = userId
     review["username"] = shopReview["username"].replace(" ", "")
     review["rating"] = shopReview["rating"]
@@ -198,7 +199,7 @@ def fakeAppointments(usersCollection,shopsCollection,shopId,shopName,viewsList,m
         randomView = random.choice(viewsList)
         appointment = {}
         #Add id to appointment
-        appointment["_id"] = ObjectId()
+        appointment["_id"] = str(uuid.uuid4())
         #Fake appointment date
         appointment["createdAt"] = fake.date_time_between(start_date=randomView["viewCreation"], end_date=randomView["viewCreation"]+timedelta(minutes=5))
         appointment["startDate"] = fake.date_time_between(start_date=appointment["createdAt"], end_date=appointment["createdAt"]+timedelta(days=5))
@@ -242,16 +243,14 @@ def main():
 
     #Establish connection to databases
     mongoClient = MongoClient('localhost', 27017)
-    redisClient = redis.Redis(host='localhost', port=6379)
 
     #Reset databases
-    mongoClient.drop_database("barberShop")
-    redisClient.delete("barberShop:shopsCoordinates")
+    mongoClient.drop_database("barbershop")
 
     #Connect to Mongo instance and create database and collections if needed
-    barberDatabaseMongo = mongoClient["barberShop"]
+    barberDatabaseMongo = mongoClient["barbershop"]
     usersCollectionMongo = barberDatabaseMongo["users"]
-    barberShopsCollectionMongo = barberDatabaseMongo["barberShops"]
+    barberShopsCollectionMongo = barberDatabaseMongo["barbershops"]
 
     #Make usernames unique
     usersCollectionMongo.create_index("username",unique=True)
@@ -298,12 +297,6 @@ def main():
             viewsUserList = fakeViews(barberShopsCollectionMongo,shopId,generatedUsersIds,1500)
             #Fake a random number of appointments
             fakeAppointments(usersCollectionMongo,barberShopsCollectionMongo,shopId,shop["name"],viewsUserList,200)
-
-            #Now add the shop id and name to Redis' Geocache
-            redisItem = str({"id":shopId,"name":shop["name"]})
-            shopLng = float(shop["coordinates"].split(" ")[1])
-            shopLat = float(shop["coordinates"].split(" ")[0])
-            redisClient.geoadd("barberShop:shopsCoordinates",[shopLng,shopLat,redisItem])
 
     #Print results
     end_time = time.perf_counter()

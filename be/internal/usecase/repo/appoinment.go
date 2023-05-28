@@ -53,6 +53,7 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 	appointment.BarbershopID = shopID
 	appointment.BarbershopName = shopName
 	appointment.UserID = ""
+	appointment.Username = ""
 
 	// Add the appointment to the User
 	userFilter := bson.M{"_id": userID}
