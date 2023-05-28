@@ -8,7 +8,8 @@ import { deleteAppointment } from '../../lib/user';
 
 export default function AccountReservation({reservationData}:any) {
     const [shopData,setshopData] = useState()
-    const date = (reservationData)?(new Date(Date.parse(reservationData.Start))).toLocaleDateString():''
+    console.log(reservationData)
+    const date = (reservationData)?(new Date(Date.parse(reservationData.StartDate))).toLocaleDateString()+" "+(new Date(Date.parse(reservationData.StartDate))).toLocaleTimeString():''
     useEffect(()=>{
         if(reservationData){
             const fetchData = async () => {
