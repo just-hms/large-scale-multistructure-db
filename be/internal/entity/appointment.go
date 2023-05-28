@@ -9,6 +9,7 @@ type Appointment struct {
 	Status    string    `bson:"status"`
 
 	UserID         string `bson:"userID,omitempty"`
+	Username       string `bson:"username,omitempty"`
 	BarbershopID   string `bson:"shopID,omitempty"`
 	BarbershopName string `bson:"shopName,omitempty"`
 }
