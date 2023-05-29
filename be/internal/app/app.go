@@ -40,15 +40,6 @@ func Run(cfg *config.Config) {
 		return
 	}
 
-	userUsecase := ucs[usecase.USER].(usecase.User)
-
-	userUsecase.Store(context.Background(), &entity.User{
-		Email:    "admin@admin.com",
-		Password: "super_secret",
-		Type:     entity.ADMIN,
-	})
-
-	// TODO: get the production env
 	router := controller.Router(ucs, true)
 
 	router.Run()
