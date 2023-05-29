@@ -246,6 +246,7 @@ def main():
 
     #Reset databases
     mongoClient.drop_database("barbershop")
+    mongoClient.drop_database("barberShop")
 
     #Connect to Mongo instance and create database and collections if needed
     barberDatabaseMongo = mongoClient["barbershop"]
