@@ -45,7 +45,7 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     user["email"] = f"{userName}@barbershop.com"
     user["password"] = f"{userName}1234"
     #Hash and salt password
-    user["password"] = bcrypt.hashpw(user["password"].encode('utf-8'), bcrypt.gensalt(12))
+    user["password"] = bcrypt.hashpw(user["password"].encode('utf-8'), bcrypt.gensalt(12)).decode("utf-8")
     user["type"] = type
     user["ownedShops"] = []
     user["currentAppointment"] = {}
@@ -246,6 +246,7 @@ def main():
 
     #Reset databases
     mongoClient.drop_database("barbershop")
+    mongoClient.drop_database("barberShop")
 
     #Connect to Mongo instance and create database and collections if needed
     barberDatabaseMongo = mongoClient["barbershop"]
@@ -266,6 +267,9 @@ def main():
     generatedShopsIds = []
     generatedUsersIds = []
     importedShops = 0
+
+    #Add the Admin to database
+    makeUser(usersCollectionMongo,"admin","admin")
 
     #Go through the scraped data, location by location
     for _, shopsList in scrapedData.items():
