@@ -1,12 +1,10 @@
 package app
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/config"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/controller"
-	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/auth"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
@@ -18,7 +16,7 @@ import (
 
 func Run(cfg *config.Config) {
 
-	mongo, err := mongo.New(cfg.Mongo.Host, cfg.Mongo.Port, "barber-deploy")
+	mongo, err := mongo.New(cfg.Mongo.Host, cfg.Mongo.Port, "barbershop")
 	if err != nil {
 		fmt.Printf("mongo-error: %s", err.Error())
 		return
@@ -40,15 +38,6 @@ func Run(cfg *config.Config) {
 		return
 	}
 
-	userUsecase := ucs[usecase.USER].(usecase.User)
-
-	userUsecase.Store(context.Background(), &entity.User{
-		Email:    "admin@admin.com",
-		Password: "super_secret",
-		Type:     entity.ADMIN,
-	})
-
-	// TODO: get the production env
 	router := controller.Router(ucs, true)
 
 	router.Run()
