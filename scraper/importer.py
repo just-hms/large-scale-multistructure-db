@@ -267,6 +267,9 @@ def main():
     generatedUsersIds = []
     importedShops = 0
 
+    #Add the Admin to database
+    makeUser(usersCollectionMongo,"admin","admin")
+
     #Go through the scraped data, location by location
     for _, shopsList in scrapedData.items():
         for shop in shopsList:
