@@ -7,7 +7,6 @@ export default function BarberReservations({shops}:any) {
             {shops.map((shop:any)=>{
                 if(shop.Appointments){
                     return shop.Appointments.map((appointment:any)=>{
-                    // TODO: SHOW USERNAME, SHOW CONFIRM APPOINTMENTS
                     if(appointment.Status === 'pending'){
                         return <>
                         <div key={appointment.ID} className="w-full lg:w-3/4 rounded-2xl bg-slate-700 shadow-sm shadow-black/70 text-slate-200 px-2 my-2 flex flex-col items-center justify-center">

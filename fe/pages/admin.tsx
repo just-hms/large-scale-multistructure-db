@@ -18,13 +18,12 @@ export default function Admin() {
   // fetch account datas and check if user is logged and admin
   useEffect(()=>{
     const fetchAccountsData = async () => {
-      const users_response = await (await getAccountInfos()).json()
       const myself = await (await getUserInfos()).json()
       // if anyone tries to access without being an admin -> unauthorized
       if(myself.user.Type !== 'admin'){
         router.push("/401")
       }else{
-        setUsers(users_response.users)
+        // setUsers(users_response.users)
         setLoaded(true)
       }
     }
@@ -40,7 +39,7 @@ export default function Admin() {
     return <div></div> 
   }else{
     if (content == "manage_accounts") {
-      displayed_element = <ManageUsers accounts={users}/>;
+      displayed_element = <ManageUsers/>;
     } else if(content == "view_analytics"){
       displayed_element = <></>;
     } else if(content == "create_shop"){

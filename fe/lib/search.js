@@ -8,14 +8,13 @@ export async function findShops(area){
       "area": area,
     })
   }).then((response)=>response.json())
-
   const data = await fetch(url+`barbershop`, {
     method: 'POST',
     headers: headers(localStorage.getItem("token")),
     body: JSON.stringify({
-      "latitude": geocoding.geocodes.Latitude,
-      "longitude": geocoding.geocodes.Longitude,
-      "radius": 10000,
+      "latitude": geocoding.geocodes[0].Longitude,
+      "longitude": geocoding.geocodes[0].Latitude,
+      "radius": 3000,
     })
   })
   return data

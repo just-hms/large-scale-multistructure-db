@@ -62,7 +62,7 @@ export const craftEventObject = (index:any,calendar:any) =>{
     if(date.hours() > 20|| date.hours() < 7 ){
         return null
     }
-    if (date.minutes() > 30){
+    if (date.minutes() >= 30){
         date.set('hour',date.hours()+1)
         date.set('minute',0)
     }else{

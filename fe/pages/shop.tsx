@@ -45,6 +45,7 @@ export default function Shop() {
           if (response.ok){                                         
             const json_response = await response.json()
             setshopData(json_response.barbershop)
+            console.log(json_response.barbershop)
           }else{
             router.push("/404")
           }
@@ -76,7 +77,7 @@ export default function Shop() {
       </Navbar>
       <div className='h-full'>
         <div className='h-96 w-full'>
-          <Image className="w-full h-full object-cover " src={barber_background} alt="barber salon"/>
+          <Image className="w-full h-full object-cover " width="100" height="100" src={shopData.ImageLink} alt="barber salon"/>
         </div>
         <div className='flex flex-col lg:flex-row w-full bg-slate-800 h-full'>
           {/* REVIEWS */}
@@ -126,13 +127,14 @@ export default function Shop() {
             {/* DESCRIPTION */}
             <div className='flex flex-col items-center order-first lg:order-none w-full px-3 lg:py-3'>
                 <div className="w-full top-0 transform -translate-y-40 lg:-translate-y-20 inset-0 flex justify-center items-center">
-                  <div className="w-full h-full flex flex-col items-center justify-start rounded-3xl bg-slate-700 bg-opacity-60 backdrop-blur-lg drop-shadow-lg">
+                  <div className=" text-slate-300 w-full h-full flex flex-col items-center justify-start rounded-3xl bg-slate-700 bg-opacity-60 backdrop-blur-lg drop-shadow-lg">
                     <div className='w-1/2 transform -translate-y-1/2 h-20 w-20 shadow shadow-black/70 rounded-full'>
-                      <Image className="w-full h-full object-cover rounded-full " src={barber_propic} alt="barber salon"/>
+                      <Image className="w-full h-full object-cover rounded-full " width="100" height="100" src={shopData.ImageLink} alt="barber salon"/>
                     </div>
                     <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-slate-200 ">
                       {shopData.Name}
                     </h1>
+                    {shopData.Address}
                     <div className='w-3/4 border-b border-slate-600 pt-1'></div>
                     <p className="text-md text-justify leading-tight tracking-tight text-slate-300 break-words w-3/4 p-3 ">
                       {shopData.Description}

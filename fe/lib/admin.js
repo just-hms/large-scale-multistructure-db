@@ -2,8 +2,8 @@ import { Coming_Soon } from "@next/font/google";
 import { headers, url } from "./request-utils";
 
 
-export async function getAccountInfos(){
-  const response = await fetch(url+`admin/user`, {
+export async function getAccountInfos(email){
+  const response = await fetch(url+`admin/user?email=`+email, {
     method: 'GET',
     headers: headers(localStorage.getItem("token"))
   })

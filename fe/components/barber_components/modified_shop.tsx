@@ -31,7 +31,7 @@ export default function ModifiedShop({ shopData }:any) {
     <>
       <div className='h-full w-full lg:px-5'>
         <div className='h-96 w-full'>
-          <Image className="w-full h-full object-cover rounded-xl" src={barber_background} alt="barber salon"/>
+          <Image className="w-full h-full object-cover rounded-xl" width="100" height="100" src={shopData.ImageLink} alt="barber salon"/>
         </div>
         <div className='flex flex-col lg:flex-row w-full bg-slate-800 h-full'>
           <div className='flex flex-col items-center w-full justify-start'>
@@ -40,7 +40,7 @@ export default function ModifiedShop({ shopData }:any) {
                 <div className="w-full top-0transform -translate-y-40 lg:-translate-y-20 inset-0 flex justify-center items-center">
                   <form onSubmit={formik.handleSubmit} className="w-full px-5 h-full flex flex-col items-center justify-start rounded-3xl bg-slate-700 bg-opacity-60 backdrop-blur-lg drop-shadow-lg">
                     <div className='w-20 h-20 transform -translate-y-1/2 shadow shadow-black/70 rounded-full'>
-                      <Image className="w-full h-full object-cover rounded-full " src={barber_propic} alt="barber salon"/>
+                      <Image className="w-full h-full object-cover rounded-full " width="100" height="100" src={shopData.ImageLink} alt="barber salon"/>
                     </div>
                     <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-slate-200 border-b w-3/4 mb-2.5 pb-2.5 border-slate-500 ">
                       {shopData.Name}
