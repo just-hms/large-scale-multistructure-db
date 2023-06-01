@@ -61,7 +61,7 @@ type (
 	Review interface {
 		Store(ctx context.Context, review *entity.Review, shopID string) error
 		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, shopID, reviewID string) error
+		DeleteByID(ctx context.Context, reviewID string) error
 
 		UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
@@ -139,7 +139,7 @@ type (
 	ReviewRepo interface {
 		Store(ctx context.Context, review *entity.Review, shopID string) error
 		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, shopID, reviewID string) error
+		DeleteByID(ctx context.Context, reviewID string) error
 	}
 
 	VoteRepo interface {
