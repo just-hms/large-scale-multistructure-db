@@ -59,6 +59,15 @@ func (r *ReviewRepo) Store(ctx context.Context, review *entity.Review, shopID st
 
 func (r *ReviewRepo) GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error) {
 
+	err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": shopID}).Err()
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("the specified barber shop does not exist")
+		}
+		return nil, err
+	}
+
 	cur, err := r.DB.Collection("reviews").Find(ctx, bson.M{"shopId": shopID})
 	if err != nil {
 		return nil, err

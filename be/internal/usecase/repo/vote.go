@@ -18,8 +18,17 @@ func NewVoteRepo(m *mongo.Mongo) *VoteRepo {
 
 func (v *VoteRepo) UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error {
 
+	err := v.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": shopID}).Err()
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return fmt.Errorf("the specified barber shop does not exist")
+		}
+		return err
+	}
+
 	reviewFilter := bson.M{"_id": reviewID}
-	err := v.DB.Collection("reviews").FindOne(ctx, reviewFilter).Err()
+	err = v.DB.Collection("reviews").FindOne(ctx, reviewFilter).Err()
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -51,8 +60,17 @@ func (v *VoteRepo) UpVoteByID(ctx context.Context, userID, shopID, reviewID stri
 
 func (v *VoteRepo) DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error {
 
+	err := v.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": shopID}).Err()
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return fmt.Errorf("the specified barber shop does not exist")
+		}
+		return err
+	}
+
 	reviewFilter := bson.M{"_id": reviewID}
-	err := v.DB.Collection("reviews").FindOne(ctx, reviewFilter).Err()
+	err = v.DB.Collection("reviews").FindOne(ctx, reviewFilter).Err()
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
