@@ -41,59 +41,52 @@ func (r *ReviewRepo) Store(ctx context.Context, review *entity.Review, shopID st
 	}
 
 	review.ID = uuid.NewString()
+	review.ShopID = shopID
 	review.Username = user.Username
 	review.Reported = false
 	review.UpVotes = []string{}
 	review.DownVotes = []string{}
 	review.CreatedAt = time.Now()
 
-	filter := bson.M{"_id": shopID}
-	update := bson.M{"$push": bson.M{"reviews": review}}
+	_, err = r.DB.Collection("reviews").InsertOne(ctx, review)
+	if err != nil {
+		review.ID = ""
+		return fmt.Errorf("error inserting the review: %s", err.Error())
+	}
 
-	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
 	return err
 }
 
 func (r *ReviewRepo) GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error) {
 
-	shop := &entity.BarberShop{}
-	err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": shopID}).Decode(&shop)
-
+	cur, err := r.DB.Collection("reviews").Find(ctx, bson.M{"shopId": shopID})
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, fmt.Errorf("the specified barber shop does not exist")
-		}
 		return nil, err
 	}
 
-	return shop.Reviews, nil
+	defer cur.Close(ctx)
+
+	reviews := []*entity.Review{}
+
+	for cur.Next(ctx) {
+		var review entity.Review
+
+		if err := cur.Decode(&review); err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, &review)
+	}
+	return reviews, nil
 }
 
-func (r *ReviewRepo) DeleteByID(ctx context.Context, shopID, reviewID string) error {
+func (r *ReviewRepo) DeleteByID(ctx context.Context, reviewID string) error {
 
-	shopFilter := bson.M{"_id": shopID}
-	err := r.DB.Collection("barbershops").FindOne(ctx, shopFilter).Err()
-
+	res, err := r.DB.Collection("reviews").DeleteOne(ctx, bson.M{"_id": reviewID})
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return fmt.Errorf("the specified barber shop does not exist")
-		}
 		return err
 	}
-
-	reviewFilter := bson.M{"_id": shopID, "reviews": bson.M{"$elemMatch": bson.M{"_id": reviewID}}}
-	err = r.DB.Collection("barbershops").FindOne(ctx, reviewFilter).Err()
-
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return fmt.Errorf("the specified review does not exist")
-		}
-		return err
+	if res.DeletedCount == 0 {
+		return fmt.Errorf("review not found")
 	}
-
-	update := bson.M{"$pull": bson.M{"reviews": bson.M{"_id": reviewID}}}
-
-	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, shopFilter, update)
-
-	return err
+	return nil
 }
