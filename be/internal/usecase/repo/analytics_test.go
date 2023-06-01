@@ -8,7 +8,7 @@ import (
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
 )
 
-func (s *RepoSuite) TestGetAppointmentCountByShop() {
+func (s *RepoSuite) TestGetAppointmentViewReviewCountByShop() {
 
 	user1 := &entity.User{Email: "giovanni"}
 	user2 := &entity.User{Email: "banana"}
@@ -94,4 +94,20 @@ func (s *RepoSuite) TestGetAppointmentCountByShop() {
 	analytics, err = analyticsRepo.GetAppointmentCountByShop(context.Background(), shop2.ID)
 	s.Require().NoError(err)
 	s.Require().Equal(len(analytics), 0)
+
+	analytics, err = analyticsRepo.GetViewCountByShop(context.Background(), shop1.ID)
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[0]["viewCount"], int32(4))
+
+	analytics, err = analyticsRepo.GetViewCountByShop(context.Background(), shop2.ID)
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[0]["viewCount"], int32(1))
+
+	analytics, err = analyticsRepo.GetReviewCountByShop(context.Background(), shop1.ID)
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[0]["viewCount"], int32(1))
+
+	analytics, err = analyticsRepo.GetReviewCountByShop(context.Background(), shop2.ID)
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[0]["viewCount"], int32(2))
 }
