@@ -15,70 +15,36 @@ func NewAnalyticsRepo(m *mongo.Mongo) *AnalyticsRepo {
 	return &AnalyticsRepo{m}
 }
 
-func (r *AnalyticsRepo) GetAppointmentViewReviewCount(ctx context.Context, shopID string) (map[string]int, error) {
+func (r *AnalyticsRepo) GetAppointmentCountByShop(ctx context.Context, shopID string) ([]bson.M, error) {
 
-	matchStage := bson.D{{"$match", bson.D{{"_id", shopID}}}}
+	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
-	/*
-		groupStage := bson.D{{
-			"$group",
-			bson.D{
-				{"_id", bson.D{
-					{"$dateToString", bson.D{
-						{"date", "$startDate"},
-						{"format", "%Y-%m"},
-					}},
-				}},
-			},
-		}}
-	*/
-
-	projectStage := bson.D{{
-		"$project",
+	groupStage := bson.D{{
+		"$group",
 		bson.D{
+			{"_id", bson.D{
+				{"$dateToString", bson.D{
+					{"date", "$startDate"},
+					{"format", "%Y-%m"},
+				}},
+			}},
 			{"appointmentCount", bson.D{
-				{"$size", bson.D{
-					{"$ifNull", bson.A{
-						"$appointments", bson.A{},
-					}},
-				}},
+				{"$sum", 1},
 			}},
-			{"viewCount", bson.D{
-				{"$size", bson.D{
-					{"$ifNull", bson.A{
-						"$views", bson.A{},
-					}},
-				}},
-			}},
-			{"reviewCount", bson.D{
-				{"$size", bson.D{
-					{"$ifNull", bson.A{
-						"$reviews", bson.A{},
-					}},
-				}},
-			}},
-			{"_id", 0},
 		},
 	}}
 
-	cur, err := r.DB.Collection("barbershops").Aggregate(ctx, mongo.Pipeline{matchStage, projectStage})
+	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage, groupStage})
 	if err != nil {
 		return nil, err
 	}
 
-	results := make(map[string]int)
 	var mongoResults []bson.M
 	err = cur.All(ctx, &mongoResults)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, result := range mongoResults {
-		for k, v := range result {
-			results[k] = int(v.(int32))
-		}
-	}
-
-	return results, err
+	return mongoResults, err
 
 }
