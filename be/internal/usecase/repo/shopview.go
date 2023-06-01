@@ -25,7 +25,7 @@ func (r *ShopViewRepo) Store(ctx context.Context, view *entity.ShopView) error {
 	_, err := r.DB.Collection("shopviews").InsertOne(ctx, view)
 	if err != nil {
 		view.ID = ""
-		return fmt.Errorf("error inserting the barber shop: %s", err.Error())
+		return fmt.Errorf("error inserting the shopview: %s", err.Error())
 	}
 
 	return err
