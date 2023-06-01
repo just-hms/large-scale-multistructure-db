@@ -15,7 +15,7 @@ func NewAnalyticsRepo(m *mongo.Mongo) *AnalyticsRepo {
 	return &AnalyticsRepo{m}
 }
 
-func (r *AnalyticsRepo) GetAppointmentCountByShop(ctx context.Context, shopID string) ([]bson.M, error) {
+func (r *AnalyticsRepo) GetAppointmentCountByShop(ctx context.Context, shopID string) (map[string]int, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
@@ -28,7 +28,7 @@ func (r *AnalyticsRepo) GetAppointmentCountByShop(ctx context.Context, shopID st
 					{"format", "%Y-%m"},
 				}},
 			}},
-			{"appointmentCount", bson.D{
+			{"count", bson.D{
 				{"$sum", 1},
 			}},
 		},
@@ -39,17 +39,22 @@ func (r *AnalyticsRepo) GetAppointmentCountByShop(ctx context.Context, shopID st
 		return nil, err
 	}
 
+	results := make(map[string]int)
 	var mongoResults []bson.M
 	err = cur.All(ctx, &mongoResults)
 	if err != nil {
 		return nil, err
 	}
 
-	return mongoResults, err
+	for _, result := range mongoResults {
+		results[result["_id"].(string)] = int(result["count"].(int32))
+	}
+
+	return results, err
 
 }
 
-func (r *AnalyticsRepo) GetViewCountByShop(ctx context.Context, shopID string) ([]bson.M, error) {
+func (r *AnalyticsRepo) GetViewCountByShop(ctx context.Context, shopID string) (map[string]int, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
@@ -62,7 +67,7 @@ func (r *AnalyticsRepo) GetViewCountByShop(ctx context.Context, shopID string) (
 					{"format", "%Y-%m"},
 				}},
 			}},
-			{"viewCount", bson.D{
+			{"count", bson.D{
 				{"$sum", 1},
 			}},
 		},
@@ -73,17 +78,22 @@ func (r *AnalyticsRepo) GetViewCountByShop(ctx context.Context, shopID string) (
 		return nil, err
 	}
 
+	results := make(map[string]int)
 	var mongoResults []bson.M
 	err = cur.All(ctx, &mongoResults)
 	if err != nil {
 		return nil, err
 	}
 
-	return mongoResults, err
+	for _, result := range mongoResults {
+		results[result["_id"].(string)] = int(result["count"].(int32))
+	}
+
+	return results, err
 
 }
 
-func (r *AnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID string) ([]bson.M, error) {
+func (r *AnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID string) (map[string]int, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
@@ -96,7 +106,7 @@ func (r *AnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID string)
 					{"format", "%Y-%m"},
 				}},
 			}},
-			{"viewCount", bson.D{
+			{"count", bson.D{
 				{"$sum", 1},
 			}},
 		},
@@ -107,12 +117,17 @@ func (r *AnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID string)
 		return nil, err
 	}
 
+	results := make(map[string]int)
 	var mongoResults []bson.M
 	err = cur.All(ctx, &mongoResults)
 	if err != nil {
 		return nil, err
 	}
 
-	return mongoResults, err
+	for _, result := range mongoResults {
+		results[result["_id"].(string)] = int(result["count"].(int32))
+	}
+
+	return results, err
 
 }

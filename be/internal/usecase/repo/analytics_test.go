@@ -2,6 +2,7 @@ package repo_test
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -14,6 +15,9 @@ func (s *RepoSuite) TestGetAppointmentViewReviewCountByShop() {
 	user2 := &entity.User{Email: "banana"}
 	shop1 := &entity.BarberShop{Name: "brownies"}
 	shop2 := &entity.BarberShop{Name: "choco"}
+
+	year, month, _ := time.Now().Date()
+	monthKey := fmt.Sprintf("%02d-%02d", year, month)
 
 	userRepo := repo.NewUserRepo(s.db)
 	shopRepo := repo.NewBarberShopRepo(s.db)
@@ -90,24 +94,24 @@ func (s *RepoSuite) TestGetAppointmentViewReviewCountByShop() {
 
 	analytics, err := analyticsRepo.GetAppointmentCountByShop(context.Background(), shop1.ID)
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0]["appointmentCount"], int32(2))
+	s.Require().Equal(analytics[monthKey], 2)
 	analytics, err = analyticsRepo.GetAppointmentCountByShop(context.Background(), shop2.ID)
 	s.Require().NoError(err)
-	s.Require().Equal(len(analytics), 0)
+	s.Require().Equal(analytics[monthKey], 0)
 
 	analytics, err = analyticsRepo.GetViewCountByShop(context.Background(), shop1.ID)
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0]["viewCount"], int32(4))
+	s.Require().Equal(analytics[monthKey], 4)
 
 	analytics, err = analyticsRepo.GetViewCountByShop(context.Background(), shop2.ID)
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0]["viewCount"], int32(1))
+	s.Require().Equal(analytics[monthKey], 1)
 
 	analytics, err = analyticsRepo.GetReviewCountByShop(context.Background(), shop1.ID)
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0]["viewCount"], int32(1))
+	s.Require().Equal(analytics[monthKey], 1)
 
 	analytics, err = analyticsRepo.GetReviewCountByShop(context.Background(), shop2.ID)
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0]["viewCount"], int32(2))
+	s.Require().Equal(analytics[monthKey], 2)
 }
