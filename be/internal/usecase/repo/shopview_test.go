@@ -29,8 +29,8 @@ func (s *RepoSuite) TestShopViewStore() {
 		{
 			name: "store new slotview",
 			input: &entity.ShopView{
-				ViewerID:     user.ID,
-				BarberShopID: shop.ID,
+				UserID:       user.ID,
+				BarbershopID: shop.ID,
 			},
 			expectErr: false,
 		},

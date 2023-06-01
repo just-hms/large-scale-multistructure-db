@@ -35,8 +35,8 @@ func (uc *BarberShopUseCase) GetByID(ctx context.Context, viewerID string, ID st
 
 	// save the view
 	err = uc.viewRepo.Store(ctx, &entity.ShopView{
-		ViewerID:     viewerID,
-		BarberShopID: ID,
+		UserID:       viewerID,
+		BarbershopID: ID,
 	})
 
 	if err != nil {
