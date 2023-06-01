@@ -95,7 +95,7 @@ func (r *BarberShopRepo) GetByID(ctx context.Context, ID string) (*entity.Barber
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, fmt.Errorf("user not found")
+			return nil, fmt.Errorf("barbershop not found")
 		}
 		return nil, err
 	}

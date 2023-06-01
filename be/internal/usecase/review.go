@@ -27,8 +27,8 @@ func (uc *ReviewUseCase) GetByBarberShopID(ctx context.Context, shopID string) (
 	return uc.reviewRepo.GetByBarberShopID(ctx, shopID)
 }
 
-func (uc *ReviewUseCase) DeleteByID(ctx context.Context, shopID, reviewID string) error {
-	return uc.reviewRepo.DeleteByID(ctx, shopID, reviewID)
+func (uc *ReviewUseCase) DeleteByID(ctx context.Context, reviewID string) error {
+	return uc.reviewRepo.DeleteByID(ctx, reviewID)
 }
 
 func (uc *ReviewUseCase) UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error {

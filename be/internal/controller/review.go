@@ -116,10 +116,9 @@ func (rr *ReviewRoutes) ShowByShop(ctx *gin.Context) {
 // @Router /barbershop/{shopid}/review/{reviewid} [delete]
 func (rr *ReviewRoutes) Delete(ctx *gin.Context) {
 
-	shopID := ctx.Param("shopid")
 	reviewID := ctx.Param("reviewid")
 
-	err := rr.reviewUseCase.DeleteByID(ctx, shopID, reviewID)
+	err := rr.reviewUseCase.DeleteByID(ctx, reviewID)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

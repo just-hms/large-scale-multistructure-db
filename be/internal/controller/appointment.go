@@ -138,9 +138,8 @@ func (ur *AppointmentRoutes) DeleteSelfAppointment(ctx *gin.Context) {
 func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 
 	shopID := ctx.Param("shopid")
-	appointment, err := ur.appointmentUseCase.GetByIDs(
+	appointment, err := ur.appointmentUseCase.GetByID(
 		ctx,
-		shopID,
 		ctx.Param("appointmentid"),
 	)
 
@@ -176,9 +175,8 @@ func (ur *AppointmentRoutes) DeleteAppointment(ctx *gin.Context) {
 func (ur *AppointmentRoutes) CompleteAppointment(ctx *gin.Context) {
 
 	shopID := ctx.Param("shopid")
-	appointment, err := ur.appointmentUseCase.GetByIDs(
+	appointment, err := ur.appointmentUseCase.GetByID(
 		ctx,
-		shopID,
 		ctx.Param("appointmentid"),
 	)
 
