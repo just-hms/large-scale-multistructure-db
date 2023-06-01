@@ -19,6 +19,20 @@ func (r *AnalyticsRepo) GetAppointmentViewReviewCount(ctx context.Context, shopI
 
 	matchStage := bson.D{{"$match", bson.D{{"_id", shopID}}}}
 
+	/*
+		groupStage := bson.D{{
+			"$group",
+			bson.D{
+				{"_id", bson.D{
+					{"$dateToString", bson.D{
+						{"date", "$startDate"},
+						{"format", "%Y-%m"},
+					}},
+				}},
+			},
+		}}
+	*/
+
 	projectStage := bson.D{{
 		"$project",
 		bson.D{
