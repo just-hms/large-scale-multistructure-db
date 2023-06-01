@@ -55,13 +55,13 @@ type (
 		CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
 		CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
 		SetCompletedFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
-		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
+		GetByID(ctx context.Context, ID string) (*entity.Appointment, error)
 	}
 
 	Review interface {
 		Store(ctx context.Context, review *entity.Review, shopID string) error
 		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, shopID, reviewID string) error
+		DeleteByID(ctx context.Context, reviewID string) error
 
 		UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
@@ -133,13 +133,13 @@ type (
 		Book(ctx context.Context, appointment *entity.Appointment) error
 		SetStatusFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
 		SetStatusFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
-		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
+		GetByID(ctx context.Context, ID string) (*entity.Appointment, error)
 	}
 
 	ReviewRepo interface {
 		Store(ctx context.Context, review *entity.Review, shopID string) error
 		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, shopID, reviewID string) error
+		DeleteByID(ctx context.Context, reviewID string) error
 	}
 
 	VoteRepo interface {

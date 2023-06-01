@@ -12,7 +12,4 @@ type BarberShop struct {
 	Phone       string
 
 	Employees int
-
-	Reviews      []*Review      `bson:",omitempty"`
-	Appointments []*Appointment `bson:",omitempty"`
 }

@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -34,23 +35,17 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 
 	// Store appointment fields before removing unused fields in the BarberShop's Appointment
 	userID := appointment.UserID
-	shopID := appointment.BarbershopID
 	shopName := appointment.BarbershopName
-	appointment.BarbershopID = ""
 	appointment.BarbershopName = ""
 
-	// Add the Appointment to the Shop
-	filter := bson.M{"_id": shopID}
-	update := bson.M{"$push": bson.M{"appointments": appointment}}
-
-	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
+	// Add the Appointment its collection
+	_, err = r.DB.Collection("appointments").InsertOne(ctx, appointment)
 	if err != nil {
 		appointment.ID = ""
-		return err
+		return fmt.Errorf("error inserting the appointment: %s", err.Error())
 	}
 
 	// Replace previously removed fields and remove unused field in the User's Appointment
-	appointment.BarbershopID = shopID
 	appointment.BarbershopName = shopName
 	appointment.UserID = ""
 	appointment.Username = ""
@@ -74,7 +69,6 @@ func (r *AppointmentRepo) SetStatusFromUser(ctx context.Context, userID string, 
 		return errors.New("you must provide an appointment")
 	}
 
-	shopID := appointment.BarbershopID
 	// Remove the appointment from the user
 	userFilter := bson.M{"_id": userID}
 	userUpdate := bson.M{"$unset": bson.M{"currentAppointment": ""}}
@@ -84,10 +78,10 @@ func (r *AppointmentRepo) SetStatusFromUser(ctx context.Context, userID string, 
 		return err
 	}
 
-	filter := bson.M{"_id": shopID, "appointments._id": appointment.ID}
-	update := bson.M{"$set": bson.M{"appointments.$.status": appointment.Status}}
+	filter := bson.M{"_id": appointment.ID}
+	update := bson.M{"$set": bson.M{"status": appointment.Status}}
 
-	_, err = r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
+	_, err = r.DB.Collection("appointments").UpdateOne(ctx, filter, update)
 
 	return err
 }
@@ -99,10 +93,10 @@ func (r *AppointmentRepo) SetStatusFromShop(ctx context.Context, shopID string, 
 
 	userID := appointment.UserID
 	// Remove the appointment from the shop
-	filter := bson.M{"_id": shopID, "appointments._id": appointment.ID}
-	update := bson.M{"$set": bson.M{"appointments.$.status": appointment.Status}}
+	filter := bson.M{"_id": appointment.ID}
+	update := bson.M{"$set": bson.M{"status": appointment.Status}}
 
-	_, err := r.DB.Collection("barbershops").UpdateOne(ctx, filter, update)
+	_, err := r.DB.Collection("appointments").UpdateOne(ctx, filter, update)
 
 	if err != nil {
 		return err
@@ -120,23 +114,17 @@ func (r *AppointmentRepo) SetStatusFromShop(ctx context.Context, shopID string, 
 	return err
 }
 
-func (r *AppointmentRepo) GetByIDs(ctx context.Context, shopID, ID string) (*entity.Appointment, error) {
-	filter := bson.M{"_id": shopID, "appointments._id": ID}
+func (r *AppointmentRepo) GetByID(ctx context.Context, ID string) (*entity.Appointment, error) {
 
-	var barbershop entity.BarberShop
-	err := r.DB.Collection("barbershops").FindOne(ctx, filter).Decode(&barbershop)
+	appointment := &entity.Appointment{}
+
+	err := r.DB.Collection("appointments").FindOne(ctx, bson.M{"_id": ID}).Decode(&appointment)
+
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, errors.New("appointment not found")
+			return nil, fmt.Errorf("appointment not found")
 		}
 		return nil, err
 	}
-
-	for _, appointment := range barbershop.Appointments {
-		if appointment.ID == ID {
-			return appointment, nil
-		}
-	}
-
-	return nil, errors.New("appointment not found")
+	return appointment, nil
 }
