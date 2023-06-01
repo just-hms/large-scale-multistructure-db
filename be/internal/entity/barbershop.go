@@ -13,7 +13,6 @@ type BarberShop struct {
 
 	Employees int
 
-	Views        []string
 	Reviews      []*Review
 	Appointments []*Appointment
 }
