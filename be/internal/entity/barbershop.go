@@ -12,6 +12,4 @@ type BarberShop struct {
 	Phone       string
 
 	Employees int
-
-	Appointments []*Appointment
 }
