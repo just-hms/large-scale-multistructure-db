@@ -55,7 +55,7 @@ type (
 		CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
 		CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
 		SetCompletedFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
-		GetByID(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
+		GetByID(ctx context.Context, ID string) (*entity.Appointment, error)
 	}
 
 	Review interface {
@@ -133,7 +133,7 @@ type (
 		Book(ctx context.Context, appointment *entity.Appointment) error
 		SetStatusFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
 		SetStatusFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
-		GetByID(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
+		GetByID(ctx context.Context, ID string) (*entity.Appointment, error)
 	}
 
 	ReviewRepo interface {

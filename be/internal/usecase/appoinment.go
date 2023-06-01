@@ -90,6 +90,6 @@ func (uc *AppointmentUseCase) SetCompletedFromShop(ctx context.Context, shopID s
 	return uc.cache.Cancel(ctx, appointment)
 }
 
-func (uc *AppointmentUseCase) GetByID(ctx context.Context, shopID, ID string) (*entity.Appointment, error) {
-	return uc.appointmentRepo.GetByID(ctx, shopID, ID)
+func (uc *AppointmentUseCase) GetByID(ctx context.Context, ID string) (*entity.Appointment, error) {
+	return uc.appointmentRepo.GetByID(ctx, ID)
 }
