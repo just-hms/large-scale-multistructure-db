@@ -97,7 +97,7 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 		UserID:  user1.ID,
 	}
 	review2 := &entity.Review{
-		Rating:  5,
+		Rating:  2,
 		Content: "test2",
 		UserID:  user2.ID,
 	}
@@ -131,6 +131,12 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 	s.Require().NoError(err)
 
 	err = reviewRepo.Store(context.Background(), review1, shop1.ID)
+	s.Require().NoError(err)
+	review2.CreatedAt = time.Now().AddDate(0, -2, 0)
+	err = reviewRepo.Store(context.Background(), review2, shop1.ID)
+	s.Require().NoError(err)
+	review2.CreatedAt = time.Now().AddDate(-1, -2, 0)
+	err = reviewRepo.Store(context.Background(), review2, shop1.ID)
 	s.Require().NoError(err)
 	review2.CreatedAt = time.Now().AddDate(0, -2, 0)
 	err = reviewRepo.Store(context.Background(), review2, shop2.ID)
@@ -252,12 +258,11 @@ func (s *RepoSuite) TestGetWeightRankedReviewByShop() {
 
 	analytics, err := analyticsRepo.GetWeightRankedReviewByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0].WeightedScore, 10)
+	s.Require().Equal(analytics, 3.53)
 
 	analytics, err = analyticsRepo.GetWeightRankedReviewByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0].WeightedScore, 2)
-	s.Require().Equal(analytics[1].WeightedScore, 1)
+	s.Require().Equal(analytics, 2.0)
 
 }
 

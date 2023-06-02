@@ -3,7 +3,6 @@ package repo
 import (
 	"context"
 
-	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -225,8 +224,9 @@ func (r *AnalyticsRepo) GetUpDownVoteCountByShop(ctx context.Context, shopID str
 //	 created > 365 days -> 1 point
 //
 // VoteScore: #upvotes - #downvotes
-// WeightedScore: (rating * freshness * voteScore) / totalOf(rating*freshness)
-func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID string) ([]*entity.Review, error) {
+// WeightedScore: freshness * voteScore
+// WeightedRating: (weightedScore * rating) / sum(weightedScore)
+func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID string) (float64, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
@@ -296,37 +296,48 @@ func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID 
 		},
 	}}
 
-	unsetStage := bson.D{{
-		"$unset",
-		bson.A{"upCount", "downCount", "freshnessScore", "voteScore"},
-	}}
-
-	sortStage := bson.D{{
-		"$sort",
+	groupStage := bson.D{{
+		"$group",
 		bson.D{
-			{"weightedScore", -1},
+			{"_id", "$shopId"},
+			{"numerator", bson.D{
+				{"$sum", bson.D{
+					{"$multiply", bson.A{"$weightedScore", "$rating"}},
+				}},
+			}},
+			{"denominator", bson.D{
+				{"$sum", "$weightedScore"},
+			}},
 		},
 	}}
 
-	cur, err := r.DB.Collection("reviews").Aggregate(ctx, mongo.Pipeline{matchStage, setStage1, setStage2, setStage3, unsetStage, sortStage})
+	projectStage := bson.D{{
+		"$project",
+		bson.D{
+			{"_id", 0},
+			{"weightedRating", bson.D{
+				{"$trunc", bson.A{
+					bson.D{{"$divide", bson.A{"$numerator", "$denominator"}}},
+					2,
+				}},
+			}},
+		},
+	}}
+
+	cur, err := r.DB.Collection("reviews").Aggregate(ctx, mongo.Pipeline{matchStage, setStage1, setStage2, setStage3, groupStage, projectStage})
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	defer cur.Close(ctx)
-
-	results := []*entity.Review{}
-
-	for cur.Next(ctx) {
-		var review entity.Review
-
-		if err := cur.Decode(&review); err != nil {
-			return nil, err
-		}
-		results = append(results, &review)
+	var mongoResults []bson.M
+	err = cur.All(ctx, &mongoResults)
+	if err != nil {
+		return 0, err
 	}
 
-	return results, err
+	result := mongoResults[0]["weightedRating"].(float64)
+
+	return result, err
 
 }
 
