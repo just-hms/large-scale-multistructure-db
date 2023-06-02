@@ -244,3 +244,38 @@ func (br *BarberShopRoutes) Calendar(ctx *gin.Context) {
 	ctx.JSON(http.StatusAccepted, gin.H{"calendar": slots})
 
 }
+
+// GetAnalytics fetches all the analytics for a specified Shop
+//
+// @Summary Retrieve analytics of a barbershop
+// @Description Retrieves analytics of a barbershop for the given shop ID.
+// @Tags Barbershop
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param shopid path string true "The ID of the barbershop"
+// @Success 200 {object} map[string]entity.BarberAnalytics
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 404 {object} string "Not Found"
+// @Router /barbershop/{shopid}/analytics [get]
+func (br *BarberShopRoutes) GetAnalytics(ctx *gin.Context) {
+
+	ID := ctx.Param("shopid")
+
+	token := middleware.ExtractTokenFromRequest(ctx)
+	_, err := br.tokenUseCase.ExtractTokenID(token)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	analytics, err := br.barberShopUseCase.GetShopAnalytics(ctx, ID)
+
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"shopAnalytics": analytics})
+}
