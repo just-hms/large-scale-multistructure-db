@@ -319,3 +319,168 @@ func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID 
 	return results, err
 
 }
+
+func (r *AnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error) {
+
+	matchStage1 := bson.D{{
+		"$match", bson.D{
+			{"shopId", shopID},
+		},
+	}}
+
+	groupStage1 := bson.D{{
+		"$group",
+		bson.D{
+			{"_id", "$shopId"},
+			{"doc", bson.D{
+				{"$first", "$$ROOT"},
+			}},
+		},
+	}}
+
+	replaceRootStage1 := bson.D{{
+		"$replaceRoot",
+		bson.D{
+			{"newRoot", "$doc"},
+		},
+	}}
+
+	lookupNewClientsShopPipelineMatchStage1 := bson.D{{
+		"$match", bson.D{
+			{"shopId", shopID},
+			{"status", bson.D{
+				{"$ne", "canceled"},
+			}},
+		},
+	}}
+
+	lookupNewClientsShopPipelineSetStage1 := bson.D{{
+		"$set",
+		bson.D{
+			{"daysElapsed", bson.D{
+				{"$dateDiff", bson.D{
+					{"startDate", "$startDate"},
+					{"endDate", "$$NOW"},
+					{"unit", "day"},
+				}},
+			}},
+		},
+	}}
+
+	lookupNewClientsShopPipelineMatchStage2 := bson.D{{
+		"$match", bson.D{
+			{"$expr", bson.D{
+				{"$lt", bson.A{"$daysElapsed", 90}},
+			}},
+		},
+	}}
+
+	lookupNewClientsShopPipelineProjectStage := bson.D{{
+		"$project", bson.D{
+			{"_id", 0},
+			{"userId", 1},
+		},
+	}}
+
+	lookupNewClientsShopPipeline := bson.A{lookupNewClientsShopPipelineMatchStage1, lookupNewClientsShopPipelineSetStage1, lookupNewClientsShopPipelineMatchStage2, lookupNewClientsShopPipelineProjectStage}
+
+	lookupNewClientsShopStage := bson.D{{
+		"$lookup", bson.D{
+			{"from", "appointments"},
+			{"pipeline", lookupNewClientsShopPipeline},
+			{"as", "newClientsShop"},
+		},
+	}}
+
+	lookupNewClientsNoShopPipelineMatchStage1 := bson.D{{
+		"$match", bson.D{
+			{"shopId", bson.D{
+				{"$ne", shopID},
+			}},
+			{"status", bson.D{
+				{"$ne", "canceled"},
+			}},
+		},
+	}}
+
+	lookupNewClientsNoShopPipelineMatchStage2 := bson.D{{
+		"$match", bson.D{
+			{"$expr", bson.D{
+				{"$not", bson.D{
+					{"$in", bson.A{"$userId", "$$newClientsShop.userId"}},
+				}},
+			}},
+		},
+	}}
+
+	lookupNewClientsNoShopPipeline := bson.A{lookupNewClientsNoShopPipelineMatchStage1, lookupNewClientsShopPipelineSetStage1, lookupNewClientsShopPipelineMatchStage2, lookupNewClientsNoShopPipelineMatchStage2, lookupNewClientsShopPipelineProjectStage}
+
+	lookupNewClientsNoShopStage := bson.D{{
+		"$lookup", bson.D{
+			{"from", "appointments"},
+			{"let", bson.D{
+				{"newClientsShop", "$newClientsShop"},
+			}},
+			{"pipeline", lookupNewClientsNoShopPipeline},
+			{"as", "newClientsNoShop"},
+		},
+	}}
+
+	lookupOldClientsShopPipelineMatchStage1 := bson.D{{
+		"$match", bson.D{
+			{"$expr", bson.D{
+				{"$gte", bson.A{"$daysElapsed", 90}},
+			}},
+		},
+	}}
+
+	lookupOldClientsShopPipelineMatchStage2 := bson.D{{
+		"$match", bson.D{
+			{"$expr", bson.D{
+				{"$in", bson.A{"$userId", "$$newClientsNoShop.userId"}},
+			}},
+		},
+	}}
+
+	lookupOldClientsShopPipeline := bson.A{lookupNewClientsShopPipelineMatchStage1, lookupNewClientsShopPipelineSetStage1, lookupOldClientsShopPipelineMatchStage1, lookupOldClientsShopPipelineMatchStage2, lookupNewClientsShopPipelineProjectStage}
+
+	lookupOldClientsShopStage := bson.D{{
+		"$lookup", bson.D{
+			{"from", "appointments"},
+			{"let", bson.D{
+				{"newClientsNoShop", "$newClientsNoShop"},
+			}},
+			{"pipeline", lookupOldClientsShopPipeline},
+			{"as", "oldClientsShop"},
+		},
+	}}
+
+	projectStage1 := bson.D{{
+		"$project",
+		bson.D{
+			{"_id", 0},
+			{"oldClientsShop", 1},
+		},
+	}}
+
+	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage1, groupStage1, replaceRootStage1, lookupNewClientsShopStage, lookupNewClientsNoShopStage, lookupOldClientsShopStage, projectStage1})
+	if err != nil {
+		return nil, err
+	}
+
+	results := []string{}
+	var mongoResults []bson.M
+	err = cur.All(ctx, &mongoResults)
+	if err != nil {
+		return nil, err
+	}
+
+	userIdMapList := mongoResults[0]["oldClientsShop"].(bson.A)
+
+	for _, user := range userIdMapList {
+		results = append(results, user.(bson.M)["userId"].(string))
+	}
+
+	return results, err
+
+}

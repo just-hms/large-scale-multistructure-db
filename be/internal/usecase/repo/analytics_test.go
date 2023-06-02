@@ -53,14 +53,31 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 	fixture[SHOP2_ID] = shop2.ID
 
 	app1 := &entity.Appointment{
-		StartDate:    time.Now().Add(1 * time.Hour),
+		CreatedAt:    time.Now().AddDate(0, -4, 0),
+		StartDate:    time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
 		UserID:       user1.ID,
 		BarbershopID: shop1.ID,
 	}
 	app2 := &entity.Appointment{
 		StartDate:    time.Now().Add(1 * time.Hour),
+		UserID:       user1.ID,
+		BarbershopID: shop1.ID,
+	}
+	app3 := &entity.Appointment{
+		CreatedAt:    time.Now().AddDate(0, -4, 0),
+		StartDate:    time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
 		UserID:       user2.ID,
 		BarbershopID: shop1.ID,
+	}
+	app4 := &entity.Appointment{
+		StartDate:    time.Now().Add(1 * time.Hour),
+		UserID:       user2.ID,
+		BarbershopID: shop2.ID,
+	}
+	app5 := &entity.Appointment{
+		StartDate:    time.Now().Add(1 * time.Hour),
+		UserID:       user1.ID,
+		BarbershopID: shop2.ID,
 	}
 	view1 := &entity.ShopView{
 		UserID:       user1.ID,
@@ -89,6 +106,12 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 	s.Require().NoError(err)
 	err = appointmentRepo.Book(context.Background(), app2)
 	s.Require().NoError(err)
+	err = appointmentRepo.Book(context.Background(), app3)
+	s.Require().NoError(err)
+	err = appointmentRepo.Book(context.Background(), app4)
+	s.Require().NoError(err)
+	err = appointmentRepo.Book(context.Background(), app5)
+	s.Require().NoError(err)
 
 	err = viewRepo.Store(context.Background(), view1)
 	s.Require().NoError(err)
@@ -97,6 +120,12 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 	err = viewRepo.Store(context.Background(), view1)
 	s.Require().NoError(err)
 	err = viewRepo.Store(context.Background(), view2)
+	s.Require().NoError(err)
+	err = viewRepo.Store(context.Background(), view3)
+	s.Require().NoError(err)
+	err = viewRepo.Store(context.Background(), view3)
+	s.Require().NoError(err)
+	err = viewRepo.Store(context.Background(), view3)
 	s.Require().NoError(err)
 	err = viewRepo.Store(context.Background(), view3)
 	s.Require().NoError(err)
@@ -132,10 +161,10 @@ func (s *RepoSuite) TestGetAppointmentCountByShop() {
 
 	analytics, err := analyticsRepo.GetAppointmentCountByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[monthKey], 2)
+	s.Require().Equal(analytics[monthKey], 1)
 	analytics, err = analyticsRepo.GetAppointmentCountByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[monthKey], 0)
+	s.Require().Equal(analytics[monthKey], 2)
 
 }
 
@@ -154,7 +183,7 @@ func (s *RepoSuite) TestGetViewCountByShop() {
 
 	analytics, err = analyticsRepo.GetViewCountByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[monthKey], 1)
+	s.Require().Equal(analytics[monthKey], 4)
 
 }
 
@@ -173,7 +202,7 @@ func (s *RepoSuite) TestGetReviewCountByShop() {
 
 	analytics, err = analyticsRepo.GetReviewCountByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[monthKey], 2)
+	s.Require().Equal(analytics[monthKey], 0)
 }
 
 func (s *RepoSuite) TestGetAppointmentViewRatioByShop() {
@@ -187,11 +216,11 @@ func (s *RepoSuite) TestGetAppointmentViewRatioByShop() {
 
 	analytics, err := analyticsRepo.GetAppointmentViewRatioByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[monthKey], 0.5)
+	s.Require().Equal(analytics[monthKey], 0.25)
 
 	analytics, err = analyticsRepo.GetAppointmentViewRatioByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[monthKey], 0.0)
+	s.Require().Equal(analytics[monthKey], 0.5)
 }
 
 func (s *RepoSuite) TestGetUpDownVoteCountByShop() {
@@ -210,8 +239,8 @@ func (s *RepoSuite) TestGetUpDownVoteCountByShop() {
 
 	analytics, err = analyticsRepo.GetUpDownVoteCountByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[monthKey]["upCount"], 1)
-	s.Require().Equal(analytics[monthKey]["downCount"], 1)
+	s.Require().Equal(analytics[monthKey]["upCount"], 0)
+	s.Require().Equal(analytics[monthKey]["downCount"], 0)
 
 }
 
@@ -229,5 +258,22 @@ func (s *RepoSuite) TestGetWeightRankedReviewByShop() {
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[0].WeightedScore, 2)
 	s.Require().Equal(analytics[1].WeightedScore, 1)
+
+}
+
+func (s *RepoSuite) TestGetInactiveUsersByShop() {
+
+	s.SetupAnalyticsTestSuite()
+
+	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+
+	analytics, err := analyticsRepo.GetInactiveUsersByShop(context.Background(), fixture[SHOP1_ID])
+	s.Require().NoError(err)
+	s.Require().Equal(len(analytics), 1)
+	s.Require().Equal(analytics[0], fixture[USER2_ID])
+
+	analytics, err = analyticsRepo.GetInactiveUsersByShop(context.Background(), fixture[SHOP2_ID])
+	s.Require().NoError(err)
+	s.Require().Equal(len(analytics), 0)
 
 }
