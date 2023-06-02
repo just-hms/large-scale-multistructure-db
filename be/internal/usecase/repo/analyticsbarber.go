@@ -226,7 +226,7 @@ func (r *BarberAnalyticsRepo) GetUpDownVoteCountByShop(ctx context.Context, shop
 // VoteScore: #upvotes - #downvotes
 // WeightedScore: freshness * voteScore
 // WeightedRating: (weightedScore * rating) / sum(weightedScore)
-func (r *BarberAnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID string) (float64, error) {
+func (r *BarberAnalyticsRepo) GetReviewWeightedRatingByShop(ctx context.Context, shopID string) (float64, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 

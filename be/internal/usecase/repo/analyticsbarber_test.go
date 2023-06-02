@@ -250,17 +250,17 @@ func (s *RepoSuite) TestGetUpDownVoteCountByShop() {
 
 }
 
-func (s *RepoSuite) TestGetWeightRankedReviewByShop() {
+func (s *RepoSuite) TestGetReviewWeightedRatingByShop() {
 
 	s.SetupAnalyticsTestSuite()
 
 	analyticsRepo := repo.NewBarberAnalyticsRepo(s.db)
 
-	analytics, err := analyticsRepo.GetWeightRankedReviewByShop(context.Background(), fixture[SHOP1_ID])
+	analytics, err := analyticsRepo.GetReviewWeightedRatingByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
 	s.Require().Equal(analytics, 3.53)
 
-	analytics, err = analyticsRepo.GetWeightRankedReviewByShop(context.Background(), fixture[SHOP2_ID])
+	analytics, err = analyticsRepo.GetReviewWeightedRatingByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)
 	s.Require().Equal(analytics, 2.0)
 
