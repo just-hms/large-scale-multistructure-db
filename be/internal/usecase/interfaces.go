@@ -44,6 +44,7 @@ type (
 		Store(ctx context.Context, shop *entity.BarberShop) error
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error
+		GetShopAnalytics(ctx context.Context, ID string) (*entity.BarberAnalytics, error)
 	}
 
 	Calendar interface {
@@ -76,9 +77,6 @@ type (
 		CreateToken(userID string) (string, error)
 		ExtractTokenID(tokenString string) (string, error)
 	}
-
-	// TODO : add analytics, maybe raw access to db using custom store like AnalyticsStore
-
 )
 
 // Utility interfaces
