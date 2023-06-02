@@ -216,7 +216,7 @@ func (r *AnalyticsRepo) GetUpDownVoteCountByShop(ctx context.Context, shopID str
 
 }
 
-// This query produces a weighted rating of a Shop based on its Reviews.
+// This aggregation produces a weighted rating of a Shop based on its Reviews.
 // Reviews are weighted depending on Freshness and VoteScore
 // Freshness:
 //
@@ -330,7 +330,7 @@ func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID 
 
 }
 
-// This query is quite complex and can be basically broken into 4 steps:
+// This aggregation is quite complex and can be basically broken into 4 steps:
 // - Use a Replace root to get just a single doc with the shopId
 // - Find all the users that made an appointment in the Shop in the last 90 days
 // - Find all the users that made an appointment in the last 90 days in another Shop and weren't in the new users (active users in other Shops)
