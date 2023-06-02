@@ -157,3 +157,60 @@ func (r *AnalyticsRepo) GetAppointmentViewRatioByShop(ctx context.Context, shopI
 	return results, err
 
 }
+
+func (r *AnalyticsRepo) GetUpDownVoteCountByShop(ctx context.Context, shopID string) (map[string]map[string]int, error) {
+
+	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
+
+	projectStage := bson.D{{
+		"$project",
+		bson.D{
+			{"createdAt", 1},
+			{"upCount", bson.D{
+				{"$size", "$upvotes"},
+			}},
+			{"downCount", bson.D{
+				{"$size", "$downvotes"},
+			}},
+		},
+	}}
+
+	groupStage := bson.D{{
+		"$group",
+		bson.D{
+			{"_id", bson.D{
+				{"$dateToString", bson.D{
+					{"date", "$createdAt"},
+					{"format", "%Y-%m"},
+				}},
+			}},
+			{"upCount", bson.D{
+				{"$sum", "$upCount"},
+			}},
+			{"downCount", bson.D{
+				{"$sum", "$downCount"},
+			}},
+		},
+	}}
+
+	cur, err := r.DB.Collection("reviews").Aggregate(ctx, mongo.Pipeline{matchStage, projectStage, groupStage})
+	if err != nil {
+		return nil, err
+	}
+
+	results := make(map[string]map[string]int)
+	var mongoResults []bson.M
+	err = cur.All(ctx, &mongoResults)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range mongoResults {
+		results[result["_id"].(string)] = make(map[string]int)
+		results[result["_id"].(string)]["upCount"] = int(result["upCount"].(int32))
+		results[result["_id"].(string)]["downCount"] = int(result["downCount"].(int32))
+	}
+
+	return results, err
+
+}

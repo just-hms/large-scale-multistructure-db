@@ -36,6 +36,7 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 	appointmentRepo := repo.NewAppointmentRepo(s.db)
 	viewRepo := repo.NewShopViewRepo(s.db)
 	reviewRepo := repo.NewReviewRepo(s.db)
+	voteRepo := repo.NewVoteRepo(s.db)
 
 	err := userRepo.Store(context.Background(), user1)
 	s.Require().NoError(err)
@@ -105,6 +106,15 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 	err = reviewRepo.Store(context.Background(), review2, shop2.ID)
 	s.Require().NoError(err)
 	err = reviewRepo.Store(context.Background(), review2, shop2.ID)
+	s.Require().NoError(err)
+
+	err = voteRepo.UpVoteByID(context.Background(), user1.ID, shop1.ID, review1.ID)
+	s.Require().NoError(err)
+	err = voteRepo.UpVoteByID(context.Background(), user2.ID, shop1.ID, review1.ID)
+	s.Require().NoError(err)
+	err = voteRepo.DownVoteByID(context.Background(), user1.ID, shop2.ID, review2.ID)
+	s.Require().NoError(err)
+	err = voteRepo.UpVoteByID(context.Background(), user2.ID, shop2.ID, review2.ID)
 	s.Require().NoError(err)
 
 }
@@ -180,4 +190,25 @@ func (s *RepoSuite) TestGetAppointmentViewRatioByShop() {
 	analytics, err = analyticsRepo.GetAppointmentViewRatioByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[monthKey], 0.0)
+}
+
+func (s *RepoSuite) TestGetUpDownVoteCountByShop() {
+
+	s.SetupAnalyticsTestSuite()
+
+	year, month, _ := time.Now().Date()
+	monthKey := fmt.Sprintf("%02d-%02d", year, month)
+
+	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+
+	analytics, err := analyticsRepo.GetUpDownVoteCountByShop(context.Background(), fixture[SHOP1_ID])
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[monthKey]["upCount"], 2)
+	s.Require().Equal(analytics[monthKey]["downCount"], 0)
+
+	analytics, err = analyticsRepo.GetUpDownVoteCountByShop(context.Background(), fixture[SHOP2_ID])
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[monthKey]["upCount"], 1)
+	s.Require().Equal(analytics[monthKey]["downCount"], 1)
+
 }
