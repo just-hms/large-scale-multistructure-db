@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 
+	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -209,6 +210,110 @@ func (r *AnalyticsRepo) GetUpDownVoteCountByShop(ctx context.Context, shopID str
 		results[result["_id"].(string)] = make(map[string]int)
 		results[result["_id"].(string)]["upCount"] = int(result["upCount"].(int32))
 		results[result["_id"].(string)]["downCount"] = int(result["downCount"].(int32))
+	}
+
+	return results, err
+
+}
+
+func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID string) ([]*entity.Review, error) {
+
+	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
+
+	setStage1 := bson.D{{
+		"$set",
+		bson.D{
+			{"upCount", bson.D{
+				{"$size", "$upvotes"},
+			}},
+			{"downCount", bson.D{
+				{"$size", "$downvotes"},
+			}},
+			{"daysElapsed", bson.D{
+				{"$dateDiff", bson.D{
+					{"startDate", "$createdAt"},
+					{"endDate", "$$NOW"},
+					{"unit", "day"},
+				}},
+			}},
+		},
+	}}
+
+	setStage2 := bson.D{{
+		"$set",
+		bson.D{
+			{"freshnessScore", bson.D{
+				{"$switch", bson.D{
+					{"branches", bson.A{
+						bson.D{
+							{"case", bson.D{
+								{"$and", bson.A{
+									bson.D{{"$gte", bson.A{"$daysElapsed", 0}}},
+									bson.D{{"$lt", bson.A{"$daysElapsed", 30}}},
+								}},
+							}},
+							{"then", 5},
+						},
+						bson.D{
+							{"case", bson.D{
+								{"$and", bson.A{
+									bson.D{{"$gte", bson.A{"$daysElapsed", 30}}},
+									bson.D{{"$lt", bson.A{"$daysElapsed", 365}}},
+								}},
+							}},
+							{"then", 2},
+						},
+					}},
+					{"default", 1},
+				}},
+			}},
+			{"voteScore", bson.D{
+				{"$cond", bson.A{
+					bson.D{{"$eq", bson.A{bson.D{{"$subtract", bson.A{"$upCount", "$downCount"}}}, 0}}},
+					1,
+					bson.D{{"$subtract", bson.A{"$upCount", "$downCount"}}},
+				}},
+			}},
+		},
+	}}
+
+	setStage3 := bson.D{{
+		"$set",
+		bson.D{
+			{"weightedScore", bson.D{
+				{"$multiply", bson.A{"$freshnessScore", "$voteScore"}},
+			}},
+		},
+	}}
+
+	unsetStage := bson.D{{
+		"$unset",
+		bson.A{"upCount", "downCount", "freshnessScore", "voteScore"},
+	}}
+
+	sortStage := bson.D{{
+		"$sort",
+		bson.D{
+			{"weightedScore", -1},
+		},
+	}}
+
+	cur, err := r.DB.Collection("reviews").Aggregate(ctx, mongo.Pipeline{matchStage, setStage1, setStage2, setStage3, unsetStage, sortStage})
+	if err != nil {
+		return nil, err
+	}
+
+	defer cur.Close(ctx)
+
+	results := []*entity.Review{}
+
+	for cur.Next(ctx) {
+		var review entity.Review
+
+		if err := cur.Decode(&review); err != nil {
+			return nil, err
+		}
+		results = append(results, &review)
 	}
 
 	return results, err

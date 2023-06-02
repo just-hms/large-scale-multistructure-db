@@ -13,4 +13,6 @@ type Review struct {
 	UpVotes   []string  `bson:"upvotes"`
 	DownVotes []string  `bson:"downvotes"`
 	CreatedAt time.Time `bson:"createdAt"`
+
+	WeightedScore int `bson:"weightedScore,omitempty"`
 }

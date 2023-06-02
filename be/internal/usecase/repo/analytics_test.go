@@ -103,8 +103,10 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 
 	err = reviewRepo.Store(context.Background(), review1, shop1.ID)
 	s.Require().NoError(err)
+	review2.CreatedAt = time.Now().AddDate(0, -2, 0)
 	err = reviewRepo.Store(context.Background(), review2, shop2.ID)
 	s.Require().NoError(err)
+	review2.CreatedAt = time.Now().AddDate(-1, -2, 0)
 	err = reviewRepo.Store(context.Background(), review2, shop2.ID)
 	s.Require().NoError(err)
 
@@ -210,5 +212,22 @@ func (s *RepoSuite) TestGetUpDownVoteCountByShop() {
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[monthKey]["upCount"], 1)
 	s.Require().Equal(analytics[monthKey]["downCount"], 1)
+
+}
+
+func (s *RepoSuite) TestGetWeightRankedReviewByShop() {
+
+	s.SetupAnalyticsTestSuite()
+
+	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+
+	analytics, err := analyticsRepo.GetWeightRankedReviewByShop(context.Background(), fixture[SHOP1_ID])
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[0].WeightedScore, 10)
+
+	analytics, err = analyticsRepo.GetWeightRankedReviewByShop(context.Background(), fixture[SHOP2_ID])
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[0].WeightedScore, 2)
+	s.Require().Equal(analytics[1].WeightedScore, 1)
 
 }
