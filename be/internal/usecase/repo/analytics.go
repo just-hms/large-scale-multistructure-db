@@ -216,6 +216,16 @@ func (r *AnalyticsRepo) GetUpDownVoteCountByShop(ctx context.Context, shopID str
 
 }
 
+// This query produces a weighted rating of a Shop based on its Reviews.
+// Reviews are weighted depending on Freshness and VoteScore
+// Freshness:
+//
+//		created < 30 days -> 5 points
+//	 30 days <= created < 365 days -> 2 points
+//	 created > 365 days -> 1 point
+//
+// VoteScore: #upvotes - #downvotes
+// WeightedScore: (rating * freshness * voteScore) / totalOf(rating*freshness)
 func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID string) ([]*entity.Review, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
@@ -320,6 +330,11 @@ func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID 
 
 }
 
+// This query is quite complex and can be basically broken into 4 steps:
+// - Use a Replace root to get just a single doc with the shopId
+// - Find all the users that made an appointment in the Shop in the last 90 days
+// - Find all the users that made an appointment in the last 90 days in another Shop and weren't in the new users (active users in other Shops)
+// - Find all the users that made an appointment in the past and are active in other Shops
 func (r *AnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error) {
 
 	matchStage1 := bson.D{{
