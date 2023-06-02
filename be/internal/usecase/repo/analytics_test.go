@@ -163,3 +163,21 @@ func (s *RepoSuite) TestGetReviewCountByShop() {
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[monthKey], 2)
 }
+
+func (s *RepoSuite) TestGetAppointmentViewRatioByShop() {
+
+	s.SetupAnalyticsTestSuite()
+
+	year, month, _ := time.Now().Date()
+	monthKey := fmt.Sprintf("%02d-%02d", year, month)
+
+	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+
+	analytics, err := analyticsRepo.GetAppointmentViewRatioByShop(context.Background(), fixture[SHOP1_ID])
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[monthKey], 0.5)
+
+	analytics, err = analyticsRepo.GetAppointmentViewRatioByShop(context.Background(), fixture[SHOP2_ID])
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[monthKey], 0.0)
+}

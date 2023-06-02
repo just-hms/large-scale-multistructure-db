@@ -131,3 +131,29 @@ func (r *AnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID string)
 	return results, err
 
 }
+
+func (r *AnalyticsRepo) GetAppointmentViewRatioByShop(ctx context.Context, shopID string) (map[string]float64, error) {
+
+	viewCount, err := r.GetViewCountByShop(ctx, shopID)
+	if err != nil {
+		return nil, err
+	}
+
+	appointmentCount, err := r.GetAppointmentCountByShop(ctx, shopID)
+	if err != nil {
+		return nil, err
+	}
+
+	results := make(map[string]float64)
+	for month, vCount := range viewCount {
+		aCount, ok := appointmentCount[month]
+		if ok {
+			results[month] = float64(aCount) / float64(vCount)
+		} else {
+			results[month] = 0.0
+		}
+	}
+
+	return results, err
+
+}
