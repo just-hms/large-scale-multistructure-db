@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
@@ -31,6 +32,9 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 
 	appointment.ID = uuid.NewString()
 	appointment.BarbershopName = barbershop.Name
+	if appointment.CreatedAt.IsZero() {
+		appointment.CreatedAt = time.Now()
+	}
 	appointment.Status = "pending"
 
 	// Store appointment fields before removing unused fields in the BarberShop's Appointment
