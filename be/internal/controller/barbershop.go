@@ -255,8 +255,8 @@ func (br *BarberShopRoutes) Calendar(ctx *gin.Context) {
 // @Security ApiKeyAuth
 // @Param shopid path string true "The ID of the barbershop"
 // @Success 200 {object} map[string]entity.BarberAnalytics
+// @Failure 400 {object} string "Bad Request"
 // @Failure 401 {object} string "Unauthorized"
-// @Failure 404 {object} string "Not Found"
 // @Router /barbershop/{shopid}/analytics [get]
 func (br *BarberShopRoutes) GetAnalytics(ctx *gin.Context) {
 
@@ -273,7 +273,7 @@ func (br *BarberShopRoutes) GetAnalytics(ctx *gin.Context) {
 	analytics, err := br.barberShopUseCase.GetShopAnalytics(ctx, ID)
 
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
