@@ -53,6 +53,8 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 	voteRepo := repo.NewVoteRepo(m)
 	slotRepo := repo.NewSlotRepo(r)
 
+	barberAnalyticsRepo := repo.NewBarberAnalyticsRepo(m)
+
 	password := auth.NewPasswordAuth()
 	tokenapi := tokenapi.New(cfg.TokenLifespan, cfg.ApiSecret)
 
@@ -63,7 +65,7 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 	}
 	ucs := map[byte]usecase.Usecase{}
 	ucs[usecase.USER] = usecase.NewUserUseCase(userRepo, password, tokenapi)
-	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo, slotRepo)
+	ucs[usecase.BARBER_SHOP] = usecase.NewBarberShopUseCase(barberShopRepo, viewShopRepo, barberAnalyticsRepo, slotRepo)
 	ucs[usecase.APPOINTMENT] = usecase.NewAppoinmentUseCase(
 		appointmentRepo,
 		slotRepo,
