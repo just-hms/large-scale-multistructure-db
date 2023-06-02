@@ -7,15 +7,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type AnalyticsRepo struct {
+type BarberAnalyticsRepo struct {
 	*mongo.Mongo
 }
 
-func NewAnalyticsRepo(m *mongo.Mongo) *AnalyticsRepo {
-	return &AnalyticsRepo{m}
+func NewBarberAnalyticsRepo(m *mongo.Mongo) *BarberAnalyticsRepo {
+	return &BarberAnalyticsRepo{m}
 }
 
-func (r *AnalyticsRepo) GetAppointmentCountByShop(ctx context.Context, shopID string) (map[string]int, error) {
+func (r *BarberAnalyticsRepo) GetAppointmentCountByShop(ctx context.Context, shopID string) (map[string]int, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
@@ -54,7 +54,7 @@ func (r *AnalyticsRepo) GetAppointmentCountByShop(ctx context.Context, shopID st
 
 }
 
-func (r *AnalyticsRepo) GetViewCountByShop(ctx context.Context, shopID string) (map[string]int, error) {
+func (r *BarberAnalyticsRepo) GetViewCountByShop(ctx context.Context, shopID string) (map[string]int, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
@@ -93,7 +93,7 @@ func (r *AnalyticsRepo) GetViewCountByShop(ctx context.Context, shopID string) (
 
 }
 
-func (r *AnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID string) (map[string]int, error) {
+func (r *BarberAnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID string) (map[string]int, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
@@ -132,7 +132,7 @@ func (r *AnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID string)
 
 }
 
-func (r *AnalyticsRepo) GetAppointmentViewRatioByShop(ctx context.Context, shopID string) (map[string]float64, error) {
+func (r *BarberAnalyticsRepo) GetAppointmentViewRatioByShop(ctx context.Context, shopID string) (map[string]float64, error) {
 
 	viewCount, err := r.GetViewCountByShop(ctx, shopID)
 	if err != nil {
@@ -158,7 +158,7 @@ func (r *AnalyticsRepo) GetAppointmentViewRatioByShop(ctx context.Context, shopI
 
 }
 
-func (r *AnalyticsRepo) GetUpDownVoteCountByShop(ctx context.Context, shopID string) (map[string]map[string]int, error) {
+func (r *BarberAnalyticsRepo) GetUpDownVoteCountByShop(ctx context.Context, shopID string) (map[string]map[string]int, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
@@ -226,7 +226,7 @@ func (r *AnalyticsRepo) GetUpDownVoteCountByShop(ctx context.Context, shopID str
 // VoteScore: #upvotes - #downvotes
 // WeightedScore: freshness * voteScore
 // WeightedRating: (weightedScore * rating) / sum(weightedScore)
-func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID string) (float64, error) {
+func (r *BarberAnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID string) (float64, error) {
 
 	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
 
@@ -346,7 +346,7 @@ func (r *AnalyticsRepo) GetWeightRankedReviewByShop(ctx context.Context, shopID 
 // - Find all the users that made an appointment in the Shop in the last 90 days
 // - Find all the users that made an appointment in the last 90 days in another Shop and weren't in the new users (active users in other Shops)
 // - Find all the users that made an appointment in the past and are active in other Shops
-func (r *AnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error) {
+func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error) {
 
 	matchStage1 := bson.D{{
 		"$match", bson.D{

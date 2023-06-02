@@ -163,7 +163,7 @@ func (s *RepoSuite) TestGetAppointmentCountByShop() {
 	year, month, _ := time.Now().Date()
 	monthKey := fmt.Sprintf("%02d-%02d", year, month)
 
-	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+	analyticsRepo := repo.NewBarberAnalyticsRepo(s.db)
 
 	analytics, err := analyticsRepo.GetAppointmentCountByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
@@ -181,7 +181,7 @@ func (s *RepoSuite) TestGetViewCountByShop() {
 	year, month, _ := time.Now().Date()
 	monthKey := fmt.Sprintf("%02d-%02d", year, month)
 
-	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+	analyticsRepo := repo.NewBarberAnalyticsRepo(s.db)
 
 	analytics, err := analyticsRepo.GetViewCountByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
@@ -200,7 +200,7 @@ func (s *RepoSuite) TestGetReviewCountByShop() {
 	year, month, _ := time.Now().Date()
 	monthKey := fmt.Sprintf("%02d-%02d", year, month)
 
-	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+	analyticsRepo := repo.NewBarberAnalyticsRepo(s.db)
 
 	analytics, err := analyticsRepo.GetReviewCountByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
@@ -218,7 +218,7 @@ func (s *RepoSuite) TestGetAppointmentViewRatioByShop() {
 	year, month, _ := time.Now().Date()
 	monthKey := fmt.Sprintf("%02d-%02d", year, month)
 
-	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+	analyticsRepo := repo.NewBarberAnalyticsRepo(s.db)
 
 	analytics, err := analyticsRepo.GetAppointmentViewRatioByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
@@ -236,7 +236,7 @@ func (s *RepoSuite) TestGetUpDownVoteCountByShop() {
 	year, month, _ := time.Now().Date()
 	monthKey := fmt.Sprintf("%02d-%02d", year, month)
 
-	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+	analyticsRepo := repo.NewBarberAnalyticsRepo(s.db)
 
 	analytics, err := analyticsRepo.GetUpDownVoteCountByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
@@ -254,7 +254,7 @@ func (s *RepoSuite) TestGetWeightRankedReviewByShop() {
 
 	s.SetupAnalyticsTestSuite()
 
-	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+	analyticsRepo := repo.NewBarberAnalyticsRepo(s.db)
 
 	analytics, err := analyticsRepo.GetWeightRankedReviewByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
@@ -270,7 +270,7 @@ func (s *RepoSuite) TestGetInactiveUsersByShop() {
 
 	s.SetupAnalyticsTestSuite()
 
-	analyticsRepo := repo.NewAnalyticsRepo(s.db)
+	analyticsRepo := repo.NewBarberAnalyticsRepo(s.db)
 
 	analytics, err := analyticsRepo.GetInactiveUsersByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
