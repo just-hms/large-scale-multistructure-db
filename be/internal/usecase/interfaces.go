@@ -147,4 +147,14 @@ type (
 		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 		RemoveVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 	}
+
+	BarberAnalyticsRepo interface {
+		GetAppointmentCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetViewCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetReviewCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetAppointmentViewRatioByShop(ctx context.Context, shopID string) (map[string]float64, error)
+		GetUpDownVoteCountByShop(ctx context.Context, shopID string) (map[string]map[string]int, error)
+		GetReviewWeightedRatingByShop(ctx context.Context, shopID string) (float64, error)
+		GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error)
+	}
 )
