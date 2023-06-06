@@ -126,6 +126,8 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		barberShop.DELETE("/:shopid/review/:reviewid/vote", rr.RemoveVote)
 
 		barberShop.GET("/:shopid/calendar", br.Calendar)
+
+		barberShop.GET("/:shopid/analytics", mr.RequireBarber, br.GetAnalytics)
 	}
 
 	admin := api.Group("/admin")

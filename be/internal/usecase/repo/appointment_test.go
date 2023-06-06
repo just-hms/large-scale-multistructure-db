@@ -67,10 +67,9 @@ func (s *RepoSuite) TestAppointmentBook() {
 			s.Require().NoError(err)
 			// in the user collection
 			s.Require().NotNil(user.CurrentAppointment)
-			// in the barbershop collection
-			shop, err = shopRepo.GetByID(context.Background(), shop.ID)
+			// in the appointments collection
+			_, err := appointmentRepo.GetByID(context.Background(), tc.input.ID)
 			s.Require().NoError(err)
-			s.Require().Len(shop.Appointments, 1)
 		})
 	}
 
@@ -111,11 +110,10 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	s.Require().NoError(err)
 	s.Require().Nil(user.CurrentAppointment)
 
-	// in the barbershop collection
-	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
+	// in the appointments collection
+	app, err := appointmentRepo.GetByID(context.Background(), appointment.ID)
 	s.Require().NoError(err)
-	s.Require().Len(shop.Appointments, 1)
-	s.Require().Equal(shop.Appointments[0].Status, "canceled")
+	s.Require().Equal(app.Status, "canceled")
 
 	// Test that Cancel also works from the Shop
 
@@ -133,11 +131,10 @@ func (s *RepoSuite) TestAppointmentCancel() {
 	s.Require().NoError(err)
 	s.Require().Nil(user.CurrentAppointment)
 
-	// in the barbershop collection
-	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
+	// in the appointments collection
+	app, err = appointmentRepo.GetByID(context.Background(), appointment.ID)
 	s.Require().NoError(err)
-	s.Require().Len(shop.Appointments, 2)
-	s.Require().Equal(shop.Appointments[1].Status, "canceled")
+	s.Require().Equal(app.Status, "canceled")
 }
 
 func (s *RepoSuite) TestAppointmentComplete() {
@@ -175,9 +172,8 @@ func (s *RepoSuite) TestAppointmentComplete() {
 	s.Require().NoError(err)
 	s.Require().Nil(user.CurrentAppointment)
 
-	// in the barbershop collection
-	shop, err = shopRepo.GetByID(context.Background(), shop.ID)
+	// in the appointments collection
+	app, err := appointmentRepo.GetByID(context.Background(), appointment.ID)
 	s.Require().NoError(err)
-	s.Require().Len(shop.Appointments, 1)
-	s.Require().Equal(shop.Appointments[0].Status, "completed")
+	s.Require().Equal(app.Status, "completed")
 }

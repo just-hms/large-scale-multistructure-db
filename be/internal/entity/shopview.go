@@ -3,7 +3,8 @@ package entity
 import "time"
 
 type ShopView struct {
-	CreatedAt    time.Time
-	ViewerID     string
-	BarberShopID string
+	ID           string    `bson:"_id"`
+	CreatedAt    time.Time `bson:"createdAt"`
+	UserID       string    `bson:"userId"`
+	BarbershopID string    `bson:"shopId"`
 }

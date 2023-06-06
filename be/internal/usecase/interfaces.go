@@ -44,6 +44,7 @@ type (
 		Store(ctx context.Context, shop *entity.BarberShop) error
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error
+		GetShopAnalytics(ctx context.Context, ID string) (*entity.BarberAnalytics, error)
 	}
 
 	Calendar interface {
@@ -55,13 +56,13 @@ type (
 		CancelFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
 		CancelFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
 		SetCompletedFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
-		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
+		GetByID(ctx context.Context, ID string) (*entity.Appointment, error)
 	}
 
 	Review interface {
 		Store(ctx context.Context, review *entity.Review, shopID string) error
 		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, shopID, reviewID string) error
+		DeleteByID(ctx context.Context, reviewID string) error
 
 		UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
@@ -76,9 +77,6 @@ type (
 		CreateToken(userID string) (string, error)
 		ExtractTokenID(tokenString string) (string, error)
 	}
-
-	// TODO : add analytics, maybe raw access to db using custom store like AnalyticsStore
-
 )
 
 // Utility interfaces
@@ -133,18 +131,28 @@ type (
 		Book(ctx context.Context, appointment *entity.Appointment) error
 		SetStatusFromUser(ctx context.Context, userID string, appointment *entity.Appointment) error
 		SetStatusFromShop(ctx context.Context, shopID string, appointment *entity.Appointment) error
-		GetByIDs(ctx context.Context, shopID string, ID string) (*entity.Appointment, error)
+		GetByID(ctx context.Context, ID string) (*entity.Appointment, error)
 	}
 
 	ReviewRepo interface {
 		Store(ctx context.Context, review *entity.Review, shopID string) error
 		GetByBarberShopID(ctx context.Context, shopID string) ([]*entity.Review, error)
-		DeleteByID(ctx context.Context, shopID, reviewID string) error
+		DeleteByID(ctx context.Context, reviewID string) error
 	}
 
 	VoteRepo interface {
 		UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 		RemoveVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+	}
+
+	BarberAnalyticsRepo interface {
+		GetAppointmentCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetViewCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetReviewCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetAppointmentViewRatioByShop(ctx context.Context, shopID string) (map[string]float64, error)
+		GetUpDownVoteCountByShop(ctx context.Context, shopID string) (map[string]map[string]int, error)
+		GetReviewWeightedRatingByShop(ctx context.Context, shopID string) (float64, error)
+		GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error)
 	}
 )
