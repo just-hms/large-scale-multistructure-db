@@ -470,27 +470,6 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupOlderClientsNotReturningIdPipeline := bson.A{lookupMatchShopClientsStage, lookupSetElapsedDaysStage, lookupMatchOlderAppointmentsStage, lookupMatchOlderClientsNotReturningStage, lookupProjectUserIdStage}
-
-	lookupOlderClientsNotReturningIdStage := bson.D{{
-		"$lookup", bson.D{
-			{"from", "appointments"},
-			{"let", bson.D{
-				{"newClientsNoShop", "$newClientsNoShop"},
-			}},
-			{"pipeline", lookupOlderClientsNotReturningIdPipeline},
-			{"as", "oldClientsShopId"},
-		},
-	}}
-
-	lookupMatchUserIdStage := bson.D{{
-		"$match", bson.D{
-			{"$expr", bson.D{
-				{"$in", bson.A{"$_id", "$$oldClientsShopId.userId"}},
-			}},
-		},
-	}}
-
 	lookupProjectUsernameStage := bson.D{{
 		"$project", bson.D{
 			{"_id", 0},
@@ -498,15 +477,15 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupOlderClientsNotReturningUsernamePipeline := bson.A{lookupMatchUserIdStage, lookupProjectUsernameStage}
+	lookupOlderClientsNotReturningPipeline := bson.A{lookupMatchShopClientsStage, lookupSetElapsedDaysStage, lookupMatchOlderAppointmentsStage, lookupMatchOlderClientsNotReturningStage, lookupProjectUsernameStage}
 
-	lookupOlderClientsNotReturningUsernameStage := bson.D{{
+	lookupOlderClientsNotReturningStage := bson.D{{
 		"$lookup", bson.D{
-			{"from", "users"},
+			{"from", "appointments"},
 			{"let", bson.D{
-				{"oldClientsShopId", "$oldClientsShopId"},
+				{"newClientsNoShop", "$newClientsNoShop"},
 			}},
-			{"pipeline", lookupOlderClientsNotReturningUsernamePipeline},
+			{"pipeline", lookupOlderClientsNotReturningPipeline},
 			{"as", "oldClientsShopUsername"},
 		},
 	}}
@@ -519,7 +498,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage1, groupStage1, replaceRootStage1, lookupNewerClientsShopStage, lookupNewerClientsNoShopStage, lookupOlderClientsNotReturningIdStage, lookupOlderClientsNotReturningUsernameStage, projectStage1})
+	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage1, groupStage1, replaceRootStage1, lookupNewerClientsShopStage, lookupNewerClientsNoShopStage, lookupOlderClientsNotReturningStage, projectStage1})
 	if err != nil {
 		return nil, err
 	}

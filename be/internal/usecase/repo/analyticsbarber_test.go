@@ -61,27 +61,32 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 		CreatedAt:    time.Now().AddDate(0, -4, 0),
 		StartDate:    time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
 		UserID:       user1.ID,
+		Username:     user1.Username,
 		BarbershopID: shop1.ID,
 	}
 	app2 := &entity.Appointment{
 		StartDate:    time.Now().Add(1 * time.Hour),
 		UserID:       user1.ID,
+		Username:     user1.Username,
 		BarbershopID: shop1.ID,
 	}
 	app3 := &entity.Appointment{
 		CreatedAt:    time.Now().AddDate(0, -4, 0),
 		StartDate:    time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
 		UserID:       user2.ID,
+		Username:     user2.Username,
 		BarbershopID: shop1.ID,
 	}
 	app4 := &entity.Appointment{
 		StartDate:    time.Now().Add(1 * time.Hour),
 		UserID:       user2.ID,
+		Username:     user2.Username,
 		BarbershopID: shop2.ID,
 	}
 	app5 := &entity.Appointment{
 		StartDate:    time.Now().Add(1 * time.Hour),
 		UserID:       user1.ID,
+		Username:     user1.Username,
 		BarbershopID: shop2.ID,
 	}
 	view1 := &entity.ShopView{
