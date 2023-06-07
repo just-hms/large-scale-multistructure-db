@@ -19,7 +19,7 @@ func (s *RepoSuite) TestGetAppointmentCount() {
 
 	analyticsRepo := repo.NewAdminAnalyticsRepo(s.db)
 
-	analytics, err := analyticsRepo.GetAppointmentCount(context.Background(), fixture[SHOP1_ID])
+	analytics, err := analyticsRepo.GetAppointmentCount(context.Background())
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[monthKey], 3)
 	s.Require().Equal(analytics[oldMonthKey], 2)
@@ -34,7 +34,7 @@ func (s *RepoSuite) TestGetViewCount() {
 
 	analyticsRepo := repo.NewAdminAnalyticsRepo(s.db)
 
-	analytics, err := analyticsRepo.GetViewCount(context.Background(), fixture[SHOP1_ID])
+	analytics, err := analyticsRepo.GetViewCount(context.Background())
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[monthKey], 8)
 
@@ -53,7 +53,7 @@ func (s *RepoSuite) TestGetReviewCount() {
 
 	analyticsRepo := repo.NewAdminAnalyticsRepo(s.db)
 
-	analytics, err := analyticsRepo.GetReviewCount(context.Background(), fixture[SHOP1_ID])
+	analytics, err := analyticsRepo.GetReviewCount(context.Background())
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[monthKey], 1)
 	s.Require().Equal(analytics[oldMonthKey], 2)
@@ -71,7 +71,7 @@ func (s *RepoSuite) TestGetNewUsersCount() {
 
 	analyticsRepo := repo.NewAdminAnalyticsRepo(s.db)
 
-	analytics, err := analyticsRepo.GetNewUsersCount(context.Background(), fixture[SHOP1_ID])
+	analytics, err := analyticsRepo.GetNewUsersCount(context.Background())
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[monthKey], 1)
 	s.Require().Equal(analytics[oldMonthKey], 1)

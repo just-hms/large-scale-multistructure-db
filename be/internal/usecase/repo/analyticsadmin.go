@@ -15,7 +15,7 @@ func NewAdminAnalyticsRepo(m *mongo.Mongo) *AdminAnalyticsRepo {
 	return &AdminAnalyticsRepo{m}
 }
 
-func (r *AdminAnalyticsRepo) GetAppointmentCount(ctx context.Context, shopID string) (map[string]int, error) {
+func (r *AdminAnalyticsRepo) GetAppointmentCount(ctx context.Context) (map[string]int, error) {
 
 	groupStage := bson.D{{
 		"$group",
@@ -52,7 +52,7 @@ func (r *AdminAnalyticsRepo) GetAppointmentCount(ctx context.Context, shopID str
 
 }
 
-func (r *AdminAnalyticsRepo) GetViewCount(ctx context.Context, shopID string) (map[string]int, error) {
+func (r *AdminAnalyticsRepo) GetViewCount(ctx context.Context) (map[string]int, error) {
 
 	groupStage := bson.D{{
 		"$group",
@@ -89,7 +89,7 @@ func (r *AdminAnalyticsRepo) GetViewCount(ctx context.Context, shopID string) (m
 
 }
 
-func (r *AdminAnalyticsRepo) GetReviewCount(ctx context.Context, shopID string) (map[string]int, error) {
+func (r *AdminAnalyticsRepo) GetReviewCount(ctx context.Context) (map[string]int, error) {
 
 	groupStage := bson.D{{
 		"$group",
@@ -126,7 +126,7 @@ func (r *AdminAnalyticsRepo) GetReviewCount(ctx context.Context, shopID string) 
 
 }
 
-func (r *AdminAnalyticsRepo) GetNewUsersCount(ctx context.Context, shopID string) (map[string]int, error) {
+func (r *AdminAnalyticsRepo) GetNewUsersCount(ctx context.Context) (map[string]int, error) {
 
 	groupStage := bson.D{{
 		"$group",

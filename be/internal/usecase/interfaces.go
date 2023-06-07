@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Usecase interface{}
@@ -158,8 +159,10 @@ type (
 	}
 
 	AdminAnalyticsRepo interface {
-		GetAppointmentCount(ctx context.Context, shopID string) (map[string]int, error)
-		GetViewCount(ctx context.Context, shopID string) (map[string]int, error)
-		GetReviewCount(ctx context.Context, shopID string) (map[string]int, error)
+		GetAppointmentCount(ctx context.Context) (map[string]int, error)
+		GetViewCount(ctx context.Context) (map[string]int, error)
+		GetReviewCount(ctx context.Context) (map[string]int, error)
+		GetAppointmentCancellationUserRanking(ctx context.Context) ([]bson.M, error)
+		GetAppointmentCancellationShopRanking(ctx context.Context) ([]bson.M, error)
 	}
 )
