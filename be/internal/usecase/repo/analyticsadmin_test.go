@@ -88,3 +88,17 @@ func (s *RepoSuite) TestGetAppointmentCancellationUserRanking() {
 	s.Require().Equal(analytics[0]["userId"], fixture[USER1_ID])
 	s.Require().Equal(analytics[0]["cancelCount"], 1)
 }
+
+func (s *RepoSuite) TestGetAppointmentCancellationShopRanking() {
+
+	s.SetupAnalyticsTestSuite()
+
+	analyticsRepo := repo.NewAdminAnalyticsRepo(s.db)
+
+	analytics, err := analyticsRepo.GetAppointmentCancellationShopRanking(context.Background())
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[0]["shopId"], fixture[SHOP1_ID])
+	s.Require().Equal(analytics[0]["cancelCount"], 1)
+	s.Require().Equal(analytics[1]["shopId"], fixture[SHOP2_ID])
+	s.Require().Equal(analytics[1]["cancelCount"], 0)
+}
