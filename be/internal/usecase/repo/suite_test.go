@@ -81,8 +81,16 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 
 	fixture = map[byte]string{}
 
-	user1 := &entity.User{Email: "giovanni", Username: "bigG"}
-	user2 := &entity.User{Email: "banana", Username: "MangoLoco"}
+	user1 := &entity.User{
+		Email:      "giovanni",
+		Username:   "bigG",
+		SignupDate: time.Now().AddDate(-1, -4, 0),
+	}
+	user2 := &entity.User{
+		Email:      "banana",
+		Username:   "MangoLoco",
+		SignupDate: time.Now().AddDate(-1, -6, 0),
+	}
 	shop1 := &entity.BarberShop{Name: "brownies"}
 	shop2 := &entity.BarberShop{Name: "choco"}
 

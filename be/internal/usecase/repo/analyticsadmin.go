@@ -125,3 +125,40 @@ func (r *AdminAnalyticsRepo) GetReviewCount(ctx context.Context, shopID string) 
 	return results, err
 
 }
+
+func (r *AdminAnalyticsRepo) GetNewUsersCount(ctx context.Context, shopID string) (map[string]int, error) {
+
+	groupStage := bson.D{{
+		"$group",
+		bson.D{
+			{"_id", bson.D{
+				{"$dateToString", bson.D{
+					{"date", "$signupDate"},
+					{"format", "%Y-%m"},
+				}},
+			}},
+			{"count", bson.D{
+				{"$sum", 1},
+			}},
+		},
+	}}
+
+	cur, err := r.DB.Collection("users").Aggregate(ctx, mongo.Pipeline{groupStage})
+	if err != nil {
+		return nil, err
+	}
+
+	results := make(map[string]int)
+	var mongoResults []bson.M
+	err = cur.All(ctx, &mongoResults)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range mongoResults {
+		results[result["_id"].(string)] = int(result["count"].(int32))
+	}
+
+	return results, err
+
+}

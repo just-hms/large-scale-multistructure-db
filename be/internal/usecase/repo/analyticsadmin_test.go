@@ -59,3 +59,20 @@ func (s *RepoSuite) TestGetReviewCount() {
 	s.Require().Equal(analytics[oldMonthKey], 2)
 	s.Require().Equal(analytics[olderMonthKey], 2)
 }
+
+func (s *RepoSuite) TestGetNewUsersCount() {
+
+	s.SetupAnalyticsTestSuite()
+
+	year, month, _ := time.Now().AddDate(-1, -4, 0).Date()
+	monthKey := fmt.Sprintf("%02d-%02d", year, month)
+	oldYear, oldMonth, _ := time.Now().AddDate(-1, -6, 0).Date()
+	oldMonthKey := fmt.Sprintf("%02d-%02d", oldYear, oldMonth)
+
+	analyticsRepo := repo.NewAdminAnalyticsRepo(s.db)
+
+	analytics, err := analyticsRepo.GetNewUsersCount(context.Background(), fixture[SHOP1_ID])
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[monthKey], 1)
+	s.Require().Equal(analytics[oldMonthKey], 1)
+}
