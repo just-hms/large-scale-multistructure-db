@@ -1641,6 +1641,12 @@
         "entity.BarberAnalytics": {
             "type": "object",
             "properties": {
+                "appointmentCancellationRatioByMonth": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
                 "appointmentViewRatioByMonth": {
                     "type": "object",
                     "additionalProperties": {
@@ -1829,6 +1835,9 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "signupDate": {
+                    "type": "string"
                 },
                 "type": {
                     "type": "string"

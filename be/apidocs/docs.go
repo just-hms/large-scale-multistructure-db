@@ -1645,6 +1645,12 @@ const docTemplate = `{
         "entity.BarberAnalytics": {
             "type": "object",
             "properties": {
+                "appointmentCancellationRatioByMonth": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
                 "appointmentViewRatioByMonth": {
                     "type": "object",
                     "additionalProperties": {
@@ -1833,6 +1839,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "signupDate": {
+                    "type": "string"
                 },
                 "type": {
                     "type": "string"
