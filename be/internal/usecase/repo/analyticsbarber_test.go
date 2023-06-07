@@ -85,13 +85,21 @@ func (s *RepoSuite) TestGetAppointmentCancellationRatioByShop() {
 
 	s.SetupAnalyticsTestSuite()
 
+	year, month, _ := time.Now().Date()
+	monthKey := fmt.Sprintf("%02d-%02d", year, month)
+	oldYear, oldMonth, _ := time.Now().AddDate(0, -4, 0).Date()
+	oldMonthKey := fmt.Sprintf("%02d-%02d", oldYear, oldMonth)
+
 	analyticsRepo := repo.NewBarberAnalyticsRepo(s.db)
 
-	_, err := analyticsRepo.GetAppointmentCancellationRatioByShop(context.Background(), fixture[SHOP1_ID])
+	analytics, err := analyticsRepo.GetAppointmentCancellationRatioByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
+	s.Require().Equal(analytics[monthKey], 0.0)
+	s.Require().Equal(analytics[oldMonthKey], 0.33)
 
-	_, err = analyticsRepo.GetAppointmentCancellationRatioByShop(context.Background(), fixture[SHOP2_ID])
+	analytics, err = analyticsRepo.GetAppointmentCancellationRatioByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)
+	s.Require().Equal(analytics[monthKey], 0.0)
 }
 
 func (s *RepoSuite) TestGetUpDownVoteCountByShop() {
