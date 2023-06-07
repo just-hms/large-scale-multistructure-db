@@ -27,7 +27,7 @@ func (s *ControllerSuite) TestGetAdminAnalytics() {
 			status: http.StatusUnauthorized,
 		},
 		{
-			name:   "Correctly got Barbershop's Analytics",
+			name:   "Correctly got Admin's Analytics",
 			token:  s.fixture[ADMIN_TOKEN],
 			status: http.StatusOK,
 		},
