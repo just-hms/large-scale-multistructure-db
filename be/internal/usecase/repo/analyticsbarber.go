@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -576,7 +575,6 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(mongoResults)
 
 	userIdMapList := mongoResults[0]["oldClientsShopUsername"].(bson.A)
 
