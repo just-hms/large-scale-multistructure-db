@@ -282,3 +282,111 @@ func (r *AdminAnalyticsRepo) GetAppointmentCancellationShopRanking(ctx context.C
 	return mongoResults, err
 
 }
+
+func (r *AdminAnalyticsRepo) GetEngagementShopRanking(ctx context.Context) ([]bson.M, error) {
+
+	setStage := bson.D{{
+		"$set",
+		bson.D{
+			{"upCount", bson.D{
+				{"$size", "$upvotes"},
+			}},
+			{"downCount", bson.D{
+				{"$size", "$downvotes"},
+			}},
+		},
+	}}
+
+	setStage2 := bson.D{{
+		"$set",
+		bson.D{
+			{"voteEngagement", bson.D{
+				{"$sum", bson.A{"$upCount", "$downCount"}},
+			}},
+		},
+	}}
+
+	groupStage := bson.D{{
+		"$group",
+		bson.D{
+			{"_id", "$shopId"},
+			{"voteEngagement", bson.D{
+				{"$sum", "$voteEngagement"},
+			}},
+		},
+	}}
+
+	lookupGroupAndScoreAppointmentsStage := bson.D{{
+		"$group",
+		bson.D{
+			{"_id", "$shopId"},
+			{"appointmentEngagement", bson.D{
+				{"$sum", 5},
+			}},
+		},
+	}}
+
+	lookupScoreAppointmentsPipeline := bson.A{lookupGroupAndScoreAppointmentsStage}
+
+	lookupScoreAppointmentsStage := bson.D{{
+		"$lookup", bson.D{
+			{"from", "appointments"},
+			{"localField", "_id"},
+			{"foreignField", "shopId"},
+			{"pipeline", lookupScoreAppointmentsPipeline},
+			{"as", "appointmentEngagementList"},
+		},
+	}}
+
+	setStage3 := bson.D{{
+		"$set",
+		bson.D{
+			{"engagementScoreElem", bson.D{
+				{"$arrayElemAt", bson.A{"$appointmentEngagementList", 0}},
+			}},
+		},
+	}}
+
+	setStage4 := bson.D{{
+		"$set",
+		bson.D{
+			{"engagementScore", bson.D{
+				{"$add", bson.A{"$voteEngagement", "$engagementScoreElem.appointmentEngagement"}},
+			}},
+		},
+	}}
+
+	projectStage := bson.D{{
+		"$project",
+		bson.D{
+			{"_id", 0},
+			{"shopId", "$_id"},
+			{"engagementScore", 1},
+		},
+	}}
+
+	sortStage := bson.D{{
+		"$sort",
+		bson.D{
+			{"engagementScore", -1},
+		},
+	}}
+
+	cur, err := r.DB.Collection("reviews").Aggregate(ctx, mongo.Pipeline{setStage, setStage2, groupStage, lookupScoreAppointmentsStage, setStage3, setStage4, projectStage, sortStage})
+	if err != nil {
+		return nil, err
+	}
+
+	var mongoResults []bson.M
+	err = cur.All(ctx, &mongoResults)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range mongoResults {
+		result["engagementScore"] = int(result["engagementScore"].(int32))
+	}
+
+	return mongoResults, err
+
+}

@@ -164,5 +164,6 @@ type (
 		GetReviewCount(ctx context.Context) (map[string]int, error)
 		GetAppointmentCancellationUserRanking(ctx context.Context) ([]bson.M, error)
 		GetAppointmentCancellationShopRanking(ctx context.Context) ([]bson.M, error)
+		GetEngagementShopRanking(ctx context.Context) ([]bson.M, error)
 	}
 )
