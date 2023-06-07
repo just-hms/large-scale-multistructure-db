@@ -149,6 +149,14 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 		Username:     user1.Username,
 		BarbershopID: shop2.ID,
 	}
+	app6 := &entity.Appointment{
+		CreatedAt:    time.Now().AddDate(0, -4, 0),
+		StartDate:    time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
+		UserID:       user1.ID,
+		Username:     user1.Username,
+		BarbershopID: shop1.ID,
+		Status:       "canceled",
+	}
 	view1 := &entity.ShopView{
 		UserID:       user1.ID,
 		BarbershopID: shop1.ID,
@@ -181,6 +189,8 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 	err = appointmentRepo.Book(context.Background(), app4)
 	s.Require().NoError(err)
 	err = appointmentRepo.Book(context.Background(), app5)
+	s.Require().NoError(err)
+	err = appointmentRepo.Book(context.Background(), app6)
 	s.Require().NoError(err)
 
 	err = viewRepo.Store(context.Background(), view1)
