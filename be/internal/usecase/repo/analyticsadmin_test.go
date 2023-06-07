@@ -22,7 +22,7 @@ func (s *RepoSuite) TestGetAppointmentCount() {
 	analytics, err := analyticsRepo.GetAppointmentCount(context.Background())
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[monthKey], 3)
-	s.Require().Equal(analytics[oldMonthKey], 2)
+	s.Require().Equal(analytics[oldMonthKey], 3)
 }
 
 func (s *RepoSuite) TestGetViewCount() {
