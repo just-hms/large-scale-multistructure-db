@@ -155,4 +155,10 @@ type (
 		GetReviewWeightedRatingByShop(ctx context.Context, shopID string) (float64, error)
 		GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error)
 	}
+
+	AdminAnalyticsRepo interface {
+		GetAppointmentCount(ctx context.Context, shopID string) (map[string]int, error)
+		GetViewCount(ctx context.Context, shopID string) (map[string]int, error)
+		GetReviewCount(ctx context.Context, shopID string) (map[string]int, error)
+	}
 )
