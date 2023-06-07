@@ -18,6 +18,9 @@ const (
 	BARBER1_ID
 	BARBER2_ID
 
+	USER1_USERNAME
+	USER2_USERNAME
+
 	SHOP1_ID
 	SHOP2_ID
 )
@@ -26,8 +29,8 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 
 	fixture = map[byte]string{}
 
-	user1 := &entity.User{Email: "giovanni"}
-	user2 := &entity.User{Email: "banana"}
+	user1 := &entity.User{Email: "giovanni", Username: "bigG"}
+	user2 := &entity.User{Email: "banana", Username: "MangoLoco"}
 	shop1 := &entity.BarberShop{Name: "brownies"}
 	shop2 := &entity.BarberShop{Name: "choco"}
 
@@ -41,9 +44,11 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 	err := userRepo.Store(context.Background(), user1)
 	s.Require().NoError(err)
 	fixture[USER1_ID] = user1.ID
+	fixture[USER1_USERNAME] = user1.Username
 	err = userRepo.Store(context.Background(), user2)
 	s.Require().NoError(err)
 	fixture[USER2_ID] = user2.ID
+	fixture[USER2_USERNAME] = user2.Username
 
 	err = shopRepo.Store(context.Background(), shop1)
 	s.Require().NoError(err)
@@ -275,7 +280,7 @@ func (s *RepoSuite) TestGetInactiveUsersByShop() {
 	analytics, err := analyticsRepo.GetInactiveUsersByShop(context.Background(), fixture[SHOP1_ID])
 	s.Require().NoError(err)
 	s.Require().Equal(len(analytics), 1)
-	s.Require().Equal(analytics[0], fixture[USER2_ID])
+	s.Require().Equal(analytics[0], fixture[USER2_USERNAME])
 
 	analytics, err = analyticsRepo.GetInactiveUsersByShop(context.Background(), fixture[SHOP2_ID])
 	s.Require().NoError(err)

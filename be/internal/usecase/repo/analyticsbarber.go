@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -346,6 +347,7 @@ func (r *BarberAnalyticsRepo) GetReviewWeightedRatingByShop(ctx context.Context,
 // - Find all the users that made an appointment in the Shop in the last 90 days
 // - Find all the users that made an appointment in the last 90 days in another Shop and weren't in the new users (active users in other Shops)
 // - Find all the users that made an appointment in the past and are active in other Shops
+// Tl;Dr: OlderClients in (NewerClients not in NewerClientsShop)
 func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error) {
 
 	matchStage1 := bson.D{{
@@ -371,7 +373,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsShopPipelineMatchStage1 := bson.D{{
+	lookupMatchShopClientsStage := bson.D{{
 		"$match", bson.D{
 			{"shopId", shopID},
 			{"status", bson.D{
@@ -380,7 +382,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsShopPipelineSetStage1 := bson.D{{
+	lookupSetElapsedDaysStage := bson.D{{
 		"$set",
 		bson.D{
 			{"daysElapsed", bson.D{
@@ -393,7 +395,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsShopPipelineMatchStage2 := bson.D{{
+	lookupMatchNewerAppointmentsStage := bson.D{{
 		"$match", bson.D{
 			{"$expr", bson.D{
 				{"$lt", bson.A{"$daysElapsed", 90}},
@@ -401,24 +403,24 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsShopPipelineProjectStage := bson.D{{
+	lookupProjectUserIdStage := bson.D{{
 		"$project", bson.D{
 			{"_id", 0},
 			{"userId", 1},
 		},
 	}}
 
-	lookupNewClientsShopPipeline := bson.A{lookupNewClientsShopPipelineMatchStage1, lookupNewClientsShopPipelineSetStage1, lookupNewClientsShopPipelineMatchStage2, lookupNewClientsShopPipelineProjectStage}
+	lookupNewerClientsShopPipeline := bson.A{lookupMatchShopClientsStage, lookupSetElapsedDaysStage, lookupMatchNewerAppointmentsStage, lookupProjectUserIdStage}
 
-	lookupNewClientsShopStage := bson.D{{
+	lookupNewerClientsShopStage := bson.D{{
 		"$lookup", bson.D{
 			{"from", "appointments"},
-			{"pipeline", lookupNewClientsShopPipeline},
+			{"pipeline", lookupNewerClientsShopPipeline},
 			{"as", "newClientsShop"},
 		},
 	}}
 
-	lookupNewClientsNoShopPipelineMatchStage1 := bson.D{{
+	lookupMatchNoShopClientsStage := bson.D{{
 		"$match", bson.D{
 			{"shopId", bson.D{
 				{"$ne", shopID},
@@ -429,7 +431,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsNoShopPipelineMatchStage2 := bson.D{{
+	lookupMatchNewerClientsNoShopStage := bson.D{{
 		"$match", bson.D{
 			{"$expr", bson.D{
 				{"$not", bson.D{
@@ -439,20 +441,20 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsNoShopPipeline := bson.A{lookupNewClientsNoShopPipelineMatchStage1, lookupNewClientsShopPipelineSetStage1, lookupNewClientsShopPipelineMatchStage2, lookupNewClientsNoShopPipelineMatchStage2, lookupNewClientsShopPipelineProjectStage}
+	lookupNewerClientsNoShopPipeline := bson.A{lookupMatchNoShopClientsStage, lookupSetElapsedDaysStage, lookupMatchNewerAppointmentsStage, lookupMatchNewerClientsNoShopStage, lookupProjectUserIdStage}
 
-	lookupNewClientsNoShopStage := bson.D{{
+	lookupNewerClientsNoShopStage := bson.D{{
 		"$lookup", bson.D{
 			{"from", "appointments"},
 			{"let", bson.D{
 				{"newClientsShop", "$newClientsShop"},
 			}},
-			{"pipeline", lookupNewClientsNoShopPipeline},
+			{"pipeline", lookupNewerClientsNoShopPipeline},
 			{"as", "newClientsNoShop"},
 		},
 	}}
 
-	lookupOldClientsShopPipelineMatchStage1 := bson.D{{
+	lookupMatchOlderAppointmentsStage := bson.D{{
 		"$match", bson.D{
 			{"$expr", bson.D{
 				{"$gte", bson.A{"$daysElapsed", 90}},
@@ -460,7 +462,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupOldClientsShopPipelineMatchStage2 := bson.D{{
+	lookupMatchOlderClientsNotReturningStage := bson.D{{
 		"$match", bson.D{
 			{"$expr", bson.D{
 				{"$in", bson.A{"$userId", "$$newClientsNoShop.userId"}},
@@ -468,16 +470,44 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupOldClientsShopPipeline := bson.A{lookupNewClientsShopPipelineMatchStage1, lookupNewClientsShopPipelineSetStage1, lookupOldClientsShopPipelineMatchStage1, lookupOldClientsShopPipelineMatchStage2, lookupNewClientsShopPipelineProjectStage}
+	lookupOlderClientsNotReturningIdPipeline := bson.A{lookupMatchShopClientsStage, lookupSetElapsedDaysStage, lookupMatchOlderAppointmentsStage, lookupMatchOlderClientsNotReturningStage, lookupProjectUserIdStage}
 
-	lookupOldClientsShopStage := bson.D{{
+	lookupOlderClientsNotReturningIdStage := bson.D{{
 		"$lookup", bson.D{
 			{"from", "appointments"},
 			{"let", bson.D{
 				{"newClientsNoShop", "$newClientsNoShop"},
 			}},
-			{"pipeline", lookupOldClientsShopPipeline},
-			{"as", "oldClientsShop"},
+			{"pipeline", lookupOlderClientsNotReturningIdPipeline},
+			{"as", "oldClientsShopId"},
+		},
+	}}
+
+	lookupMatchUserIdStage := bson.D{{
+		"$match", bson.D{
+			{"$expr", bson.D{
+				{"$in", bson.A{"$_id", "$$oldClientsShopId.userId"}},
+			}},
+		},
+	}}
+
+	lookupProjectUsernameStage := bson.D{{
+		"$project", bson.D{
+			{"_id", 0},
+			{"username", 1},
+		},
+	}}
+
+	lookupOlderClientsNotReturningUsernamePipeline := bson.A{lookupMatchUserIdStage, lookupProjectUsernameStage}
+
+	lookupOlderClientsNotReturningUsernameStage := bson.D{{
+		"$lookup", bson.D{
+			{"from", "users"},
+			{"let", bson.D{
+				{"oldClientsShopId", "$oldClientsShopId"},
+			}},
+			{"pipeline", lookupOlderClientsNotReturningUsernamePipeline},
+			{"as", "oldClientsShopUsername"},
 		},
 	}}
 
@@ -485,11 +515,11 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		"$project",
 		bson.D{
 			{"_id", 0},
-			{"oldClientsShop", 1},
+			{"oldClientsShopUsername", 1},
 		},
 	}}
 
-	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage1, groupStage1, replaceRootStage1, lookupNewClientsShopStage, lookupNewClientsNoShopStage, lookupOldClientsShopStage, projectStage1})
+	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage1, groupStage1, replaceRootStage1, lookupNewerClientsShopStage, lookupNewerClientsNoShopStage, lookupOlderClientsNotReturningIdStage, lookupOlderClientsNotReturningUsernameStage, projectStage1})
 	if err != nil {
 		return nil, err
 	}
@@ -500,11 +530,12 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(mongoResults)
 
-	userIdMapList := mongoResults[0]["oldClientsShop"].(bson.A)
+	userIdMapList := mongoResults[0]["oldClientsShopUsername"].(bson.A)
 
 	for _, user := range userIdMapList {
-		results = append(results, user.(bson.M)["userId"].(string))
+		results = append(results, user.(bson.M)["username"].(string))
 	}
 
 	return results, err
