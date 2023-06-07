@@ -76,3 +76,15 @@ func (s *RepoSuite) TestGetNewUsersCount() {
 	s.Require().Equal(analytics[monthKey], 1)
 	s.Require().Equal(analytics[oldMonthKey], 1)
 }
+
+func (s *RepoSuite) TestGetAppointmentCancellationUserRanking() {
+
+	s.SetupAnalyticsTestSuite()
+
+	analyticsRepo := repo.NewAdminAnalyticsRepo(s.db)
+
+	analytics, err := analyticsRepo.GetAppointmentCancellationUserRanking(context.Background())
+	s.Require().NoError(err)
+	s.Require().Equal(analytics[0]["userId"], fixture[USER1_ID])
+	s.Require().Equal(analytics[0]["cancelCount"], 1)
+}
