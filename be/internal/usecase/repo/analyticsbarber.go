@@ -133,6 +133,73 @@ func (r *BarberAnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID s
 
 }
 
+func (r *BarberAnalyticsRepo) GetAppointmentCancellationRatioByShop(ctx context.Context, shopID string) (map[string]float64, error) {
+
+	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
+
+	setStage := bson.D{{
+		"$set",
+		bson.D{
+			{"isCanceled", bson.D{
+				{"$cond", bson.A{
+					bson.D{{"$eq", bson.A{"$status", "canceled"}}},
+					1,
+					0,
+				}},
+			}},
+		},
+	}}
+
+	groupStage := bson.D{{
+		"$group",
+		bson.D{
+			{"_id", bson.D{
+				{"$dateToString", bson.D{
+					{"date", "$startDate"},
+					{"format", "%Y-%m"},
+				}},
+			}},
+			{"cancelCount", bson.D{
+				{"$sum", "$isCanceled"},
+			}},
+			{"appCount", bson.D{
+				{"$sum", 1},
+			}},
+		},
+	}}
+
+	projectStage := bson.D{{
+		"$project",
+		bson.D{
+			{"cancellationRatio", bson.D{
+				{"$trunc", bson.A{
+					bson.D{{"$divide", bson.A{"$cancelCount", "$appCount"}}},
+					2,
+				}},
+			}},
+		},
+	}}
+
+	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage, setStage, groupStage, projectStage})
+	if err != nil {
+		return nil, err
+	}
+
+	results := make(map[string]float64)
+	var mongoResults []bson.M
+	err = cur.All(ctx, &mongoResults)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range mongoResults {
+		results[result["_id"].(string)] = float64(result["cancellationRatio"].(float64))
+	}
+
+	return results, err
+
+}
+
 func (r *BarberAnalyticsRepo) GetAppointmentViewRatioByShop(ctx context.Context, shopID string) (map[string]float64, error) {
 
 	viewCount, err := r.GetViewCountByShop(ctx, shopID)

@@ -150,6 +150,7 @@ type (
 		GetAppointmentCountByShop(ctx context.Context, shopID string) (map[string]int, error)
 		GetViewCountByShop(ctx context.Context, shopID string) (map[string]int, error)
 		GetReviewCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetAppointmentCancellationRatioByShop(ctx context.Context, shopID string) (map[string]float64, error)
 		GetAppointmentViewRatioByShop(ctx context.Context, shopID string) (map[string]float64, error)
 		GetUpDownVoteCountByShop(ctx context.Context, shopID string) (map[string]map[string]int, error)
 		GetReviewWeightedRatingByShop(ctx context.Context, shopID string) (float64, error)
