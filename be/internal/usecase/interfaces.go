@@ -19,6 +19,7 @@ const (
 	HOLIDAY
 	REVIEW
 	GEOCODING
+	ADMIN_ANALYTICS
 	TOKEN
 )
 
@@ -72,6 +73,10 @@ type (
 
 	Geocoding interface {
 		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
+	}
+
+	AdminAnalytics interface {
+		GetAdminAnalytics(ctx context.Context) (*entity.AdminAnalytics, error)
 	}
 
 	Token interface {
