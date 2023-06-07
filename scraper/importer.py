@@ -55,7 +55,7 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     try:
         return usersCollection.insert_one(user).inserted_id, user
     except DuplicateKeyError:
-        return -1
+        return -1, None
 
 def addAppointmentToUser(usersCollection,userId,appointment):
     """Adds current appointment info to the specified user"""
@@ -288,10 +288,11 @@ def main():
             #Go through the reviews and generate users based on the found usernames. Skip if username already exists.
             for review in shop["reviewData"]["reviews"]:
                 userId, user = makeUser(usersCollectionMongo,review["username"],"user")
-                if userId != -1:
-                    generatedUsers[userId] = user
-                    #Add review to shop while faking amount of upvotes and downvotes
-                    addReviewToShop(reviewsCollectionMongo,shopId,user,review,fakeUserList(list(generatedUsers.keys())),fakeUserList(list(generatedUsers.keys()),5))
+                while userId == -1:
+                    userId, user = makeUser(usersCollectionMongo,review["username"],"user")
+                generatedUsers[userId] = user
+                #Add review to shop while faking amount of upvotes and downvotes
+                addReviewToShop(reviewsCollectionMongo,shopId,user,review,fakeUserList(list(generatedUsers.keys())),fakeUserList(list(generatedUsers.keys()),5))
             ##Fake interaction stuff we do not have: Views, Appointments
 
             #Fake a random amount of views from random users. Max 1500.
