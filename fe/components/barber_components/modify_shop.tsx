@@ -14,7 +14,6 @@ export default function ModifyShop({shops}:any) {
   }
   const [shopData,setShopData] = useState(dropdownElements[0])
   const [selectedShop,setSelectedShop] = useState(dropdownElements[0].Name)
-  // const [show,setShow] = useState(false)
   return (
     <>
     <div className='flex flex-col items-end justify-start h-full w-full px-5'>
@@ -58,10 +57,7 @@ export default function ModifyShop({shops}:any) {
               </Transition>
           </Menu>
       </div>
-      {/* element enabling the modification of the shop description */}
-      {/* {(show)? */}
       <ModifiedShop shopData={shopData}></ModifiedShop>
-       {/* :<></>} */}
     </div>
     </>
   );

@@ -1,4 +1,4 @@
-import { getShopData,submitReview,shopCalendar,getReviews, getAppointment } from '../lib/shops';
+import { getShopData,submitReview,shopCalendar} from '../lib/shops';
 import { getUserInfos } from '../lib/user';
 import { useFormik } from 'formik';
 import Image from 'next/image';
@@ -45,7 +45,7 @@ export default function Shop() {
           if (response.ok){                                         
             const json_response = await response.json()
             setshopData(json_response.barbershop)
-            console.log(json_response.barbershop)
+            // console.log(json_response.barbershop)
           }else{
             router.push("/404")
           }

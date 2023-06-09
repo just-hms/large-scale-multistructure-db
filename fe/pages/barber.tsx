@@ -3,11 +3,12 @@ import Navbar from '../components/navbar'
 import {useEffect, useState, useRef} from 'react';
 import UserInfos from '../components/user_components/account_infos';
 import Footer from '../components/footer';
-import {getReservations, getOwnedShops} from '../lib/barber'
+import {getOwnedShops} from '../lib/barber'
 import ModifyShop from '../components/barber_components/modify_shop';
 import BarberReservations from '../components/barber_components/barber_reservations';
 import { useRouter } from 'next/router';
 import { getUserInfos } from '../lib/user';
+import AnalytcsContainer from '../components/barber_components/analytics_container';
 export default function User() {
 
   const [content, setContent] = useState("account_info");
@@ -44,10 +45,8 @@ export default function User() {
   } else if (content == "reservations"){
     displayed_element = <BarberReservations shops={shopsData}/>;
   } else if (content == "analytics"){
-    displayed_element = <></>;
-  } else if (content == "calendar"){
-    displayed_element = <></>;
-  }
+    displayed_element = <AnalytcsContainer shops={shopsData}></AnalytcsContainer>;
+  } 
   
   if(!loaded){
     return <div></div> 
@@ -79,9 +78,9 @@ export default function User() {
                 <li className='mx-2 '>
                     <button className={`hover:text-white focus:outline-none ${content == "analytics" ? "font-bold" : ""}`} onClick={event => {setContent("analytics")}}>Analytics</button>
                 </li>
-                <li className='mx-2 '>
+                {/* <li className='mx-2 '>
                     <button className={`hover:text-white focus:outline-none ${content == "calendar" ? "font-bold" : ""}`} onClick={event => {setContent("calendar")}}>Calendar</button>
-                </li>
+                </li> */}
             </ul>
         </div>
 

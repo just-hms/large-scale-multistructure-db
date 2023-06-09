@@ -25,6 +25,13 @@ export async function shopCalendar(id){
   return response;
 }
 
+export async function shopAnalytics(id){
+  const response = await fetch(url+`barbershop/`+id+`/analytics`, {
+      method: 'GET',
+      headers: headers(localStorage.getItem("token"))
+  })
+  return response;
+}
 
 export async function submitReview(id,values){
   const response = await fetch(url+'barbershop/'+id+'/review', {
@@ -36,6 +43,13 @@ export async function submitReview(id,values){
     })
   })
   return response;
+}
+
+export async function deleteReview(shopid, reviewid){
+  await fetch(url+'barbershop/'+shopid+'/review/'+reviewid, {
+    method: 'DELETE',
+    headers: headers(localStorage.getItem("token"))
+  })
 }
 
 export async function submitVote(shopid, reviewid, vote){
@@ -56,12 +70,6 @@ export async function deleteVote(shopid, reviewid){
   })
 }
 
-export async function deleteReview(shopid, reviewid){
-  await fetch(url+'barbershop/'+shopid+'/review/'+reviewid, {
-    method: 'DELETE',
-    headers: headers(localStorage.getItem("token"))
-  })
-}
 
 export async function getAppointment(shopid,dateTime){
   const response = await fetch(url+'barbershop/'+shopid+'/appointment', {
