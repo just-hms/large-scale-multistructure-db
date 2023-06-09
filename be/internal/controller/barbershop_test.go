@@ -404,7 +404,7 @@ func (s *ControllerSuite) TestBarberShopDeleteByID() {
 	}
 }
 
-func (s *ControllerSuite) TestGetAnalytics() {
+func (s *ControllerSuite) TestGetShopAnalytics() {
 	testCases := []struct {
 		name   string
 		token  string

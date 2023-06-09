@@ -132,6 +132,73 @@ func (r *BarberAnalyticsRepo) GetReviewCountByShop(ctx context.Context, shopID s
 
 }
 
+func (r *BarberAnalyticsRepo) GetAppointmentCancellationRatioByShop(ctx context.Context, shopID string) (map[string]float64, error) {
+
+	matchStage := bson.D{{"$match", bson.D{{"shopId", shopID}}}}
+
+	setStage := bson.D{{
+		"$set",
+		bson.D{
+			{"isCanceled", bson.D{
+				{"$cond", bson.A{
+					bson.D{{"$eq", bson.A{"$status", "canceled"}}},
+					1,
+					0,
+				}},
+			}},
+		},
+	}}
+
+	groupStage := bson.D{{
+		"$group",
+		bson.D{
+			{"_id", bson.D{
+				{"$dateToString", bson.D{
+					{"date", "$startDate"},
+					{"format", "%Y-%m"},
+				}},
+			}},
+			{"cancelCount", bson.D{
+				{"$sum", "$isCanceled"},
+			}},
+			{"appCount", bson.D{
+				{"$sum", 1},
+			}},
+		},
+	}}
+
+	projectStage := bson.D{{
+		"$project",
+		bson.D{
+			{"cancellationRatio", bson.D{
+				{"$trunc", bson.A{
+					bson.D{{"$divide", bson.A{"$cancelCount", "$appCount"}}},
+					2,
+				}},
+			}},
+		},
+	}}
+
+	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage, setStage, groupStage, projectStage})
+	if err != nil {
+		return nil, err
+	}
+
+	results := make(map[string]float64)
+	var mongoResults []bson.M
+	err = cur.All(ctx, &mongoResults)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range mongoResults {
+		results[result["_id"].(string)] = float64(result["cancellationRatio"].(float64))
+	}
+
+	return results, err
+
+}
+
 func (r *BarberAnalyticsRepo) GetAppointmentViewRatioByShop(ctx context.Context, shopID string) (map[string]float64, error) {
 
 	viewCount, err := r.GetViewCountByShop(ctx, shopID)
@@ -346,6 +413,7 @@ func (r *BarberAnalyticsRepo) GetReviewWeightedRatingByShop(ctx context.Context,
 // - Find all the users that made an appointment in the Shop in the last 90 days
 // - Find all the users that made an appointment in the last 90 days in another Shop and weren't in the new users (active users in other Shops)
 // - Find all the users that made an appointment in the past and are active in other Shops
+// Tl;Dr: OlderClients in (NewerClients not in NewerClientsShop)
 func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error) {
 
 	matchStage1 := bson.D{{
@@ -371,7 +439,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsShopPipelineMatchStage1 := bson.D{{
+	lookupMatchShopClientsStage := bson.D{{
 		"$match", bson.D{
 			{"shopId", shopID},
 			{"status", bson.D{
@@ -380,7 +448,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsShopPipelineSetStage1 := bson.D{{
+	lookupSetElapsedDaysStage := bson.D{{
 		"$set",
 		bson.D{
 			{"daysElapsed", bson.D{
@@ -393,7 +461,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsShopPipelineMatchStage2 := bson.D{{
+	lookupMatchNewerAppointmentsStage := bson.D{{
 		"$match", bson.D{
 			{"$expr", bson.D{
 				{"$lt", bson.A{"$daysElapsed", 90}},
@@ -401,24 +469,24 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsShopPipelineProjectStage := bson.D{{
+	lookupProjectUserIdStage := bson.D{{
 		"$project", bson.D{
 			{"_id", 0},
 			{"userId", 1},
 		},
 	}}
 
-	lookupNewClientsShopPipeline := bson.A{lookupNewClientsShopPipelineMatchStage1, lookupNewClientsShopPipelineSetStage1, lookupNewClientsShopPipelineMatchStage2, lookupNewClientsShopPipelineProjectStage}
+	lookupNewerClientsShopPipeline := bson.A{lookupMatchShopClientsStage, lookupSetElapsedDaysStage, lookupMatchNewerAppointmentsStage, lookupProjectUserIdStage}
 
-	lookupNewClientsShopStage := bson.D{{
+	lookupNewerClientsShopStage := bson.D{{
 		"$lookup", bson.D{
 			{"from", "appointments"},
-			{"pipeline", lookupNewClientsShopPipeline},
+			{"pipeline", lookupNewerClientsShopPipeline},
 			{"as", "newClientsShop"},
 		},
 	}}
 
-	lookupNewClientsNoShopPipelineMatchStage1 := bson.D{{
+	lookupMatchNoShopClientsStage := bson.D{{
 		"$match", bson.D{
 			{"shopId", bson.D{
 				{"$ne", shopID},
@@ -429,7 +497,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsNoShopPipelineMatchStage2 := bson.D{{
+	lookupMatchNewerClientsNoShopStage := bson.D{{
 		"$match", bson.D{
 			{"$expr", bson.D{
 				{"$not", bson.D{
@@ -439,20 +507,20 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupNewClientsNoShopPipeline := bson.A{lookupNewClientsNoShopPipelineMatchStage1, lookupNewClientsShopPipelineSetStage1, lookupNewClientsShopPipelineMatchStage2, lookupNewClientsNoShopPipelineMatchStage2, lookupNewClientsShopPipelineProjectStage}
+	lookupNewerClientsNoShopPipeline := bson.A{lookupMatchNoShopClientsStage, lookupSetElapsedDaysStage, lookupMatchNewerAppointmentsStage, lookupMatchNewerClientsNoShopStage, lookupProjectUserIdStage}
 
-	lookupNewClientsNoShopStage := bson.D{{
+	lookupNewerClientsNoShopStage := bson.D{{
 		"$lookup", bson.D{
 			{"from", "appointments"},
 			{"let", bson.D{
 				{"newClientsShop", "$newClientsShop"},
 			}},
-			{"pipeline", lookupNewClientsNoShopPipeline},
+			{"pipeline", lookupNewerClientsNoShopPipeline},
 			{"as", "newClientsNoShop"},
 		},
 	}}
 
-	lookupOldClientsShopPipelineMatchStage1 := bson.D{{
+	lookupMatchOlderAppointmentsStage := bson.D{{
 		"$match", bson.D{
 			{"$expr", bson.D{
 				{"$gte", bson.A{"$daysElapsed", 90}},
@@ -460,7 +528,7 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupOldClientsShopPipelineMatchStage2 := bson.D{{
+	lookupMatchOlderClientsNotReturningStage := bson.D{{
 		"$match", bson.D{
 			{"$expr", bson.D{
 				{"$in", bson.A{"$userId", "$$newClientsNoShop.userId"}},
@@ -468,16 +536,23 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupOldClientsShopPipeline := bson.A{lookupNewClientsShopPipelineMatchStage1, lookupNewClientsShopPipelineSetStage1, lookupOldClientsShopPipelineMatchStage1, lookupOldClientsShopPipelineMatchStage2, lookupNewClientsShopPipelineProjectStage}
+	lookupProjectUsernameStage := bson.D{{
+		"$project", bson.D{
+			{"_id", 0},
+			{"username", 1},
+		},
+	}}
 
-	lookupOldClientsShopStage := bson.D{{
+	lookupOlderClientsNotReturningPipeline := bson.A{lookupMatchShopClientsStage, lookupSetElapsedDaysStage, lookupMatchOlderAppointmentsStage, lookupMatchOlderClientsNotReturningStage, lookupProjectUsernameStage}
+
+	lookupOlderClientsNotReturningStage := bson.D{{
 		"$lookup", bson.D{
 			{"from", "appointments"},
 			{"let", bson.D{
 				{"newClientsNoShop", "$newClientsNoShop"},
 			}},
-			{"pipeline", lookupOldClientsShopPipeline},
-			{"as", "oldClientsShop"},
+			{"pipeline", lookupOlderClientsNotReturningPipeline},
+			{"as", "oldClientsShopUsername"},
 		},
 	}}
 
@@ -485,11 +560,11 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		"$project",
 		bson.D{
 			{"_id", 0},
-			{"oldClientsShop", 1},
+			{"oldClientsShopUsername", 1},
 		},
 	}}
 
-	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage1, groupStage1, replaceRootStage1, lookupNewClientsShopStage, lookupNewClientsNoShopStage, lookupOldClientsShopStage, projectStage1})
+	cur, err := r.DB.Collection("appointments").Aggregate(ctx, mongo.Pipeline{matchStage1, groupStage1, replaceRootStage1, lookupNewerClientsShopStage, lookupNewerClientsNoShopStage, lookupOlderClientsNotReturningStage, projectStage1})
 	if err != nil {
 		return nil, err
 	}
@@ -501,10 +576,10 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		return nil, err
 	}
 
-	userIdMapList := mongoResults[0]["oldClientsShop"].(bson.A)
+	userIdMapList := mongoResults[0]["oldClientsShopUsername"].(bson.A)
 
 	for _, user := range userIdMapList {
-		results = append(results, user.(bson.M)["userId"].(string))
+		results = append(results, user.(bson.M)["username"].(string))
 	}
 
 	return results, err

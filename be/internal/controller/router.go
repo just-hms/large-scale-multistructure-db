@@ -91,6 +91,11 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 		ucs[usecase.GEOCODING].(usecase.Geocoding),
 	)
 
+	aa := NewAdminAnalyticsRoutes(
+		ucs[usecase.ADMIN_ANALYTICS].(usecase.AdminAnalytics),
+		ucs[usecase.TOKEN].(usecase.Token),
+	)
+
 	api.POST("geocoding/search", mr.RequireAuth, gr.Search)
 
 	user := api.Group("/user")
@@ -140,6 +145,8 @@ func Router(ucs map[byte]usecase.Usecase, production bool) *gin.Engine {
 
 		admin.POST("/barbershop", br.Create)
 		admin.DELETE("/barbershop/:shopid", br.Delete)
+
+		admin.GET("/analytics", aa.GetAnalytics)
 	}
 
 	return router

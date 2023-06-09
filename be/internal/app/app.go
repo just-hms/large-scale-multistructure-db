@@ -54,11 +54,11 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 	slotRepo := repo.NewSlotRepo(r)
 
 	barberAnalyticsRepo := repo.NewBarberAnalyticsRepo(m)
+	adminAnalyticsRepo := repo.NewAdminAnalyticsRepo(m)
 
 	password := auth.NewPasswordAuth()
 	tokenapi := tokenapi.New(cfg.TokenLifespan, cfg.ApiSecret)
 
-	// TODO : move check before and pass conf matrix
 	search_api, err := webapi.NewGeocodingWebAPI(cfg.Geocoding.Apikey)
 	if err != nil {
 		return nil, err
@@ -75,6 +75,8 @@ func BuildRequirements(m *mongo.Mongo, r *redis.Redis, cfg *config.Config) (map[
 	ucs[usecase.REVIEW] = usecase.NewReviewUseCase(reviewRepo, voteRepo)
 	ucs[usecase.CALENDAR] = usecase.NewCalendarUseCase(slotRepo)
 	ucs[usecase.GEOCODING] = usecase.NewGeocodingUseCase(search_api)
+
+	ucs[usecase.ADMIN_ANALYTICS] = usecase.NewAdminAnalyticsUseCase(adminAnalyticsRepo)
 
 	ucs[usecase.TOKEN] = usecase.NewTokenUsecase(tokenapi)
 

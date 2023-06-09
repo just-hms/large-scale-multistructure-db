@@ -47,6 +47,7 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     #Hash and salt password
     user["password"] = bcrypt.hashpw(user["password"].encode('utf-8'), bcrypt.gensalt(12)).decode("utf-8")
     user["type"] = type
+    user["signupDate"] = fake.date_time_between(start_date='-10y', end_date='now')
     user["ownedShops"] = []
     user["currentAppointment"] = {}
 
@@ -54,7 +55,7 @@ def makeUser(usersCollection,userName:str,type:Literal["user","barber","admin"])
     try:
         return usersCollection.insert_one(user).inserted_id, user
     except DuplicateKeyError:
-        return -1
+        return -1, None
 
 def addAppointmentToUser(usersCollection,userId,appointment):
     """Adds current appointment info to the specified user"""
@@ -118,7 +119,7 @@ def makeShop(shopsCollection,shopData:dict)->int:
     #Add shop to the db and return its new id
     return shopsCollection.insert_one(shop).inserted_id
 
-def addReviewToShop(reviewsCollection,shopId,userId,shopReview,upvotesIdList,downvotesIdList):
+def addReviewToShop(reviewsCollection,shopId,user,shopReview,upvotesIdList,downvotesIdList):
     """Adds a review to the specified shop. Uses the data format from the scraper."""
 
     #Create the review dict structure
@@ -126,7 +127,7 @@ def addReviewToShop(reviewsCollection,shopId,userId,shopReview,upvotesIdList,dow
     #Generate an id for the review
     review["_id"] = str(uuid.uuid4())
     review["shopId"] = shopId
-    review["userId"] = userId
+    review["userId"] = user["_id"]
     review["username"] = shopReview["username"].replace(" ", "")
     review["rating"] = shopReview["rating"]
     review["reported"] = False
@@ -134,7 +135,7 @@ def addReviewToShop(reviewsCollection,shopId,userId,shopReview,upvotesIdList,dow
     review["upvotes"] = upvotesIdList
     review["downvotes"] = downvotesIdList
     #We generate a review date as we do not have it
-    review["createdAt"] = fake.date_time_between(start_date='-10y', end_date='now')
+    review["createdAt"] = fake.date_time_between(start_date=user["signupDate"], end_date='now')
 
     #Update the review collection
     reviewsCollection.insert_one(review)
@@ -160,11 +161,13 @@ def fakeViews(shopviewsCollectionMongo,shopId,userList,maxViewsAmount=1500):
 
     viewsUserList = []
     for _ in range(viewsAmount):
+        #Extract a user
+        user = random.choice(userList)
         #Fake view date
         view = {}
         view["_id"] = str(uuid.uuid4())
-        view["createdAt"] = fake.date_time_between(start_date='-10y', end_date='now')
-        view["userId"] = random.choice(userList)
+        view["createdAt"] = fake.date_time_between(start_date=user["signupDate"], end_date='now')
+        view["userId"] = user["_id"]
         view["shopId"] = shopId
         viewsUserList.append(view)
 
@@ -285,14 +288,15 @@ def main():
             #Go through the reviews and generate users based on the found usernames. Skip if username already exists.
             for review in shop["reviewData"]["reviews"]:
                 userId, user = makeUser(usersCollectionMongo,review["username"],"user")
-                if userId != -1:
-                    generatedUsers[userId] = user
-                    #Add review to shop while faking amount of upvotes and downvotes
-                    addReviewToShop(reviewsCollectionMongo,shopId,userId,review,fakeUserList(list(generatedUsers.keys())),fakeUserList(list(generatedUsers.keys()),5))
+                while userId == -1:
+                    userId, user = makeUser(usersCollectionMongo,review["username"],"user")
+                generatedUsers[userId] = user
+                #Add review to shop while faking amount of upvotes and downvotes
+                addReviewToShop(reviewsCollectionMongo,shopId,user,review,fakeUserList(list(generatedUsers.keys())),fakeUserList(list(generatedUsers.keys()),5))
             ##Fake interaction stuff we do not have: Views, Appointments
 
             #Fake a random amount of views from random users. Max 1500.
-            viewsUserList = fakeViews(shopviewsCollectionMongo,shopId,list(generatedUsers.keys()),1500)
+            viewsUserList = fakeViews(shopviewsCollectionMongo,shopId,list(generatedUsers.values()),1500)
             #Fake a random number of appointments
             fakeAppointments(usersCollectionMongo,appointmentsCollectionMongo,shopId,shop["name"],viewsUserList,generatedUsers,200)
 

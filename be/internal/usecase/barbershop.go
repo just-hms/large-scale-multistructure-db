@@ -98,6 +98,10 @@ func (uc *BarberShopUseCase) GetShopAnalytics(ctx context.Context, ID string) (*
 	if err != nil {
 		return nil, err
 	}
+	analytics.AppointmentCancellationRatioByMonth, err = uc.analyticsRepo.GetAppointmentCancellationRatioByShop(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
 	analytics.AppointmentViewRatioByMonth, err = uc.analyticsRepo.GetAppointmentViewRatioByShop(ctx, ID)
 	if err != nil {
 		return nil, err
