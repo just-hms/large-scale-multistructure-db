@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Usecase interface{}
@@ -18,6 +19,7 @@ const (
 	HOLIDAY
 	REVIEW
 	GEOCODING
+	ADMIN_ANALYTICS
 	TOKEN
 )
 
@@ -44,6 +46,7 @@ type (
 		Store(ctx context.Context, shop *entity.BarberShop) error
 		ModifyByID(ctx context.Context, ID string, shop *entity.BarberShop) error
 		DeleteByID(ctx context.Context, ID string) error
+		GetShopAnalytics(ctx context.Context, ID string) (*entity.BarberAnalytics, error)
 	}
 
 	Calendar interface {
@@ -72,13 +75,14 @@ type (
 		Search(ctx context.Context, area string) ([]entity.GeocodingInfo, error)
 	}
 
+	AdminAnalytics interface {
+		GetAdminAnalytics(ctx context.Context) (*entity.AdminAnalytics, error)
+	}
+
 	Token interface {
 		CreateToken(userID string) (string, error)
 		ExtractTokenID(tokenString string) (string, error)
 	}
-
-	// TODO : add analytics, maybe raw access to db using custom store like AnalyticsStore
-
 )
 
 // Utility interfaces
@@ -146,5 +150,26 @@ type (
 		UpVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 		DownVoteByID(ctx context.Context, userID, shopID, reviewID string) error
 		RemoveVoteByID(ctx context.Context, userID, shopID, reviewID string) error
+	}
+
+	BarberAnalyticsRepo interface {
+		GetAppointmentCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetViewCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetReviewCountByShop(ctx context.Context, shopID string) (map[string]int, error)
+		GetAppointmentCancellationRatioByShop(ctx context.Context, shopID string) (map[string]float64, error)
+		GetAppointmentViewRatioByShop(ctx context.Context, shopID string) (map[string]float64, error)
+		GetUpDownVoteCountByShop(ctx context.Context, shopID string) (map[string]map[string]int, error)
+		GetReviewWeightedRatingByShop(ctx context.Context, shopID string) (float64, error)
+		GetInactiveUsersByShop(ctx context.Context, shopID string) ([]string, error)
+	}
+
+	AdminAnalyticsRepo interface {
+		GetAppointmentCount(ctx context.Context) (map[string]int, error)
+		GetViewCount(ctx context.Context) (map[string]int, error)
+		GetReviewCount(ctx context.Context) (map[string]int, error)
+		GetNewUsersCount(ctx context.Context) (map[string]int, error)
+		GetAppointmentCancellationUserRanking(ctx context.Context) ([]bson.M, error)
+		GetAppointmentCancellationShopRanking(ctx context.Context) ([]bson.M, error)
+		GetEngagementShopRanking(ctx context.Context) ([]bson.M, error)
 	}
 )

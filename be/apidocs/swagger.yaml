@@ -119,15 +119,48 @@ definitions:
         type: string
       userID:
         type: string
+      username:
+        type: string
+    type: object
+  entity.BarberAnalytics:
+    properties:
+      appointmentCancellationRatioByMonth:
+        additionalProperties:
+          type: number
+        type: object
+      appointmentViewRatioByMonth:
+        additionalProperties:
+          type: number
+        type: object
+      appointmentsByMonth:
+        additionalProperties:
+          type: integer
+        type: object
+      inactiveUsersList:
+        items:
+          type: string
+        type: array
+      reviewWeightedRating:
+        type: number
+      reviewsByMonth:
+        additionalProperties:
+          type: integer
+        type: object
+      upDownVoteCountByMonth:
+        additionalProperties:
+          additionalProperties:
+            type: integer
+          type: object
+        type: object
+      viewsByMonth:
+        additionalProperties:
+          type: integer
+        type: object
     type: object
   entity.BarberShop:
     properties:
       address:
         type: string
-      appointments:
-        items:
-          $ref: '#/definitions/entity.Appointment'
-        type: array
       description:
         type: string
       employees:
@@ -144,10 +177,6 @@ definitions:
         type: string
       rating:
         type: number
-      reviews:
-        items:
-          $ref: '#/definitions/entity.Review'
-        type: array
     type: object
   entity.GeocodingInfo:
     properties:
@@ -189,6 +218,8 @@ definitions:
         type: integer
       reported:
         type: boolean
+      shopID:
+        type: string
       upVotes:
         items:
           type: string
@@ -197,6 +228,8 @@ definitions:
         type: string
       username:
         type: string
+      weightedScore:
+        type: integer
     type: object
   entity.Slot:
     properties:
@@ -219,6 +252,8 @@ definitions:
         items:
           type: string
         type: array
+      signupDate:
+        type: string
       type:
         type: string
       username:
@@ -527,6 +562,39 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Modify details of a barbershop
+      tags:
+      - Barbershop
+  /barbershop/{shopid}/analytics:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves analytics of a barbershop for the given shop ID.
+      parameters:
+      - description: The ID of the barbershop
+        in: path
+        name: shopid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/entity.BarberAnalytics'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve analytics of a barbershop
       tags:
       - Barbershop
   /barbershop/{shopid}/appointment:

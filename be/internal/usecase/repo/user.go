@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/entity"
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
@@ -31,6 +32,9 @@ func (r *UserRepo) Store(ctx context.Context, user *entity.User) error {
 	}
 
 	user.ID = uuid.NewString()
+	if user.SignupDate.IsZero() {
+		user.SignupDate = time.Now()
+	}
 
 	_, err := r.DB.Collection("users").InsertOne(ctx, user)
 

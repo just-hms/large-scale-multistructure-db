@@ -7,16 +7,18 @@ import (
 )
 
 type BarberShopUseCase struct {
-	shopRepo BarberShopRepo
-	viewRepo ShopViewRepo
-	cache    SlotRepo
+	shopRepo      BarberShopRepo
+	viewRepo      ShopViewRepo
+	analyticsRepo BarberAnalyticsRepo
+	cache         SlotRepo
 }
 
-func NewBarberShopUseCase(shopRepo BarberShopRepo, viewRepo ShopViewRepo, cache SlotRepo) *BarberShopUseCase {
+func NewBarberShopUseCase(shopRepo BarberShopRepo, viewRepo ShopViewRepo, analyticsRepo BarberAnalyticsRepo, cache SlotRepo) *BarberShopUseCase {
 	return &BarberShopUseCase{
-		shopRepo: shopRepo,
-		viewRepo: viewRepo,
-		cache:    cache,
+		shopRepo:      shopRepo,
+		viewRepo:      viewRepo,
+		analyticsRepo: analyticsRepo,
+		cache:         cache,
 	}
 }
 
@@ -74,6 +76,49 @@ func (uc *BarberShopUseCase) ModifyByID(ctx context.Context, ID string, shop *en
 	return err
 
 }
+
 func (uc *BarberShopUseCase) DeleteByID(ctx context.Context, ID string) error {
 	return uc.shopRepo.DeleteByID(ctx, ID)
+}
+
+func (uc *BarberShopUseCase) GetShopAnalytics(ctx context.Context, ID string) (*entity.BarberAnalytics, error) {
+
+	var err error
+	analytics := &entity.BarberAnalytics{}
+
+	analytics.AppointmentsByMonth, err = uc.analyticsRepo.GetAppointmentCountByShop(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+	analytics.ViewsByMonth, err = uc.analyticsRepo.GetViewCountByShop(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+	analytics.ReviewsByMonth, err = uc.analyticsRepo.GetReviewCountByShop(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+	analytics.AppointmentCancellationRatioByMonth, err = uc.analyticsRepo.GetAppointmentCancellationRatioByShop(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+	analytics.AppointmentViewRatioByMonth, err = uc.analyticsRepo.GetAppointmentViewRatioByShop(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+	analytics.UpDownVoteCountByMonth, err = uc.analyticsRepo.GetUpDownVoteCountByShop(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+	analytics.ReviewWeightedRating, err = uc.analyticsRepo.GetReviewWeightedRatingByShop(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+	analytics.InactiveUsersList, err = uc.analyticsRepo.GetInactiveUsersByShop(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return analytics, err
+
 }

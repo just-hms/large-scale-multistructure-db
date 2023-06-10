@@ -469,6 +469,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/barbershop/{shopid}/analytics": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves analytics of a barbershop for the given shop ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Barbershop"
+                ],
+                "summary": "Retrieve analytics of a barbershop",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The ID of the barbershop",
+                        "name": "shopid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/entity.BarberAnalytics"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/barbershop/{shopid}/appointment": {
             "post": {
                 "security": [
@@ -1584,6 +1636,62 @@ const docTemplate = `{
                 },
                 "userID": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.BarberAnalytics": {
+            "type": "object",
+            "properties": {
+                "appointmentCancellationRatioByMonth": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "appointmentViewRatioByMonth": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "appointmentsByMonth": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "inactiveUsersList": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "reviewWeightedRating": {
+                    "type": "number"
+                },
+                "reviewsByMonth": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "upDownVoteCountByMonth": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "viewsByMonth": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -1592,12 +1700,6 @@ const docTemplate = `{
             "properties": {
                 "address": {
                     "type": "string"
-                },
-                "appointments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entity.Appointment"
-                    }
                 },
                 "description": {
                     "type": "string"
@@ -1622,12 +1724,6 @@ const docTemplate = `{
                 },
                 "rating": {
                     "type": "number"
-                },
-                "reviews": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entity.Review"
-                    }
                 }
             }
         },
@@ -1692,6 +1788,9 @@ const docTemplate = `{
                 "reported": {
                     "type": "boolean"
                 },
+                "shopID": {
+                    "type": "string"
+                },
                 "upVotes": {
                     "type": "array",
                     "items": {
@@ -1703,6 +1802,9 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                },
+                "weightedScore": {
+                    "type": "integer"
                 }
             }
         },
@@ -1737,6 +1839,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "signupDate": {
+                    "type": "string"
                 },
                 "type": {
                     "type": "string"

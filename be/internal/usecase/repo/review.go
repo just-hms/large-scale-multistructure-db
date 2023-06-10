@@ -46,7 +46,9 @@ func (r *ReviewRepo) Store(ctx context.Context, review *entity.Review, shopID st
 	review.Reported = false
 	review.UpVotes = []string{}
 	review.DownVotes = []string{}
-	review.CreatedAt = time.Now()
+	if review.CreatedAt.IsZero() {
+		review.CreatedAt = time.Now()
+	}
 
 	_, err = r.DB.Collection("reviews").InsertOne(ctx, review)
 	if err != nil {

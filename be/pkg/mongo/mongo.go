@@ -20,6 +20,8 @@ type Mongo struct {
 	DB *mongodriver.Database
 }
 
+type Pipeline mongodriver.Pipeline
+
 // get url and options as param
 // add const
 

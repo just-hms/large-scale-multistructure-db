@@ -8,8 +8,8 @@ type Appointment struct {
 	StartDate time.Time `bson:"startDate"`
 	Status    string    `bson:"status"`
 
-	UserID         string `bson:"userID,omitempty"`
+	UserID         string `bson:"userId,omitempty"`
 	Username       string `bson:"username,omitempty"`
-	BarbershopID   string `bson:"shopID,omitempty"`
+	BarbershopID   string `bson:"shopId,omitempty"`
 	BarbershopName string `bson:"shopName,omitempty"`
 }
