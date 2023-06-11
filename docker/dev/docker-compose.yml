@@ -23,7 +23,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 5
+      start_period: 5s
 
   mongodb2:
     container_name: mongodb2
