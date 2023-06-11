@@ -61,11 +61,11 @@ func (r *SlotRepo) Book(ctx context.Context, appointment *entity.Appointment, sl
 		return errors.New("barberShopID not specified")
 	}
 
-	slot.BookedAppointments += 1
-
 	if slot.BookedAppointments >= slot.Employees {
 		return errors.New("cannot book because this slot is full")
 	}
+
+	slot.BookedAppointments += 1
 
 	return r.set(appointment.BarbershopID, appointment.StartDate, slot)
 }
