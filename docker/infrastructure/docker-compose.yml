@@ -18,6 +18,12 @@ services:
       - dbClusterInfrastructure
     restart: always
     command: mongod --replSet barberReplSet
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb1:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   mongodb2:
     container_name: mongodb2
@@ -28,6 +34,12 @@ services:
       - dbClusterInfrastructure
     restart: always
     command: mongod --replSet barberReplSet
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb2:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   mongodb3:
     container_name: mongodb3
@@ -38,6 +50,12 @@ services:
       - dbClusterInfrastructure
     restart: always
     command: mongod --replSet barberReplSet
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb3:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   db: 
     restart: "no"
@@ -45,13 +63,18 @@ services:
     networks:
       - dbClusterInfrastructure
     depends_on:
-      - mongodb1
-      - mongodb2
-      - mongodb3
+      mongodb1:
+        condition: service_healthy
+      mongodb2:
+        condition: service_healthy
+      mongodb3:
+        condition: service_healthy
     command: >
       mongosh --host mongodb1:27017 --eval 
       '
       db = (new Mongo("mongodb1:27017")).getDB("test");
+      db = (new Mongo("mongodb2:27017")).getDB("test");
+      db = (new Mongo("mongodb3:27017")).getDB("test");
       config = {
       "_id" : "barberReplSet",
       "members" : [
