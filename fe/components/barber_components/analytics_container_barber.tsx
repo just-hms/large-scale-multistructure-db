@@ -4,7 +4,7 @@ import { Fragment} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons' 
 import React from 'react';
-import Analytics from './analytics';
+import Analytics from './analytics_barber';
 
 export default function AnalytcsContainer({shops}:any) {
   // dropdown shenanigans

@@ -45,13 +45,12 @@ export default function Chart({analyticsData, title}:any) {
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
             })
             chartRef.current?.update()
-        }else{
         }
+        console.log(analyticsData)
     },[analyticsData])
 
     return (
     <>
-    {( title != "Inactive users" && title != "Weighted Rating")?
     <div className="w-full flex flex-col justify-center items-center px-3">
         <Line
         ref={chartRef}
@@ -98,7 +97,7 @@ export default function Chart({analyticsData, title}:any) {
         data={{
             datasets: [],
         }} />
-    </div>:<></>}
+    </div>
     </>
     )
 }

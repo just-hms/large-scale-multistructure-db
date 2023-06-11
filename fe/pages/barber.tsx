@@ -8,7 +8,7 @@ import ModifyShop from '../components/barber_components/modify_shop';
 import BarberReservations from '../components/barber_components/barber_reservations';
 import { useRouter } from 'next/router';
 import { getUserInfos } from '../lib/user';
-import AnalytcsContainer from '../components/barber_components/analytics_container';
+import AnalytcsContainer from '../components/barber_components/analytics_container_barber';
 export default function User() {
 
   const [content, setContent] = useState("account_info");

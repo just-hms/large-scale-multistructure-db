@@ -44,28 +44,31 @@ export default function ManageShops() {
                 </div>
               </div>
               <div className="p-3 bg-slate-800/80">
-                {shops.map((shop:any)=>
-                <div key={shop.ID} className="w-full text-slate-200 my-4 px-2 flex flex-col items-center justify-start">
-                    <div key={shop.ID+"container"} className=" flex flex-col bg-slate-700 items-center justify-start w-full rounded-lg">
-                        <div className="flex w-full items-start justify-start">
-                            <div key={shop.ID+"title"} className="flex flex-col p-3 items-center lg:items-start justify-start w-full text-left">
-                                  <div className="flex w-full items-center py-1 justify-between">
-                                    <p className=" text-xl font-bold">{shop.Name}</p>
-                                    <button className="" type="button" id="search_button"
-                                    onClick={async () =>{
-                                      const response = await deleteShop(shop.ID)
-                                      if(response.status === 202)
-                                        window.location.reload()
-                                    }}>        
-                                      <FontAwesomeIcon icon={faTrash} className="text-xl pr-1 text-slate-400 hover:text-slate-100"/>
-                                    </button>
-                                  </div>
-                                  <p className="w-full pb-1 border-b border-slate-500">Shop Id: {shop.ID}</p>
-                                  <p className="w-full pb-1 border-b border-slate-500">Shop Owner: {shop.Owner}</p>
+                {shops.map((shop:any)=>{
+                    return(
+                    <div key={shop.ID} className="w-full text-slate-200 my-4 px-2 flex flex-col items-center justify-start">
+                        <div key={shop.ID+"container"} className=" flex flex-col bg-slate-700 items-center justify-start w-full rounded-lg">
+                            <div className="flex w-full items-start justify-start">
+                                <div key={shop.ID+"title"} className="flex flex-col p-3 items-center lg:items-start justify-start w-full text-left">
+                                      <div className="flex w-full items-center py-1 justify-between">
+                                        <p className=" text-xl font-bold">{shop.Name}</p>
+                                        <button className="" type="button" id="search_button"
+                                        onClick={async () =>{
+                                          const response = await deleteShop(shop.ID)
+                                          if(response.status === 202)
+                                            window.location.reload()
+                                        }}>        
+                                          <FontAwesomeIcon icon={faTrash} className="text-xl pr-1 text-slate-400 hover:text-slate-100"/>
+                                        </button>
+                                      </div>
+                                      <div className="w-full pb-1 border-b border-slate-500"> <p className="font-bold ">Shop Id:</p>{shop.ID}</div>
+                                      <div className="w-full pb-1 border-b border-slate-500"> <p className="font-bold ">Shop Address:</p>{shop.Address}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    )
+                }
                 )}
               </div>
             </div>

@@ -94,3 +94,11 @@ export async function modifyUserEmail (id,email){
   })
   return response;
 }
+
+export async function adminAnalytics(){
+  const response = await fetch(url+`admin/analytics`, {
+    method: 'GET',
+    headers: headers(localStorage.getItem("token"))
+  })
+  return response;
+}

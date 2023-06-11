@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { shopAnalytics } from "../../lib/shops";
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment} from 'react'
-import LineChart from "./barber_chart";
+import Chart from "../chart_components/chart";
 import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons' 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PaginatedList from "../chart_components/list_chart";
 
 export default function Analytics({shop}:any) {
     const [selectedAnalytics,setSelectedAnalytics] = useState({shown:'',key:''})
-    const shownElements = ["Appointments per month", "Views per month", "Reviews per month", "Views-appointment ratio", 
+    const shownElements = ["Appointments per month", "Views per month", "Reviews per month", "Views-appointment ratio","Appointments cancellation ratio", 
                                 "Review votes per month", "Weighted Rating",  "Inactive users" ]
     const [analytics,setAnalytics] = useState<any[]>([])
     const [dropDownElements, setdropDownElements] = useState<any[]>([])
@@ -24,9 +25,10 @@ export default function Analytics({shop}:any) {
                 retrieved_dropdownElements.push({key, shown})
                 i++
             }
+            console.log(retrieved_dropdownElements)
             setdropDownElements(retrieved_dropdownElements)
             setSelectedAnalytics(retrieved_dropdownElements[0])
-            const show_key:any = (selectedAnalytics.key != '')?selectedAnalytics.key:retrieved_dropdownElements[0].key
+            const show_key:any = retrieved_dropdownElements[0].key
             setAnalyticsData(analytics[show_key])
         }
         fetchData(shop)
@@ -35,6 +37,7 @@ export default function Analytics({shop}:any) {
     useEffect(()=>{
         const show_key:any = selectedAnalytics.key
         setAnalyticsData(analytics[show_key])
+        console.log(analytics)
     },[selectedAnalytics])
     return (
         <>
@@ -80,7 +83,9 @@ export default function Analytics({shop}:any) {
                 </Menu>
             </div>
         </div>
-        <LineChart analyticsData={analyticsData} title={selectedAnalytics.shown}></LineChart>
+        {(selectedAnalytics.key != 'InactiveUsersList' && selectedAnalytics.key != 'ReviewWeightedRating')?
+        <Chart analyticsData={analyticsData} title={selectedAnalytics.shown}/>:
+            <PaginatedList analyticsData={analyticsData} title={selectedAnalytics.shown}/>}
         </>
     );
 }

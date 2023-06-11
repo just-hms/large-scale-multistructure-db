@@ -3,11 +3,11 @@ import Navbar from '../components/navbar'
 import {useEffect, useState, useRef} from 'react';
 import Footer from '../components/footer';
 import ManageUsers from '../components/admin_components/manage_accounts';
-import { getAccountInfos } from '../lib/admin';
 import CreateShop from '../components/admin_components/create_shop';
 import { useRouter } from 'next/router';
 import { getUserInfos } from '../lib/user';
 import ManageShops from '../components/admin_components/manage_shops';
+import AnalyticsAdmin from "../components/admin_components/analyitcs_admin"
 
 export default function Admin() {
   const [content, setContent] = useState("manage_accounts");
@@ -17,13 +17,12 @@ export default function Admin() {
   const [users, setUsers] = useState([])
   // fetch account datas and check if user is logged and admin
   useEffect(()=>{
-    const fetchAccountsData = async () => {
+    const checkAdmin = async () => {
       const myself = await (await getUserInfos()).json()
       // if anyone tries to access without being an admin -> unauthorized
       if(myself.user.Type !== 'admin'){
         router.push("/401")
       }else{
-        // setUsers(users_response.users)
         setLoaded(true)
       }
     }
@@ -31,7 +30,7 @@ export default function Admin() {
     if(!token ){
       router.push("/home")
     }else{
-      fetchAccountsData()
+      checkAdmin()
     }
   },[])
   // dynamic displaying content based on the menu selected output
@@ -41,7 +40,7 @@ export default function Admin() {
     if (content == "manage_accounts") {
       displayed_element = <ManageUsers/>;
     } else if(content == "view_analytics"){
-      displayed_element = <></>;
+      displayed_element = <AnalyticsAdmin/>;
     } else if(content == "create_shop"){
       displayed_element = <CreateShop accounts={users}/>;
     } else if(content == "manage_shops"){
