@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 services:
   
   cache:
@@ -6,9 +6,80 @@ services:
     image : redis
     ports:
       - 127.0.0.1:6379:6379
+    networks:
+      - dbClusterInfrastructure
+
+  mongodb1:
+    container_name: mongodb1
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 127.0.0.1:27017:27017 
+    networks:
+      - dbClusterInfrastructure
+    restart: always
+    command: mongod --replSet barberReplSet
+
+  mongodb2:
+    container_name: mongodb2
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 127.0.0.1:27018:27017 
+    networks:
+      - dbClusterInfrastructure
+    restart: always
+    command: mongod --replSet barberReplSet
+
+  mongodb3:
+    container_name: mongodb3
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 127.0.0.1:27019:27017 
+    networks:
+      - dbClusterInfrastructure
+    restart: always
+    command: mongod --replSet barberReplSet
 
   db: 
-    restart: always
+    restart: "no"
     image: mongo
-    ports:
-      - 127.0.0.1:27017:27017
+    networks:
+      - dbClusterInfrastructure
+    depends_on:
+      - mongodb1
+      - mongodb2
+      - mongodb3
+    command: >
+      mongosh --host mongodb1:27017 --eval 
+      '
+      config = {
+      "_id" : "barberReplSet",
+      "members" : [
+        {
+          "_id" : 0,
+          "host" : "mongodb1:27017",
+          "priority" : 5
+        },
+        {
+          "_id" : 1,
+          "host" : "mongodb2:27017",
+          "priority" : 3
+        },
+        {
+          "_id" : 2,
+          "host" : "mongodb3:27017",
+          "priority" : 1
+        }
+      ]
+      };
+      rs.initiate(config);
+      '  
+
+networks:
+  dbCluster:
+    name: dbClusterInfrastructure
