@@ -14,8 +14,6 @@ services:
     image: mongo
     expose:
       - 27017
-    ports:
-      - 127.0.0.1:27017:27017 
     networks:
       - dbClusterInfrastructure
     restart: always
@@ -26,8 +24,6 @@ services:
     image: mongo
     expose:
       - 27017
-    ports:
-      - 127.0.0.1:27018:27017 
     networks:
       - dbClusterInfrastructure
     restart: always
@@ -38,8 +34,6 @@ services:
     image: mongo
     expose:
       - 27017
-    ports:
-      - 127.0.0.1:27019:27017 
     networks:
       - dbClusterInfrastructure
     restart: always
@@ -57,6 +51,7 @@ services:
     command: >
       mongosh --host mongodb1:27017 --eval 
       '
+      db = (new Mongo("mongodb1:27017")).getDB("test");
       config = {
       "_id" : "barberReplSet",
       "members" : [
