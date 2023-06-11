@@ -3,11 +3,34 @@ services:
   
   cache:
     restart: always
+    container_name: cache
     image : redis
+    expose:
+      - 6379
     ports:
       - 127.0.0.1:6379:6379
     networks:
-      - dbClusterDeploy
+      - dbClusterDev
+
+  cache-slave1:
+    restart: always
+    container_name: cache-slave1
+    image : redis
+    expose:
+      - 6379
+    networks:
+      - dbClusterDev
+    command: redis-server --slaveof cache 6379
+
+  cache-slave2:
+    restart: always
+    container_name: cache-slave2
+    image : redis
+    expose:
+      - 6379
+    networks:
+      - dbClusterDev
+    command: redis-server --slaveof cache 6379
 
   mongodb1:
     container_name: mongodb1
@@ -17,7 +40,7 @@ services:
     ports:
       - 127.0.0.1:27017:27017 
     networks:
-      - dbClusterDeploy
+      - dbClusterDev
     restart: always
     command: mongod --replSet barberReplSet
     healthcheck:
@@ -35,7 +58,7 @@ services:
     ports:
       - 127.0.0.1:27018:27017 
     networks:
-      - dbClusterDeploy
+      - dbClusterDev
     restart: always
     command: mongod --replSet barberReplSet
     healthcheck:
@@ -53,7 +76,7 @@ services:
     ports:
       - 127.0.0.1:27019:27017 
     networks:
-      - dbClusterDeploy
+      - dbClusterDev
     restart: always
     command: mongod --replSet barberReplSet
     healthcheck:
@@ -67,7 +90,7 @@ services:
     restart: "no"
     image: mongo
     networks:
-      - dbClusterDeploy
+      - dbClusterDev
     depends_on:
       mongodb1:
         condition: service_healthy
@@ -111,15 +134,17 @@ services:
     ports:
       - 127.0.0.1:7000:8080
     networks:
-      - dbClusterDeploy
+      - dbClusterDev
     depends_on:
       - cache
+      - cache-slave1
+      - cache-slave2
       - db
     environment:
       - REDIS_HOST=cache
       - MONGO_HOST=mongodb1
 
 networks:
-  dbClusterDeploy:
-    name: dbClusterDeploy
+  dbClusterDev:
+    name: dbClusterDev
     

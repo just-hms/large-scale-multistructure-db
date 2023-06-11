@@ -3,11 +3,34 @@ services:
   
   cache:
     restart: always
+    container_name: cache
     image : redis
+    expose:
+      - 6379
     ports:
       - 127.0.0.1:6379:6379
     networks:
       - dbClusterInfrastructure
+
+  cache-slave1:
+    restart: always
+    container_name: cache-slave1
+    image : redis
+    expose:
+      - 6379
+    networks:
+      - dbClusterInfrastructure
+    command: redis-server --slaveof cache 6379
+
+  cache-slave2:
+    restart: always
+    container_name: cache-slave2
+    image : redis
+    expose:
+      - 6379
+    networks:
+      - dbClusterInfrastructure
+    command: redis-server --slaveof cache 6379
 
   mongodb1:
     container_name: mongodb1
