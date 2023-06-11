@@ -81,5 +81,5 @@ services:
       '  
 
 networks:
-  dbCluster:
+  dbClusterInfrastructure:
     name: dbClusterInfrastructure
