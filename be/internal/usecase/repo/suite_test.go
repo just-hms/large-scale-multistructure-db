@@ -35,6 +35,9 @@ const (
 
 	SHOP1_ID
 	SHOP2_ID
+
+	SHOP1_NAME
+	SHOP2_NAME
 )
 
 func TestRepoSuite(t *testing.T) {
@@ -113,49 +116,57 @@ func (s *RepoSuite) SetupAnalyticsTestSuite() {
 	err = shopRepo.Store(context.Background(), shop1)
 	s.Require().NoError(err)
 	fixture[SHOP1_ID] = shop1.ID
+	fixture[SHOP1_NAME] = shop1.Name
 	err = shopRepo.Store(context.Background(), shop2)
 	s.Require().NoError(err)
 	fixture[SHOP2_ID] = shop2.ID
+	fixture[SHOP2_NAME] = shop2.Name
 
 	app1 := &entity.Appointment{
-		CreatedAt:    time.Now().AddDate(0, -4, 0),
-		StartDate:    time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
-		UserID:       user1.ID,
-		Username:     user1.Username,
-		BarbershopID: shop1.ID,
+		CreatedAt:      time.Now().AddDate(0, -4, 0),
+		StartDate:      time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
+		UserID:         user1.ID,
+		Username:       user1.Username,
+		BarbershopID:   shop1.ID,
+		BarbershopName: shop1.Name,
 	}
 	app2 := &entity.Appointment{
-		StartDate:    time.Now().Add(1 * time.Hour),
-		UserID:       user1.ID,
-		Username:     user1.Username,
-		BarbershopID: shop1.ID,
+		StartDate:      time.Now().Add(1 * time.Hour),
+		UserID:         user1.ID,
+		Username:       user1.Username,
+		BarbershopID:   shop1.ID,
+		BarbershopName: shop1.Name,
 	}
 	app3 := &entity.Appointment{
-		CreatedAt:    time.Now().AddDate(0, -4, 0),
-		StartDate:    time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
-		UserID:       user2.ID,
-		Username:     user2.Username,
-		BarbershopID: shop1.ID,
+		CreatedAt:      time.Now().AddDate(0, -4, 0),
+		StartDate:      time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
+		UserID:         user2.ID,
+		Username:       user2.Username,
+		BarbershopID:   shop1.ID,
+		BarbershopName: shop1.Name,
 	}
 	app4 := &entity.Appointment{
-		StartDate:    time.Now().Add(1 * time.Hour),
-		UserID:       user2.ID,
-		Username:     user2.Username,
-		BarbershopID: shop2.ID,
+		StartDate:      time.Now().Add(1 * time.Hour),
+		UserID:         user2.ID,
+		Username:       user2.Username,
+		BarbershopID:   shop2.ID,
+		BarbershopName: shop2.Name,
 	}
 	app5 := &entity.Appointment{
-		StartDate:    time.Now().Add(1 * time.Hour),
-		UserID:       user1.ID,
-		Username:     user1.Username,
-		BarbershopID: shop2.ID,
+		StartDate:      time.Now().Add(1 * time.Hour),
+		UserID:         user1.ID,
+		Username:       user1.Username,
+		BarbershopID:   shop2.ID,
+		BarbershopName: shop2.Name,
 	}
 	app6 := &entity.Appointment{
-		CreatedAt:    time.Now().AddDate(0, -4, 0),
-		StartDate:    time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
-		UserID:       user1.ID,
-		Username:     user1.Username,
-		BarbershopID: shop1.ID,
-		Status:       "canceled",
+		CreatedAt:      time.Now().AddDate(0, -4, 0),
+		StartDate:      time.Now().AddDate(0, -4, 0).Add(1 * time.Hour),
+		UserID:         user1.ID,
+		Username:       user1.Username,
+		BarbershopID:   shop1.ID,
+		BarbershopName: shop1.Name,
+		Status:         "canceled",
 	}
 	view1 := &entity.ShopView{
 		UserID:       user1.ID,
