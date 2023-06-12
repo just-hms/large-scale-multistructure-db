@@ -163,6 +163,8 @@ func (r *AdminAnalyticsRepo) GetNewUsersCount(ctx context.Context) (map[string]i
 
 }
 
+// Appointments are grouped by username. Each Appointment is counted if it has the field status == "canceled".
+// The result is then sorted in descending order.
 func (r *AdminAnalyticsRepo) GetAppointmentCancellationUserRanking(ctx context.Context) ([]bson.M, error) {
 
 	setStage := bson.D{{
@@ -223,6 +225,8 @@ func (r *AdminAnalyticsRepo) GetAppointmentCancellationUserRanking(ctx context.C
 
 }
 
+// Appointments are grouped by shop name. Each Appointment is counted if it has the field status == "canceled".
+// The result is then sorted in descending order.
 func (r *AdminAnalyticsRepo) GetAppointmentCancellationShopRanking(ctx context.Context) ([]bson.M, error) {
 
 	setStage := bson.D{{
@@ -286,6 +290,14 @@ func (r *AdminAnalyticsRepo) GetAppointmentCancellationShopRanking(ctx context.C
 
 }
 
+// The Engagement of a shop is computed as follows: 5*(#appointments) + (#upVotes + #downVotes)
+// The ranking is achieved by:
+// 1) Computing the size of upVotes and downVotes of each Review
+// 2) Summing those results together on each Review
+// 3) Grouping together the Reviews by shopId and summing all the results
+// 4) For each shop, looking up its number of Appointments, multiplied by 5
+// 5) Summing together the results of steps 4 and 5 for each shop
+// 6) Sorting the shops descendently by the Engagement Rating of step 5
 func (r *AdminAnalyticsRepo) GetEngagementShopRanking(ctx context.Context) ([]bson.M, error) {
 
 	setStage := bson.D{{
