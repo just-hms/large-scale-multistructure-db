@@ -136,10 +136,14 @@ services:
     networks:
       - dbClusterDev
     depends_on:
-      - cache
-      - cache-slave1
-      - cache-slave2
-      - db
+      cache:
+        condition: service_started
+      cache-slave1:
+        condition: service_started
+      cache-slave2:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
     environment:
       - REDIS_HOST=cache
       - MONGO_HOST=mongodb1
