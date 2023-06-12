@@ -85,8 +85,9 @@ func (s *RepoSuite) TestGetAppointmentCancellationUserRanking() {
 
 	analytics, err := analyticsRepo.GetAppointmentCancellationUserRanking(context.Background())
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0]["userId"], fixture[USER1_ID])
+	s.Require().Equal(analytics[0]["username"], fixture[USER1_USERNAME])
 	s.Require().Equal(analytics[0]["cancelCount"], 1)
+	fmt.Println(analytics)
 }
 
 func (s *RepoSuite) TestGetAppointmentCancellationShopRanking() {
@@ -97,9 +98,9 @@ func (s *RepoSuite) TestGetAppointmentCancellationShopRanking() {
 
 	analytics, err := analyticsRepo.GetAppointmentCancellationShopRanking(context.Background())
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0]["shopId"], fixture[SHOP1_ID])
+	s.Require().Equal(analytics[0]["shopName"], fixture[SHOP1_NAME])
 	s.Require().Equal(analytics[0]["cancelCount"], 1)
-	s.Require().Equal(analytics[1]["shopId"], fixture[SHOP2_ID])
+	s.Require().Equal(analytics[1]["shopName"], fixture[SHOP2_NAME])
 	s.Require().Equal(analytics[1]["cancelCount"], 0)
 }
 
@@ -111,8 +112,8 @@ func (s *RepoSuite) TestGetEngagementShopRanking() {
 
 	analytics, err := analyticsRepo.GetEngagementShopRanking(context.Background())
 	s.Require().NoError(err)
-	s.Require().Equal(analytics[0]["shopId"], fixture[SHOP1_ID])
+	s.Require().Equal(analytics[0]["shopName"], fixture[SHOP1_NAME])
 	s.Require().Equal(analytics[0]["engagementScore"], 22)
-	s.Require().Equal(analytics[1]["shopId"], fixture[SHOP2_ID])
+	s.Require().Equal(analytics[1]["shopName"], fixture[SHOP2_NAME])
 	s.Require().Equal(analytics[1]["engagementScore"], 12)
 }

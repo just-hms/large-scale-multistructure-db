@@ -181,7 +181,7 @@ func (r *AdminAnalyticsRepo) GetAppointmentCancellationUserRanking(ctx context.C
 	groupStage := bson.D{{
 		"$group",
 		bson.D{
-			{"_id", "$userId"},
+			{"_id", "$username"},
 			{"cancelCount", bson.D{
 				{"$sum", "$isCanceled"},
 			}},
@@ -192,7 +192,7 @@ func (r *AdminAnalyticsRepo) GetAppointmentCancellationUserRanking(ctx context.C
 		"$project",
 		bson.D{
 			{"_id", 0},
-			{"userId", "$_id"},
+			{"username", "$_id"},
 			{"cancelCount", 1},
 		},
 	}}
@@ -242,6 +242,9 @@ func (r *AdminAnalyticsRepo) GetAppointmentCancellationShopRanking(ctx context.C
 		"$group",
 		bson.D{
 			{"_id", "$shopId"},
+			{"shopName", bson.D{
+				{"$first", "$shopName"},
+			}},
 			{"cancelCount", bson.D{
 				{"$sum", "$isCanceled"},
 			}},
@@ -252,7 +255,7 @@ func (r *AdminAnalyticsRepo) GetAppointmentCancellationShopRanking(ctx context.C
 		"$project",
 		bson.D{
 			{"_id", 0},
-			{"shopId", "$_id"},
+			{"shopName", "$shopName"},
 			{"cancelCount", 1},
 		},
 	}}
@@ -310,6 +313,9 @@ func (r *AdminAnalyticsRepo) GetEngagementShopRanking(ctx context.Context) ([]bs
 		"$group",
 		bson.D{
 			{"_id", "$shopId"},
+			{"shopName", bson.D{
+				{"$first", "$shopName"},
+			}},
 			{"voteEngagement", bson.D{
 				{"$sum", "$voteEngagement"},
 			}},
@@ -360,7 +366,7 @@ func (r *AdminAnalyticsRepo) GetEngagementShopRanking(ctx context.Context) ([]bs
 		"$project",
 		bson.D{
 			{"_id", 0},
-			{"shopId", "$_id"},
+			{"shopName", "$shopName"},
 			{"engagementScore", 1},
 		},
 	}}
