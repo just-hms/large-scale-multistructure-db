@@ -27,4 +27,3 @@ services:
     environment:
       - REDIS_HOST=cache
       - MONGO_HOST=db
-    
