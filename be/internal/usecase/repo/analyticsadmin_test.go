@@ -87,7 +87,6 @@ func (s *RepoSuite) TestGetAppointmentCancellationUserRanking() {
 	s.Require().NoError(err)
 	s.Require().Equal(analytics[0]["username"], fixture[USER1_USERNAME])
 	s.Require().Equal(analytics[0]["cancelCount"], 1)
-	fmt.Println(analytics)
 }
 
 func (s *RepoSuite) TestGetAppointmentCancellationShopRanking() {
