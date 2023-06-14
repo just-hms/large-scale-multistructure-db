@@ -1,129 +1,17 @@
-version: '3.5'
+version: '3'
 services:
   
   cache:
     restart: always
-    container_name: cache
     image : redis
-    expose:
-      - 6379
     ports:
       - 127.0.0.1:6379:6379
-    networks:
-      - dbClusterDev
-
-  cache-slave1:
-    restart: always
-    container_name: cache-slave1
-    image : redis
-    expose:
-      - 6379
-    networks:
-      - dbClusterDev
-    command: redis-server --slaveof cache 6379
-
-  cache-slave2:
-    restart: always
-    container_name: cache-slave2
-    image : redis
-    expose:
-      - 6379
-    networks:
-      - dbClusterDev
-    command: redis-server --slaveof cache 6379
-
-  mongodb1:
-    container_name: mongodb1
-    image: mongo
-    expose:
-      - 27017
-    ports:
-      - 127.0.0.1:27017:27017 
-    networks:
-      - dbClusterDev
-    restart: always
-    command: mongod --replSet barberReplSet
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh mongodb1:27017/test --quiet
-      interval: 5s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-
-  mongodb2:
-    container_name: mongodb2
-    image: mongo
-    expose:
-      - 27017
-    ports:
-      - 127.0.0.1:27018:27017 
-    networks:
-      - dbClusterDev
-    restart: always
-    command: mongod --replSet barberReplSet
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh mongodb2:27017/test --quiet
-      interval: 5s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-
-  mongodb3:
-    container_name: mongodb3
-    image: mongo
-    expose:
-      - 27017
-    ports:
-      - 127.0.0.1:27019:27017 
-    networks:
-      - dbClusterDev
-    restart: always
-    command: mongod --replSet barberReplSet
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh mongodb3:27017/test --quiet
-      interval: 5s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
 
   db: 
-    restart: "no"
+    restart: always
     image: mongo
-    networks:
-      - dbClusterDev
-    depends_on:
-      mongodb1:
-        condition: service_healthy
-      mongodb2:
-        condition: service_healthy
-      mongodb3:
-        condition: service_healthy
-    command: >
-      mongosh --host mongodb1:27017 --eval 
-      '
-      db = (new Mongo("mongodb1:27017")).getDB("test");
-      config = {
-      "_id" : "barberReplSet",
-      "members" : [
-        {
-          "_id" : 0,
-          "host" : "mongodb1:27017",
-          "priority" : 5
-        },
-        {
-          "_id" : 1,
-          "host" : "mongodb2:27017",
-          "priority" : 3
-        },
-        {
-          "_id" : 2,
-          "host" : "mongodb3:27017",
-          "priority" : 1
-        }
-      ]
-      };
-      rs.initiate(config);
-      '  
+    ports:
+      - 127.0.0.1:27017:27017
 
   backend:
     restart: always
@@ -133,12 +21,8 @@ services:
       context: ../../
     ports:
       - 127.0.0.1:7000:8080
-    networks:
-      - dbClusterDev
     depends_on:
       - cache
-      - cache-slave1
-      - cache-slave2
       - db
     environment:
       - REDIS_HOST=cache
