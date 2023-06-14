@@ -46,7 +46,7 @@ export default function PaginatedList({analyticsData, title}:any) {
                     }><FontAwesomeIcon className="px-2 text-xl py-2" icon={faArrowAltCircleLeft}/></button>
                     <button onClick={
                         (e)=>{
-                            if(slice < analyticsData.length/page_size){
+                            if(slice < (analyticsData.length/page_size)-1){
                                 setSlice(slice + 1)
                             }
                         }
