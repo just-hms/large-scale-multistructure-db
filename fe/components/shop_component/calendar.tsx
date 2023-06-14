@@ -73,8 +73,9 @@ export const craftEventObject = (index:any,calendar:any) =>{
     // TODO TAKE THIS OUTSIDE
     for(var i in calendar){
         if((new Date(calendar[i].Start)).getTime() === date.toDate().getTime()){
-            if(calendar[i].BookedAppointmens >= calendar[i].Employees)
+            if(calendar[i].BookedAppointments == calendar[i].Employees){
                 return null
+            }
         }
     }
     return {
@@ -85,11 +86,6 @@ export const craftEventObject = (index:any,calendar:any) =>{
 }
 
 export const fillCalendar = (calendar:any, employees:any)=>{
-    // var fullSlots = []
-    // for( var i in  calendar){
-    //     if(calendar[i].BookedAppointmens >= calendar[i].Employees)
-    //         fullSlots.push((new Date(calendar[i].Start)).getTime())
-    // }
     let events = []
     if(employees != 0){
         for(let index = 0; index < 48*30; index+=1){

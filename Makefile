@@ -3,7 +3,7 @@ github:
 test:	
 	docker compose -f ./docker/test/docker-compose.yml up --force-recreate --build backend
 dev:
-	docker compose -f ./docker/dev/docker-compose.yml up --force-recreate --build --attach backend
+	docker compose -f ./docker/dev/docker-compose.yml up --force-recreate --build
 infrastructure:
 	docker compose -f ./docker/infrastructure/docker-compose.yml up --build -d
 deploy:
@@ -17,4 +17,3 @@ down:
 
 doc:
 	swag init -g be/internal/controller/router.go --output be/apidocs/
-
