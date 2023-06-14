@@ -206,10 +206,8 @@ def fakeAppointments(usersCollection,appointmentsCollectionMongo,shopId,shopName
             appointment["status"] = "canceled"
         #Add shopID
         appointment["shopId"] = shopId
-        #Make a copy to be used for users
-        userAppointment = appointment.copy()
-        userAppointment["shopName"] = shopName
-        addAppointmentToUser(usersCollection,randomView["userId"],userAppointment)
+        appointment["shopName"] = shopName
+        addAppointmentToUser(usersCollection,randomView["userId"],appointment)
         #Fill appointment info for the shop
         appointment["userId"] = randomView["userId"]
         appointment["username"] = generatedUsersMap[randomView["userId"]]["username"]
