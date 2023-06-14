@@ -39,10 +39,8 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 		appointment.Status = "pending"
 	}
 
-	// Store appointment fields before removing unused fields in the BarberShop's Appointment
+	// Store appointment fields before removing unused fields
 	userID := appointment.UserID
-	shopName := appointment.BarbershopName
-	appointment.BarbershopName = ""
 
 	// Add the Appointment its collection
 	_, err = r.DB.Collection("appointments").InsertOne(ctx, appointment)
@@ -51,8 +49,7 @@ func (r *AppointmentRepo) Book(ctx context.Context, appointment *entity.Appointm
 		return fmt.Errorf("error inserting the appointment: %s", err.Error())
 	}
 
-	// Replace previously removed fields and remove unused field in the User's Appointment
-	appointment.BarbershopName = shopName
+	// Remove unused field in the User's Appointment
 	appointment.UserID = ""
 	appointment.Username = ""
 

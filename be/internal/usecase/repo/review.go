@@ -21,7 +21,8 @@ func NewReviewRepo(m *mongo.Mongo) *ReviewRepo {
 
 func (r *ReviewRepo) Store(ctx context.Context, review *entity.Review, shopID string) error {
 
-	err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": shopID}).Err()
+	shop := &entity.BarberShop{}
+	err := r.DB.Collection("barbershops").FindOne(ctx, bson.M{"_id": shopID}).Decode(&shop)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -42,6 +43,7 @@ func (r *ReviewRepo) Store(ctx context.Context, review *entity.Review, shopID st
 
 	review.ID = uuid.NewString()
 	review.ShopID = shopID
+	review.ShopName = shop.Name
 	review.Username = user.Username
 	review.Reported = false
 	review.UpVotes = []string{}
