@@ -99,6 +99,8 @@ def makeShop(shopsCollection,shopData:dict)->int:
     ## Fix phone field
     if shop["phone"] == []:
         shop["phone"] = ""
+    ## Fix null ratings
+    shop["rating"] = shop["rating"] if shop["rating"] > 0 else 1
     ##Add reviews once the shop exists. Delete them in the meanwhile.
     shop.pop("reviewData",None)
     ##Remove calendar
@@ -129,7 +131,7 @@ def addReviewToShop(reviewsCollection,shopId,user,shopReview,upvotesIdList,downv
     review["shopId"] = shopId
     review["userId"] = user["_id"]
     review["username"] = shopReview["username"].replace(" ", "")
-    review["rating"] = shopReview["rating"]
+    review["rating"] = shopReview["rating"] if shopReview["rating"] > 0 else 1
     review["reported"] = False
     review["content"] = shopReview["body"]
     review["upvotes"] = upvotesIdList
