@@ -52,7 +52,7 @@ func (r *BarberShopRepo) Find(ctx context.Context, lat float64, lon float64, nam
 				Key: "location",
 				Value: bson.D{
 					{Key: "$near", Value: bson.D{
-						{Key: "$geometry", Value: entity.NewLocation(lat, lon)},
+						{Key: "$geometry", Value: entity.NewLocation(lon, lat)},
 						{Key: "$maxDistance", Value: radius},
 					}},
 				},
