@@ -536,14 +536,21 @@ func (r *BarberAnalyticsRepo) GetInactiveUsersByShop(ctx context.Context, shopID
 		},
 	}}
 
-	lookupProjectUsernameStage := bson.D{{
-		"$project", bson.D{
-			{"_id", 0},
-			{"username", 1},
+	lookupGroupByUsernameStage := bson.D{{
+		"$group",
+		bson.D{
+			{"_id", "$username"},
 		},
 	}}
 
-	lookupOlderClientsNotReturningPipeline := bson.A{lookupMatchShopClientsStage, lookupSetElapsedDaysStage, lookupMatchOlderAppointmentsStage, lookupMatchOlderClientsNotReturningStage, lookupProjectUsernameStage}
+	lookupProjectUsernameStage := bson.D{{
+		"$project", bson.D{
+			{"_id", 0},
+			{"username", "$_id"},
+		},
+	}}
+
+	lookupOlderClientsNotReturningPipeline := bson.A{lookupMatchShopClientsStage, lookupSetElapsedDaysStage, lookupMatchOlderAppointmentsStage, lookupMatchOlderClientsNotReturningStage, lookupGroupByUsernameStage, lookupProjectUsernameStage}
 
 	lookupOlderClientsNotReturningStage := bson.D{{
 		"$lookup", bson.D{
