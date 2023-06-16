@@ -47,9 +47,9 @@ func (s *RepoSuite) TestBarberShopFind() {
 	shopRepo := repo.NewBarberShopRepo(s.db)
 
 	shops := []*entity.BarberShop{
-		{Name: "hair brownies", Location: entity.NewLocation(14.1234, 24.5678)},
-		{Name: "haircut place", Location: entity.NewLocation(11.1234, 22.5678)},
-		{Name: "cut and shave", Location: entity.NewLocation(11.1334, 22.5679)},
+		{Name: "hair brownies", Location: entity.NewLocation(24.5678, 14.1234)},
+		{Name: "haircut place", Location: entity.NewLocation(22.5678, 11.1234)},
+		{Name: "cut and shave", Location: entity.NewLocation(22.5679, 11.1334)},
 	}
 
 	for _, shop := range shops {
