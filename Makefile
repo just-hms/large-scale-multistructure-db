@@ -17,4 +17,3 @@ down:
 
 doc:
 	swag init -g be/internal/controller/router.go --output be/apidocs/
-

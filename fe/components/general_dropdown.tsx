@@ -2,8 +2,9 @@ import { Menu, Transition } from '@headlessui/react'
 import { Fragment} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons' 
-import {useEffect, useState, useRef, createContext, useContext } from 'react';
+import { useState } from 'react';
 import React from 'react';
+
 
 export default function GeneralDropdown({placeholder,elements,children,classname}:{placeholder:any,elements:any,children:any,classname:any}) {
     if(placeholder == undefined)
@@ -13,7 +14,6 @@ export default function GeneralDropdown({placeholder,elements,children,classname
     <div className={`inline-block leading-none `+` ` + classname}>
         <Menu as="div" className="relative inline-block">
             <Menu.Button className="inline-flex w-full justify-center items-center rounded-full bg-opacity-20 text-slate-200 focus:outline-none">
-                
                 <div className=' px-1 flex hover:text-white'>
                     <div className='pr-1'>{children}</div>
                     {selected_value}

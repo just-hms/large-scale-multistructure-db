@@ -1,36 +1,32 @@
-export function findShops(position) {
-    // this function will retrieve all the shop datas when needed
-    return [{
-        name:"shop name",
-        id:1111,
-        meanRating:3,
-        description:"small description of the shop",
-        distance:1,
-        image:"path_to_image"
-    },{
-        name:"shop name",
-        id:1112,
-        meanRating:3,
-        reviewNumber:15,
-        description:"small description of the shop",
-        distance:1,
-        image:"path_to_image"
-    },{
-        name:"shop name",
-        id:1113,
-        meanRating:3,
-        reviewNumber:15,
-        description:"small description of the shop",
-        distance:1,
-        image:"path_to_image"
-    },{
-        name:"shop name",
-        id:1114,
-        meanRating:3,
-        reviewNumber:15,
-        description:"small description of the shop",
-        distance:1,
-        image:"path_to_image"
-    }];
-  }
-  
+import { headers, url } from "./request-utils";
+
+export async function findShops(area){
+  const geocoding = await fetch(url+`geocoding/search`,{
+    method: 'POST',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "area": area,
+    })
+  }).then((response)=>response.json())
+  const data = await fetch(url+`barbershop`, {
+    method: 'POST',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "latitude": geocoding.geocodes[0].Latitude,
+      "longitude": geocoding.geocodes[0].Longitude,
+      "radius": 3000,
+    })
+  })
+  return data
+}
+
+export async function findShopByName(name){
+  const data = await fetch(url+`barbershop`, {
+    method: 'POST',
+    headers: headers(localStorage.getItem("token")),
+    body: JSON.stringify({
+      "name": name
+    })
+  })
+  return data
+}

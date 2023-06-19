@@ -1,14 +1,14 @@
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment} from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 export default function UserDropdown({elements}:any){
+  const router = useRouter()
   return (
     <div className="inline-block text-sm leading-none rounded-full text-white border-slate-700 hover:text-slate-500">
       <Menu as="div" className="relative inline-block">
         <div>
           <Menu.Button className="inline-flex w-full justify-center rounded-full bg-slate-800 bg-opacity-20 text-sm font-medium text-white focus:outline-none">
-            {/* <Image className="w-full h-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" width="20" height="20" alt="logo" /> */}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} className="w-10 h-10 stroke-slate-500 hover:stroke-slate-400">
              <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -28,9 +28,23 @@ export default function UserDropdown({elements}:any){
               <div key={`container-`+element} className="px-1 py-1">
                 <Menu.Item key={`item-`+element}>
                 {({ active }) => (
-                  <Link key={`link-`+element} href={`/${(element == "Profile")?"user":"logout"}`} className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                  <button key={`link-`+element} className={`hover:bg-slate-500/80 text-white group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                  onClick={ async (event) => {
+                    if(element === "Profile"){
+                      if(localStorage.getItem("type") === "user")
+                        return router.push("/user");
+                      else if(localStorage.getItem("type") === "admin")
+                        return router.push("/admin");
+                      else if(localStorage.getItem("type") === "barber")
+                        return router.push("/barber");
+                    }else{
+                        localStorage.clear()
+                        return router.push("/");
+                    }
+                    }}>
                     {element}
-                  </Link>
+                    
+                  </button>
                   )}
                   </Menu.Item>
               </div>
