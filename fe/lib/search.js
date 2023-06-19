@@ -12,8 +12,8 @@ export async function findShops(area){
     method: 'POST',
     headers: headers(localStorage.getItem("token")),
     body: JSON.stringify({
-      "latitude": geocoding.geocodes[0].Longitude,
-      "longitude": geocoding.geocodes[0].Latitude,
+      "latitude": geocoding.geocodes[0].Latitude,
+      "longitude": geocoding.geocodes[0].Longitude,
       "radius": 3000,
     })
   })
