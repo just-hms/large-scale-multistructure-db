@@ -120,6 +120,11 @@ export default function Calendar({shopid,calendar, employees}:any) {
                                 submit({shopid,info})
                             }
                         }
+                        eventTimeFormat={{
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            meridiem: false,
+                          }}
                     />
                     </StyleWrapper>
                 </div>
