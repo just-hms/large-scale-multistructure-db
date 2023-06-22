@@ -290,6 +290,7 @@ def main():
             for review in shop["reviewData"]["reviews"]:
                 userId, user = makeUser(usersCollectionMongo,review["username"],"user")
                 while userId == -1:
+                    review["username"] = review["username"] + "1"
                     userId, user = makeUser(usersCollectionMongo,review["username"],"user")
                 generatedUsers[userId] = user
                 #Add review to shop while faking amount of upvotes and downvotes
