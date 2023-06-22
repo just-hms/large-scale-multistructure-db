@@ -3,7 +3,6 @@ import {faStar, faMapLocationDot} from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import Link from "next/link";
 import barber_background from '../../public/barber_profile.jpg'
-// import GeneralDropdown from "../general_dropdown";
 
 export default function ShopsFound({shops}:any) {
     return (
@@ -18,7 +17,7 @@ export default function ShopsFound({shops}:any) {
                 <div key={shop.ID+"container"} className="flex flex-col items-center justify-start w-full rounded-lg pb-5">
                     <div className="flex w-full items-start justify-start">
                         <div key={shop.ID+"title"} className="text-sm flex items-center lg:items-start justify-start w-full text-left">
-                            {/* TODO SOURCE */}
+
                             <div className='h-32 lg:w-1/2'>
                                 <Image className="w-full h-full object-cover rounded-lg shadow-md shadow-black/30 hover:shadow-black/80" width="100" height="100" src={shop.ImageLink} alt="barber salon"/>
                             </div>

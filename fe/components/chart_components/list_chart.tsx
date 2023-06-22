@@ -8,7 +8,6 @@ export default function PaginatedList({analyticsData, title}:any) {
     const [shownData, setShownData]=useState<any[]>((Array.isArray(analyticsData))?analyticsData.slice(slice * page_size, (slice+1)*page_size):[])
     useEffect(()=>{
         setShownData((Array.isArray(analyticsData))?analyticsData.slice(slice * page_size, (slice+1)*page_size):[])
-        console.log(slice)
     },[analyticsData, slice])
 
     if(Array.isArray(analyticsData)){
@@ -36,7 +35,7 @@ export default function PaginatedList({analyticsData, title}:any) {
                         </>
                     }
                 })}
-                <div className="">
+                <div className="flex text-slate-200 items-center justify-center">
                     <button onClick={
                         (e)=>{
                             if(slice > 0){
@@ -44,6 +43,7 @@ export default function PaginatedList({analyticsData, title}:any) {
                             }
                         }
                     }><FontAwesomeIcon className="px-2 text-xl py-2" icon={faArrowAltCircleLeft}/></button>
+                    {slice+1}
                     <button onClick={
                         (e)=>{
                             if(slice < (analyticsData.length/page_size)-1){

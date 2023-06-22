@@ -15,7 +15,6 @@ export default function Holidays({ shopData }:any) {
             }else{
               alert("there was an error")
             }
-            // alert(values.employeesNumber)
         },
         });
     useEffect(()=>{

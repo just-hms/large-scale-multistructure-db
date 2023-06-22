@@ -23,15 +23,12 @@ confirmAlert({
                         onClick={onClose}>No</button>
                     <button className="m-2 w-2/3 bg-slate-600 hover:bg-slate-500 focus:border-rose-600 font-medium rounded-lg border-slate-800 text-sm px-5 py-2.5 text-center"
                         onClick={async (e) => {
-                            // alert((new Date(info.event.startStr)).toISOString())
-                            // alert(info.event.startStr)
                             const response = await getAppointment(shopid,info.event.startStr)
                             if(response.status == 201){
                                 alert("Slot booked correctly!")
                             }else{
                                 alert((await response.json()).error)
                             }   
-                            // alert(parseInt((new Date(info.event.startStr).getTime() / 1000).toFixed(0)))
                             onClose()
                         }}
                         >
@@ -56,7 +53,6 @@ export const StyleWrapper = styled.div`
 // this creates the calendar slots based on the already booked appointments
 // must return an array of objects with: title, start, end
 export const craftEventObject = (index:any,calendar:any) =>{
-    // console.log(calendar)
     const date = moment().add(30*index, 'm')
 
     if(date.hours() > 20|| date.hours() < 7 ){
@@ -70,7 +66,6 @@ export const craftEventObject = (index:any,calendar:any) =>{
     }
     date.set('second',0)
     date.set('millisecond',0)
-    // TODO TAKE THIS OUTSIDE
     for(var i in calendar){
         if((new Date(calendar[i].Start)).getTime() === date.toDate().getTime()){
             if(calendar[i].BookedAppointments == calendar[i].Employees){

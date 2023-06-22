@@ -25,7 +25,6 @@ export default function Analytics({shop}:any) {
                 retrieved_dropdownElements.push({key, shown})
                 i++
             }
-            console.log(retrieved_dropdownElements)
             setdropDownElements(retrieved_dropdownElements)
             setSelectedAnalytics(retrieved_dropdownElements[0])
             const show_key:any = retrieved_dropdownElements[0].key
@@ -37,7 +36,6 @@ export default function Analytics({shop}:any) {
     useEffect(()=>{
         const show_key:any = selectedAnalytics.key
         setAnalyticsData(analytics[show_key])
-        console.log(analytics)
     },[selectedAnalytics])
     return (
         <>

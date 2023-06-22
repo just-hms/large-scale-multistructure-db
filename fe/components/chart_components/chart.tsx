@@ -25,8 +25,10 @@ ChartJS.register(
 
 
 export default function Chart({analyticsData, title}:any) {    
-    // var slice = 1
+    const [slice, setSlice] = useState(0)
+    const page_size = 30
     const chartRef = useRef<ChartJS<"line", number[], string>>(null)
+    // handle the analytic change
     useEffect(()=>{
         chartRef.current?.clear()
         if(chartRef.current?.data.labels){
@@ -36,18 +38,17 @@ export default function Chart({analyticsData, title}:any) {
         }
         chartRef.current?.data.datasets.pop()
         if(analyticsData != undefined){
-            var labels:any = Object.keys(analyticsData).slice(-30);
-            labels.map((label:any)=>{chartRef.current?.data.labels?.push(label)})
+            var labels:any = Object.keys(analyticsData);
+            labels.slice(slice * page_size, (slice+1)*page_size).map((label:any)=>{chartRef.current?.data.labels?.push(label)})
             chartRef.current?.data.datasets.push({
                 label: title,
-                data: (title == "Review votes per month")? labels.map((label:any) => analyticsData[label].upCount - analyticsData[label].downCount) :labels.map((label:any) => analyticsData[label]),
+                data: (title == "Review votes per month")? labels.slice(slice * page_size, (slice+1)*page_size).map((label:any) => analyticsData[label].upCount - analyticsData[label].downCount) :labels.slice(slice * page_size, (slice+1)*page_size).map((label:any) => analyticsData[label]),
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
             })
             chartRef.current?.update()
         }
-        console.log(analyticsData)
-    },[analyticsData])
+    },[analyticsData, slice])
 
     return (
     <>
@@ -97,6 +98,24 @@ export default function Chart({analyticsData, title}:any) {
         data={{
             datasets: [],
         }} />
+        {/* paginated view handling */}
+        <div className="flex text-slate-200 items-center justify-center">
+            <button onClick={
+                (e)=>{
+                    if(slice > 0){
+                        setSlice(slice - 1)
+                    }
+                }
+            }><FontAwesomeIcon className="text-slate-200 px-2 text-xl py-2" icon={faArrowAltCircleLeft}/></button>
+            {slice+1}
+            <button onClick={
+                (e)=>{
+                    if(slice < (Object.keys(analyticsData).length/page_size)-1){
+                        setSlice(slice + 1)
+                    }
+                }
+            }><FontAwesomeIcon className="text-slate-200 px-2 text-xl py-2" icon={faArrowAltCircleRight}/></button>
+        </div>
     </div>
     </>
     )
