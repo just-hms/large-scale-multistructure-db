@@ -250,8 +250,9 @@ def main():
     appointmentsCollectionMongo = barberDatabaseMongo["appointments"]
     reviewsCollectionMongo = barberDatabaseMongo["reviews"]
 
-    #Make usernames unique
+    #Make username and email unique
     usersCollectionMongo.create_index("username",unique=True)
+    usersCollectionMongo.create_index("email",unique=True)
     #Prepare Mongo for geolocation
     barberShopsCollectionMongo.create_index([("location",GEOSPHERE)])
 
