@@ -251,13 +251,15 @@ def main():
     if args.port:
         mongoPort = args.port
 
-    print(f"{mongoHost}:{mongoPort}")
-
-    start_time = time.perf_counter()
-    print("> Starting BarberShop importer\n")
+    print(f"> Attempting connection to {mongoHost}:{mongoPort}")
 
     #Establish connection to databases
     mongoClient = MongoClient(mongoHost,mongoPort)
+
+    print("> Successfully established connection")
+
+    start_time = time.perf_counter()
+    print("> Starting BarberShop importer\n")
 
     #Reset databases
     mongoClient.drop_database("barbershop")
