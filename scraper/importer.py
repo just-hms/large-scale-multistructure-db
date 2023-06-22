@@ -12,6 +12,8 @@ import time
 import bcrypt
 import uuid
 
+import argparse
+
 #Type hinting imports
 from typing import Literal
 
@@ -232,11 +234,30 @@ def fakeUserList(userList,maxAmount=50):
 
 
 def main():
+
+    mongoHost = '127.0.0.1'
+    mongoPort = 27017
+
+    #Parse the command-line arguments
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-H", "--host", type=str, help="The IP address of the machine hosting the MongoDB instance")
+    argParser.add_argument("-P", "--port", type=int, help="The port of the machine hosting the MongoDB instance")
+
+    args = argParser.parse_args()
+
+    if args.host:
+        mongoHost = args.host
+
+    if args.port:
+        mongoPort = args.port
+
+    print(f"{mongoHost}:{mongoPort}")
+
     start_time = time.perf_counter()
     print("> Starting BarberShop importer\n")
 
     #Establish connection to databases
-    mongoClient = MongoClient('localhost', 27017)
+    mongoClient = MongoClient(mongoHost,mongoPort)
 
     #Reset databases
     mongoClient.drop_database("barbershop")
