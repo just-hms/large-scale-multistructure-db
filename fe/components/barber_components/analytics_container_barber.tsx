@@ -7,7 +7,7 @@ import React from 'react';
 import Analytics from './analytics_barber';
 
 export default function AnalytcsContainer({shops}:any) {
-  // dropdown shenanigans
+  // dropdown
   let dropdownElements = []
   for(var element in shops){
     dropdownElements.push(shops[element])

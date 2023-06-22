@@ -1,5 +1,3 @@
-import Dropdown from './user_components/user_dropdown'
-import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 export default function Footer() {

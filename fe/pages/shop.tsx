@@ -45,7 +45,6 @@ export default function Shop() {
           if (response.ok){                                         
             const json_response = await response.json()
             setshopData(json_response.barbershop)
-            // console.log(json_response.barbershop)
           }else{
             router.push("/404")
           }

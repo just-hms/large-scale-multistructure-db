@@ -7,7 +7,7 @@ import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons'
 import React from 'react';
 
 export default function ModifyShop({shops}:any) {
-  // dropdown shenanigans
+  // dropdown
   let dropdownElements = []
   for(var element in shops){
     dropdownElements.push(shops[element])

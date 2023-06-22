@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
 
 export default function Home(){
-  // CHECK IF THERE'S A TOKEN
+  // check if the user is logged
   const [loaded,setLoaded] = useState(false)
   const [query, setQuery] = useState('');
   const router = useRouter()

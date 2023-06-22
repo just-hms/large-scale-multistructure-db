@@ -4,7 +4,6 @@ import SingleAccountManagement from "./single_account_management";
 import { getAccountInfos } from "../../lib/admin";
 
 export default function ManageUsers() {
-  // change to useEffect triggered by onsubmit which changes the users shown
   const [users, setUsers] = useState([])
   const [query, setQuery] = useState('');
   //Handling the input on our search bar
