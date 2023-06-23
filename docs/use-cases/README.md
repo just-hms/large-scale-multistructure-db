@@ -51,10 +51,10 @@
 flowchart LR
 
 %% main user
-generic_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
-logged_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
-barber_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
-admin_user["<div class='admin' style='width:200px;height:250px'><img src='stick.png' alt='kek'></div>"]
+generic_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'><h3 style='position:absolute;bottom:0px;text-align:center;width:100%;'>user</h3></div>"]
+logged_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'><h3 style='position:absolute;bottom:0px;text-align:center;width:100%;'>logged</h3></div>"]
+barber_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'><h3 style='position:absolute;bottom:0px;text-align:center;width:100%;'>barber</h3></div>"]
+admin_user["<div class='admin' style='width:200px;height:250px'><img src='stick.png' alt='kek'><h3 style='position:absolute;bottom:0px;text-align:center;width:100%;'>admin</h3></div>"]
 
 logged_user --> generic_user
 barber_user --> generic_user
@@ -101,7 +101,6 @@ subgraph
 	view_reviews([view reviews])
 	booking([book appointment])
 	modify_shop([modify shop info])
-	add_holidays([add holidays])
 	rep_reviews([report review])
 	view_appointments([view appointments])
 	delete_appointment([delete appointment])
@@ -119,7 +118,6 @@ subgraph
 	review -.extends.-> view_shop
 	rep_reviews -.extends.->view_reviews
 	modify_shop -.extends.->view_shop
-	add_holidays -.extends.->modify_shop
 	view_reviews-.extends.-> view_shop
 	booking -.extends.-> view_shop
 	delete_shop -.extends.->view_shop

@@ -1,3 +1,9 @@
+<style>
+.edgeLabel{
+	
+}
+</style>
+
 # UML Class diagram
 
 ```mermaid
