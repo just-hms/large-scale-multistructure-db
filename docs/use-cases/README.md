@@ -160,7 +160,7 @@ class create_shop admin
 class user_analytics admin
 class rep_reviews barber
 class curr_appointment user
-class view_profile_info nil
+class view_profile_info user
 class pswd_rec nil
 class del_appointment user
 class del_acc barberuser

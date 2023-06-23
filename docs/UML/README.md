@@ -1,9 +1,3 @@
-<style>
-.edgeLabel{
-	
-}
-</style>
-
 # UML Class diagram
 
 ```mermaid
@@ -11,19 +5,18 @@ classDiagram
 direction LR
 
 	Barber --|> User
-	Admin --|> User
 	Barber "1,*"--"1" BarberShop : Owns
-	User "1,*"--"0,*" BarberShop : HasPermissions
-	ShopView "1"--"0,*" BarberShop
+	Admin --|> User
 	Calendar "1,*"--"1" Slot
-	User "0,*"--"1" ShopView
+	ShopView "1"--"0,*" BarberShop
 	Appointment "1"--"0,*" BarberShop
-	Review "1"--"0,*" BarberShop
-	User "0,*"--"1" Appointment
 	BarberShop "1"--"1" Calendar
+	Review "1"--"0,*" BarberShop
+	User "0,*"--"1" ShopView
+	User "0,*"--"0,*" Review : HasUpvoted
+	User "0,*"--"1" Appointment
 	User "0,*"--"0,*" Review : HasDownvoted
 	User "0,*"--"1" Review
-	User "0,*"--"0,*" Review : HasUpvoted
 	
 
 	class User {
