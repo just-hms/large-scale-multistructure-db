@@ -7,7 +7,7 @@ import { deleteAppointment } from '../../lib/user';
 
 
 export default function AccountReservation({reservationData}:any) {
-    const [shopData,setshopData] = useState()
+    const [shopData,setshopData] = useState({Name:''})
     const date = (reservationData)?(new Date(Date.parse(reservationData.StartDate))).toLocaleDateString()+" "+(new Date(Date.parse(reservationData.StartDate))).toLocaleTimeString():''
     useEffect(()=>{
         if(reservationData){
