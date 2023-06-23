@@ -1,0 +1,19 @@
+version: '3'
+services:
+
+  cache-slave:
+    restart: always
+    container_name: cache-slave
+    image : redis
+    ports:
+      - 0.0.0.0:6379:6379
+    command: redis-server --slaveof 172.16.5.42 6379
+
+  mongodb-replica:
+    container_name: mongodb-replica
+    image: mongo
+    ports:
+      - 0.0.0.0:27017:27017 
+    restart: always
+    command: mongod --replSet barberReplSet
+
