@@ -5,23 +5,26 @@ classDiagram
 direction LR
 
 	Barber --|> User
+	Calendar "1,*"--"1" Slot
+	User "0,*"--"0,*" Review : UpVote
+	User "0,*"--"0,*" Review : DownVote
+	User "0,*"--"1" Appointment
 	Barber "1,*"--"1" BarberShop : Owns
 	Admin --|> User
-	Calendar "1,*"--"1" Slot
-	ShopView "1"--"0,*" BarberShop
+	User "0,*"--"1" ShopView
 	Appointment "1"--"0,*" BarberShop
 	BarberShop "1"--"1" Calendar
-	Review "1"--"0,*" BarberShop
-	User "0,*"--"1" ShopView
-	User "0,*"--"0,*" Review : HasUpvoted
-	User "0,*"--"1" Appointment
-	User "0,*"--"0,*" Review : HasDownvoted
 	User "0,*"--"1" Review
+	Review "1"--"0,*" BarberShop
+	
+	ShopView "1"--"0,*" BarberShop
 	
 
 	class User {
 		Email : String
 		Password : String
+		Username : String
+		SignupDate : DateTime
 	}
 
 	class Barber
@@ -30,16 +33,21 @@ direction LR
 
 	class BarberShop {
 		Name : String
-		AverageRating : Float
+		Location : Location
+		Address : String
+		Description : String
+		ImageLink : String
+		Phone : String
+		Rating : Float
 		Latitude : Float
 		Longitude : Float
-		EmployeesNumber : Int
+		Employees : Int
 	}
 
 	class Appointment {
 		CreatedAt : DateTime
 		Start : DateTime
-		Duration : Time
+		Status : String
 	}
 
 	class ShopView {
@@ -49,7 +57,6 @@ direction LR
 	class Slot{
 		Start : DateTime
 		BookedAppoIntments : Int 
-		UnavailableEmployees : Int 
 	}
 
 	class Review {

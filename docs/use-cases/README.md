@@ -73,7 +73,7 @@ subgraph
 	find_user([find user])
 	view_user([view user])
 	delete_user([delete user])
-	modify_perm([modify permissions])
+	modify_perm([edit barbershop ownership])
 	user_analytics([view app analytics])
 	create_shop([create shop])
 
@@ -101,7 +101,6 @@ subgraph
 	view_reviews([view reviews])
 	booking([book appointment])
 	modify_shop([modify shop info])
-	rep_reviews([report review])
 	view_appointments([view appointments])
 	delete_appointment([delete appointment])
 	view_shop_analytics([view shop analytics])
@@ -116,7 +115,6 @@ subgraph
 	delete_review -.extends.->view_reviews
 	view_shop_analytics -.extends.-> view_shop
 	review -.extends.-> view_shop
-	rep_reviews -.extends.->view_reviews
 	modify_shop -.extends.->view_shop
 	view_reviews-.extends.-> view_shop
 	booking -.extends.-> view_shop
@@ -143,7 +141,6 @@ subgraph
 end
 
 class modify_shop barber
-class add_holidays barber
 class dis_reviews barber
 class barber_user barber
 class view_appointments barber
@@ -158,7 +155,6 @@ class delete_user admin
 class modify_perm admin
 class create_shop admin
 class user_analytics admin
-class rep_reviews barber
 class curr_appointment user
 class view_profile_info user
 class pswd_rec nil
