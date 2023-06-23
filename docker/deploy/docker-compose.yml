@@ -2,29 +2,85 @@ version: '3'
 services:
 
   cache:
+    restart: always
+    container_name: cache
     image : redis
     ports:
-      - 127.0.0.1:6379:6379
+      - 0.0.0.0:6379:6379
 
-  db:
+  mongodb1:
+    container_name: mongodb1
     image: mongo
     ports:
-      - 127.0.0.1:27017:27017
+      - 0.0.0.0:27017:27017 
+    restart: always
+    command: mongod --replSet barberReplSet
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb1:27017/test --quiet
+      interval: 5s
+      timeout: 15s
+      retries: 3
+      start_period: 5s
+
+  db: 
+    container_name: db
+    restart: "no"
+    image: mongo
+    depends_on:
+      mongodb1:
+        condition: service_healthy
+    command: >
+      mongosh --host mongodb1:27017 --eval 
+      '
+      db = (new Mongo("172.16.5.42:27017")).getDB("test");
+      db = (new Mongo("172.16.5.43:27017")).getDB("test");
+      db = (new Mongo("172.16.5.47:27017")).getDB("test");
+      config = {
+      "_id" : "barberReplSet",
+      "members" : [
+        {
+          "_id" : 0,
+          "host" : "172.16.5.42:27017",
+          "priority" : 5
+        },
+        {
+          "_id" : 1,
+          "host" : "172.16.5.43:27017",
+          "priority" : 3
+        },
+        {
+          "_id" : 2,
+          "host" : "172.16.5.47:27017",
+          "priority" : 1
+        }
+      ]
+      };
+      rs.initiate(config);
+      '  
 
   backend:
+    container_name: backend
+    restart: always
     build:
       dockerfile: ./docker/deploy/be/Dockerfile
       context: ../../
+    ports:
+      - 0.0.0.0:7000:8080
     depends_on:
-      - db
-      - cache
+      cache:
+        condition: service_started
+      db:
+        condition: service_completed_successfully
     environment:
       - REDIS_HOST=cache
-      - MONGO_HOST=db
+      - MONGO_HOST=mongodb1
 
   proxy:
+    container_name: proxy
     build:
       dockerfile: ./docker/deploy/proxy/Dockerfile
       context: ../../
     ports:
-      - 80:80
+      - 0.0.0.0:80:80
+    depends_on:
+      - backend
