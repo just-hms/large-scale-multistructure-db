@@ -12,6 +12,8 @@ import time
 import bcrypt
 import uuid
 
+import argparse
+
 #Type hinting imports
 from typing import Literal
 
@@ -232,11 +234,32 @@ def fakeUserList(userList,maxAmount=50):
 
 
 def main():
-    start_time = time.perf_counter()
-    print("> Starting BarberShop importer\n")
+
+    mongoHost = '127.0.0.1'
+    mongoPort = 27017
+
+    #Parse the command-line arguments
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-H", "--host", type=str, help="The IP address of the machine hosting the MongoDB instance")
+    argParser.add_argument("-P", "--port", type=int, help="The port of the machine hosting the MongoDB instance")
+
+    args = argParser.parse_args()
+
+    if args.host:
+        mongoHost = args.host
+
+    if args.port:
+        mongoPort = args.port
+
+    print(f"> Attempting connection to {mongoHost}:{mongoPort}")
 
     #Establish connection to databases
-    mongoClient = MongoClient('localhost', 27017)
+    mongoClient = MongoClient(mongoHost,mongoPort)
+
+    print("> Successfully established connection")
+
+    start_time = time.perf_counter()
+    print("> Starting BarberShop importer\n")
 
     #Reset databases
     mongoClient.drop_database("barbershop")
@@ -250,8 +273,9 @@ def main():
     appointmentsCollectionMongo = barberDatabaseMongo["appointments"]
     reviewsCollectionMongo = barberDatabaseMongo["reviews"]
 
-    #Make usernames unique
+    #Make username and email unique
     usersCollectionMongo.create_index("username",unique=True)
+    usersCollectionMongo.create_index("email",unique=True)
     #Prepare Mongo for geolocation
     barberShopsCollectionMongo.create_index([("location",GEOSPHERE)])
 
@@ -289,6 +313,7 @@ def main():
             for review in shop["reviewData"]["reviews"]:
                 userId, user = makeUser(usersCollectionMongo,review["username"],"user")
                 while userId == -1:
+                    review["username"] = review["username"] + "1"
                     userId, user = makeUser(usersCollectionMongo,review["username"],"user")
                 generatedUsers[userId] = user
                 #Add review to shop while faking amount of upvotes and downvotes
