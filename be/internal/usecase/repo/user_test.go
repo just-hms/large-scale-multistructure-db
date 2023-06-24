@@ -131,10 +131,12 @@ func (s *RepoSuite) TestUserList() {
 
 	users := []*entity.User{
 		{
-			Email: "existinguser@gmail.com",
+			Username: "user",
+			Email:    "existinguser@gmail.com",
 		},
 		{
-			Email: "kek@gmail.com",
+			Username: "kek",
+			Email:    "kek@gmail.com",
 		},
 	}
 	for _, user := range users {
