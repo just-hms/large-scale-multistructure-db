@@ -121,16 +121,17 @@ def makeShop(shopsCollection,shopData:dict)->int:
     shop["employees"] = random.randint(1,3)
 
     #Add shop to the db and return its new id
-    return shopsCollection.insert_one(shop).inserted_id
+    return shopsCollection.insert_one(shop).inserted_id, shop
 
-def addReviewToShop(reviewsCollection,shopId,user,shopReview,upvotesIdList,downvotesIdList):
+def addReviewToShop(reviewsCollection,shop,user,shopReview,upvotesIdList,downvotesIdList):
     """Adds a review to the specified shop. Uses the data format from the scraper."""
 
     #Create the review dict structure
     review = {}
     #Generate an id for the review
     review["_id"] = str(uuid.uuid4())
-    review["shopId"] = shopId
+    review["shopId"] = shop["_id"]
+    review["shopName"] = shop["name"]
     review["userId"] = user["_id"]
     review["username"] = shopReview["username"].replace(" ", "")
     review["rating"] = shopReview["rating"] if shopReview["rating"] > 0 else 1
@@ -298,7 +299,7 @@ def main():
             print(f">> Importing {shop['name']}")
             importedShops += 1
             #Generate a shop entry in the database
-            shopId = makeShop(barberShopsCollectionMongo,shop)
+            shopId, generatedShop = makeShop(barberShopsCollectionMongo,shop)
             generatedShopsIds.append(shopId)
             #Generate a fake barber user for the shop and save its id.
             #We might accidentally generate a barber with the same username. Repeat until we succeed.
@@ -320,7 +321,7 @@ def main():
                 userUpvoteList = fakeUserList(list(generatedUsers.keys()))
                 ##Remove already chosen upvoters from downvote list
                 userDownvoteList = fakeUserList(list(set(generatedUsers.keys()) - set(userUpvoteList)),5)
-                addReviewToShop(reviewsCollectionMongo,shopId,user,review,userUpvoteList,userDownvoteList)
+                addReviewToShop(reviewsCollectionMongo,generatedShop,user,review,userUpvoteList,userDownvoteList)
             ##Fake interaction stuff we do not have: Views, Appointments
 
             #Fake a random amount of views from random users. Max 1500.
