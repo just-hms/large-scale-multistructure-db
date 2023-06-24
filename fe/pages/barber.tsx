@@ -26,13 +26,17 @@ export default function User() {
       const fetchData = async () => {
         const retrievedData = await (await getUserInfos()).json() 
         // if anyone tries to access without being a barber -> unauthorized
-        if(retrievedData.user.Type !== 'barber'){
+        if(retrievedData.user == undefined){
           router.push("/401")
         }else{
-          setUserData(retrievedData)
-          const ownedShops = await (await getOwnedShops()).json()
-          setShopsData(ownedShops.barbershops)
-          setLoaded(true)
+          if(retrievedData.user.Type !== 'barber'){
+            router.push("/401")
+          }else{
+            setUserData(retrievedData)
+            const ownedShops = await (await getOwnedShops()).json()
+            setShopsData(ownedShops.barbershops)
+            setLoaded(true)
+          }
         }
       }
       fetchData()
