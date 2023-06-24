@@ -61,7 +61,7 @@ func (s *ControllerSuite) SetupSuite() {
 		err := mongo.DB.Drop(context.Background())
 		s.Require().NoError(err)
 
-		err = repo.AddIndexes(mongo)
+		err = repo.AddTestIndexes(mongo)
 		s.Require().NoError(err)
 
 		s.fixture, err = InitFixture(ucs)
