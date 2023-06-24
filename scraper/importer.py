@@ -317,7 +317,10 @@ def main():
                     userId, user = makeUser(usersCollectionMongo,review["username"],"user")
                 generatedUsers[userId] = user
                 #Add review to shop while faking amount of upvotes and downvotes
-                addReviewToShop(reviewsCollectionMongo,shopId,user,review,fakeUserList(list(generatedUsers.keys())),fakeUserList(list(generatedUsers.keys()),5))
+                userUpvoteList = fakeUserList(list(generatedUsers.keys()))
+                ##Remove already chosen upvoters from downvote list
+                userDownvoteList = fakeUserList(list(set(generatedUsers.keys()) - set(userUpvoteList)),5)
+                addReviewToShop(reviewsCollectionMongo,shopId,user,review,userUpvoteList,userDownvoteList)
             ##Fake interaction stuff we do not have: Views, Appointments
 
             #Fake a random amount of views from random users. Max 1500.
