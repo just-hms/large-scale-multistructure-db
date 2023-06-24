@@ -39,8 +39,6 @@ direction LR
 		ImageLink : String
 		Phone : String
 		Rating : Float
-		Latitude : Float
-		Longitude : Float
 		Employees : Int
 	}
 
