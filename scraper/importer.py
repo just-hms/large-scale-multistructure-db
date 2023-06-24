@@ -226,7 +226,7 @@ def fakeUserList(userList,maxAmount=50):
     #Get minimum bewteen amount of users and maxAmount
     maxAmount = len(userList) if len(userList)<maxAmount else maxAmount
     #Get a random amount 
-    amount = random.randint(1,maxAmount)
+    amount = random.randint(0,maxAmount)
 
     #Extract the user ids
     return random.sample(userList,k=amount) 
