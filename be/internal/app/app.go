@@ -21,10 +21,6 @@ func Run(cfg *config.Config) {
 		fmt.Printf("mongo-error: %s", err.Error())
 		return
 	}
-	if err := repo.AddIndexes(mongo); err != nil {
-		fmt.Printf("index-error: %s", err.Error())
-		return
-	}
 
 	redis, err := redis.New(cfg.Redis.Host, cfg.Redis.Port, cfg.Redis.Password)
 	if err != nil {
