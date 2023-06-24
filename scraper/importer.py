@@ -229,7 +229,7 @@ def fakeUserList(userList,maxAmount=50):
     amount = random.randint(1,maxAmount)
 
     #Extract the user ids
-    return random.choices(userList,k=amount) 
+    return random.sample(userList,k=amount) 
 
 
 
