@@ -72,6 +72,8 @@ subgraph
 	booking([book appointment])
 	modify_shop([modify shop info])
 	delete_shop([delete shop])
+	up_vote([up vote])
+	down_vote([down vote])
 
 	%% relations
 	browse_shops -.include.-> find_shops
@@ -94,13 +96,13 @@ subgraph
 	%% entities
 	view_profile_info([view profile info])
 	view_appointments([view appointments])
-	curr_appointment([view current appointment])
-	view_shop_analytics([view owned shops analytics])
 	del_acc([delete account])
-	delete_appointment([delete appointment])
-	browse_owned_shops([browse owned shops])
 	del_appointment([delete appointment])
+	browse_owned_shops([browse owned shops])
+	view_shop_analytics([view owned shops analytics])
+	curr_appointment([view current appointment])
 	select_shop([select shop])
+	delete_appointment([delete appointment])
 
 	%% relations
 	delete_appointment -.extends.-> view_appointments
