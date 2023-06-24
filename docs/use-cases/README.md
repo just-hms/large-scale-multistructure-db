@@ -64,7 +64,6 @@ admin_user["<div class='admin' style='width:200px;height:250px'><img src='stick.
 logged_user ---- browse_shops
 subgraph  
 	%% entities
-	view_shop_analytics -.extends.-> view_shop
 	browse_shops([browse barber shops])
 	find_shops([find shops])
 	view_shop([view shop])
@@ -72,7 +71,6 @@ subgraph
 	view_reviews([view reviews])
 	booking([book appointment])
 	modify_shop([modify shop info])
-	view_shop_analytics([view shop analytics])
 	delete_shop([delete shop])
 
 	%% relations
@@ -95,18 +93,23 @@ subgraph
 
 	%% entities
 	view_profile_info([view profile info])
-	del_appointment([delete appointment])
 	view_appointments([view appointments])
-	browse_owned_shops([browse owned shops])
 	curr_appointment([view current appointment])
+	view_shop_analytics([view owned shops analytics])
 	del_acc([delete account])
 	delete_appointment([delete appointment])
+	browse_owned_shops([browse owned shops])
+	del_appointment([delete appointment])
+	select_shop([select shop])
 
 	%% relations
 	delete_appointment -.extends.-> view_appointments
 	browse_owned_shops -.include.-> view_appointments
 	
 	browse_owned_shops -.extends.->view_profile_info
+	view_shop_analytics -.extends.->view_profile_info
+	view_shop_analytics -.include.-> select_shop
+
 	curr_appointment -.extends.->view_profile_info
 	del_acc -.extends.->view_profile_info
 	del_appointment-.extends.->curr_appointment
@@ -167,6 +170,7 @@ class dis_reviews barber
 class barber_user barber
 class view_appointments barber
 class view_shop_analytics barber
+class select_shop barber
 class delete_appointment barber
 class delete_shop admin
 class delete_review admin
