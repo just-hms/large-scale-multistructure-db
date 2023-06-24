@@ -198,7 +198,7 @@ def fakeAppointments(usersCollection,appointmentsCollectionMongo,shopId,shopName
         #Add id to appointment
         appointment["_id"] = str(uuid.uuid4())
         #Fake appointment date
-        appointment["createdAt"] = fake.date_time_between(start_date=randomView["createdAt"], end_date=randomView["createdAt"]+timedelta(minutes=5))
+        appointment["createdAt"] = fake.date_time_between(start_date=randomView["createdAt"], end_date=randomView["createdAt"]+timedelta(minutes=30))
         appointment["startDate"] = fake.date_time_between(start_date=appointment["createdAt"], end_date=appointment["createdAt"]+timedelta(days=5))
         #Round datetime to the nearest half hour
         appointment["startDate"] = roundUpDateTime(appointment["startDate"],timedelta(minutes=30))
@@ -212,7 +212,9 @@ def fakeAppointments(usersCollection,appointmentsCollectionMongo,shopId,shopName
         #Add shopID
         appointment["shopId"] = shopId
         appointment["shopName"] = shopName
-        addAppointmentToUser(usersCollection,randomView["userId"],appointment)
+        #Add appointment to user only if it is pending
+        if (appointment["status"] == "pending"):
+            addAppointmentToUser(usersCollection,randomView["userId"],appointment)
         #Fill appointment info for the shop
         appointment["userId"] = randomView["userId"]
         appointment["username"] = generatedUsersMap[randomView["userId"]]["username"]
