@@ -103,8 +103,8 @@ subgraph
 	delete_appointment([delete appointment])
 
 	%% relations
-	browse_owned_shops -.include.-> view_appointments
 	delete_appointment -.extends.-> view_appointments
+	browse_owned_shops -.include.-> view_appointments
 	
 	browse_owned_shops -.extends.->view_profile_info
 	curr_appointment -.extends.->view_profile_info
