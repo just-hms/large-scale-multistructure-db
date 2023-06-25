@@ -34,7 +34,6 @@ export default function Search() {
     const filteredShops = searchFilter(shops)
 
     useEffect(() => {
-      const token = localStorage.getItem('token')
       const fetchData = async () =>{
         const response = await findShops(area)
         if(response.status == 200){
@@ -43,7 +42,7 @@ export default function Search() {
         }
         setLoaded(true)
       }
-      if(!token){
+      if(!localStorage.getItem('token')){
         router.push("/")
       }else{
         if(area){

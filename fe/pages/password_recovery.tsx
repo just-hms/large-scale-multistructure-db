@@ -30,8 +30,7 @@ export default function PasswordRecovery() {
         },
     });
     useEffect(()=>{
-        const token = localStorage.getItem('token')
-        if(!token){
+        if(!localStorage.getItem('token')){
           router.push("/")
         }else{
           setLoaded(true)

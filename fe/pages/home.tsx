@@ -13,8 +13,7 @@ export default function Home(){
   const [query, setQuery] = useState('');
   const router = useRouter()
   useEffect(()=>{
-    const token = localStorage.getItem('token')
-    if(!token){
+    if(!localStorage.getItem('token')){
       router.push("/")
     }else{
       setLoaded(true)
