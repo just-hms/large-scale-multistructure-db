@@ -28,17 +28,21 @@ func BenchmarkIndexes(b *testing.B) {
 	}
 	userRepo := repo.NewUserRepo(mongo)
 	barberShopRepo := repo.NewBarberShopRepo(mongo)
+	barberAnalyticsRepo := repo.NewBarberAnalyticsRepo(mongo)
 
 	err = repo.CreateTestIndexes(mongo, ctx)
 	if err != nil {
+		fmt.Println(err)
 		b.Fail()
 	}
 	users, err := userRepo.List(ctx, "")
 	if err != nil {
+		fmt.Println(err)
 		b.Fail()
 	}
 	barbershops, err := barberShopRepo.Find(ctx, -1, -1, "", 0)
 	if err != nil {
+		fmt.Println(err)
 		b.Fail()
 	}
 
@@ -49,6 +53,7 @@ func BenchmarkIndexes(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			_, err := userRepo.GetByEmail(ctx, users[len(users)-1].Email)
 			if err != nil {
+				fmt.Println(err)
 				b.Fail()
 			}
 		}
@@ -58,6 +63,17 @@ func BenchmarkIndexes(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			_, err := barberShopRepo.Find(ctx, 41.9027835, 12.4963655, "", 10000)
 			if err != nil {
+				fmt.Println(err)
+				b.Fail()
+			}
+		}
+	})
+
+	b.Run("shopEgagementRanking-index", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_, err := barberAnalyticsRepo.GetReviewWeightedRatingByShop(ctx, barbershops[0].ID)
+			if err != nil {
+				fmt.Println(err)
 				b.Fail()
 			}
 		}
@@ -65,6 +81,7 @@ func BenchmarkIndexes(b *testing.B) {
 
 	err = repo.DropTestIndexes(mongo, ctx)
 	if err != nil {
+		fmt.Println(err)
 		b.Fail()
 	}
 
@@ -72,11 +89,22 @@ func BenchmarkIndexes(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			_, err := userRepo.GetByEmail(ctx, users[len(users)-1].Email)
 			if err != nil {
+				fmt.Println(err)
 				b.Fail()
 			}
 		}
 	})
 
 	b.Run("barbershop-Find", func(b *testing.B) {})
+
+	b.Run("shopEgagementRanking", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_, err := barberAnalyticsRepo.GetReviewWeightedRatingByShop(ctx, barbershops[0].ID)
+			if err != nil {
+				fmt.Println(err)
+				b.Fail()
+			}
+		}
+	})
 
 }

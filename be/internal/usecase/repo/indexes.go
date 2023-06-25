@@ -29,6 +29,11 @@ func CreateTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 	pointIndexModel := mongodriver.IndexModel{
 		Keys: bsonx.MDoc{"location": bsonx.String("2dsphere")},
 	}
+	// add index to shopId to improve performance
+	shopIDIndexModel := mongodriver.IndexModel{
+		Keys:    bson.D{{"shopId", 1}},
+		Options: options.Index().SetUnique(true),
+	}
 
 	userIndexes := m.DB.Collection("users").Indexes()
 	_, err := userIndexes.CreateOne(ctx, usernameIndexModel, indexOpts)
@@ -43,6 +48,15 @@ func CreateTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 
 	shopIndexes := m.DB.Collection("barbershops").Indexes()
 	_, err = shopIndexes.CreateOne(ctx, pointIndexModel, indexOpts)
+	if err != nil {
+		return err
+	}
+
+	appointmentsIndexes := m.DB.Collection("appointments").Indexes()
+	_, err = appointmentsIndexes.CreateOne(ctx, shopIDIndexModel, indexOpts)
+	if err != nil {
+		return err
+	}
 
 	return err
 }
