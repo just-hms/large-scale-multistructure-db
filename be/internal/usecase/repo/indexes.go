@@ -32,7 +32,7 @@ func CreateTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 	// add index to shopId to improve performance
 	shopIDIndexModel := mongodriver.IndexModel{
 		Keys:    bson.D{{"shopId", 1}},
-		Options: options.Index().SetUnique(true),
+		Options: options.Index(),
 	}
 
 	userIndexes := m.DB.Collection("users").Indexes()
