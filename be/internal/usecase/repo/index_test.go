@@ -13,7 +13,7 @@ import (
 
 func BenchmarkIndexes(b *testing.B) {
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*2)
 	defer cancel()
 
 	cfg, err := config.NewConfig()
