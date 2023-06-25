@@ -17,8 +17,7 @@ export default function User() {
   let displayed_element;
 
   useEffect(()=>{
-    const token = localStorage.getItem('token')
-    if(!token){
+    if(!localStorage.getItem('token')){
       router.push("/")
     }else{
       const fetchData = async () => {

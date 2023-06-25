@@ -19,8 +19,7 @@ export default function User() {
   let displayed_element;
   // check if logged in and barber
   useEffect(()=>{
-    const token = localStorage.getItem('token')
-    if(!token){
+    if(!localStorage.getItem('token')){
       router.push("/")
     }else{
       const fetchData = async () => {

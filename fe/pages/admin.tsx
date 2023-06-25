@@ -29,8 +29,7 @@ export default function Admin() {
         setLoaded(true)
       }
     }
-    const token = localStorage.getItem('token')
-    if(!token ){
+    if(!localStorage.getItem('token') ){
       router.push("/home")
     }else{
       checkAdmin()

@@ -35,8 +35,7 @@ export default function Shop() {
 
   useEffect(()=>{
     if(shopid != undefined){
-      const token = localStorage.getItem('token')
-      if(!token){
+      if(!localStorage.getItem('token')){
         router.push("/")
       }else{
         const fetchData = async (shopid:any) => {
