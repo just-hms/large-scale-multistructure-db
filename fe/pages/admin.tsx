@@ -20,6 +20,9 @@ export default function Admin() {
     const checkAdmin = async () => {
       const myself = await (await getUserInfos()).json()
       // if anyone tries to access without being an admin -> unauthorized
+      if(myself.user == undefined){
+        router.push('/401')
+      }
       if(myself.user.Type !== 'admin'){
         router.push("/401")
       }else{

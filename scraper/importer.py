@@ -12,6 +12,8 @@ import time
 import bcrypt
 import uuid
 
+import argparse
+
 #Type hinting imports
 from typing import Literal
 
@@ -119,16 +121,17 @@ def makeShop(shopsCollection,shopData:dict)->int:
     shop["employees"] = random.randint(1,3)
 
     #Add shop to the db and return its new id
-    return shopsCollection.insert_one(shop).inserted_id
+    return shopsCollection.insert_one(shop).inserted_id, shop
 
-def addReviewToShop(reviewsCollection,shopId,user,shopReview,upvotesIdList,downvotesIdList):
+def addReviewToShop(reviewsCollection,shop,user,shopReview,upvotesIdList,downvotesIdList):
     """Adds a review to the specified shop. Uses the data format from the scraper."""
 
     #Create the review dict structure
     review = {}
     #Generate an id for the review
     review["_id"] = str(uuid.uuid4())
-    review["shopId"] = shopId
+    review["shopId"] = shop["_id"]
+    review["shopName"] = shop["name"]
     review["userId"] = user["_id"]
     review["username"] = shopReview["username"].replace(" ", "")
     review["rating"] = shopReview["rating"] if shopReview["rating"] > 0 else 1
@@ -195,7 +198,7 @@ def fakeAppointments(usersCollection,appointmentsCollectionMongo,shopId,shopName
         #Add id to appointment
         appointment["_id"] = str(uuid.uuid4())
         #Fake appointment date
-        appointment["createdAt"] = fake.date_time_between(start_date=randomView["createdAt"], end_date=randomView["createdAt"]+timedelta(minutes=5))
+        appointment["createdAt"] = fake.date_time_between(start_date=randomView["createdAt"], end_date=randomView["createdAt"]+timedelta(minutes=30))
         appointment["startDate"] = fake.date_time_between(start_date=appointment["createdAt"], end_date=appointment["createdAt"]+timedelta(days=5))
         #Round datetime to the nearest half hour
         appointment["startDate"] = roundUpDateTime(appointment["startDate"],timedelta(minutes=30))
@@ -209,7 +212,9 @@ def fakeAppointments(usersCollection,appointmentsCollectionMongo,shopId,shopName
         #Add shopID
         appointment["shopId"] = shopId
         appointment["shopName"] = shopName
-        addAppointmentToUser(usersCollection,randomView["userId"],appointment)
+        #Add appointment to user only if it is pending
+        if (appointment["status"] == "pending"):
+            addAppointmentToUser(usersCollection,randomView["userId"],appointment)
         #Fill appointment info for the shop
         appointment["userId"] = randomView["userId"]
         appointment["username"] = generatedUsersMap[randomView["userId"]]["username"]
@@ -224,19 +229,40 @@ def fakeUserList(userList,maxAmount=50):
     #Get minimum bewteen amount of users and maxAmount
     maxAmount = len(userList) if len(userList)<maxAmount else maxAmount
     #Get a random amount 
-    amount = random.randint(1,maxAmount)
+    amount = random.randint(0,maxAmount)
 
     #Extract the user ids
-    return random.choices(userList,k=amount) 
+    return random.sample(userList,k=amount) 
 
 
 
 def main():
-    start_time = time.perf_counter()
-    print("> Starting BarberShop importer\n")
+
+    mongoHost = '127.0.0.1'
+    mongoPort = 27017
+
+    #Parse the command-line arguments
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-H", "--host", type=str, help="The IP address of the machine hosting the MongoDB instance")
+    argParser.add_argument("-P", "--port", type=int, help="The port of the machine hosting the MongoDB instance")
+
+    args = argParser.parse_args()
+
+    if args.host:
+        mongoHost = args.host
+
+    if args.port:
+        mongoPort = args.port
+
+    print(f"> Attempting connection to {mongoHost}:{mongoPort}")
 
     #Establish connection to databases
-    mongoClient = MongoClient('localhost', 27017)
+    mongoClient = MongoClient(mongoHost,mongoPort)
+
+    print("> Successfully established connection")
+
+    start_time = time.perf_counter()
+    print("> Starting BarberShop importer\n")
 
     #Reset databases
     mongoClient.drop_database("barbershop")
@@ -250,8 +276,9 @@ def main():
     appointmentsCollectionMongo = barberDatabaseMongo["appointments"]
     reviewsCollectionMongo = barberDatabaseMongo["reviews"]
 
-    #Make usernames unique
+    #Make username and email unique
     usersCollectionMongo.create_index("username",unique=True)
+    usersCollectionMongo.create_index("email",unique=True)
     #Prepare Mongo for geolocation
     barberShopsCollectionMongo.create_index([("location",GEOSPHERE)])
 
@@ -274,7 +301,7 @@ def main():
             print(f">> Importing {shop['name']}")
             importedShops += 1
             #Generate a shop entry in the database
-            shopId = makeShop(barberShopsCollectionMongo,shop)
+            shopId, generatedShop = makeShop(barberShopsCollectionMongo,shop)
             generatedShopsIds.append(shopId)
             #Generate a fake barber user for the shop and save its id.
             #We might accidentally generate a barber with the same username. Repeat until we succeed.
@@ -289,10 +316,14 @@ def main():
             for review in shop["reviewData"]["reviews"]:
                 userId, user = makeUser(usersCollectionMongo,review["username"],"user")
                 while userId == -1:
+                    review["username"] = review["username"] + "1"
                     userId, user = makeUser(usersCollectionMongo,review["username"],"user")
                 generatedUsers[userId] = user
                 #Add review to shop while faking amount of upvotes and downvotes
-                addReviewToShop(reviewsCollectionMongo,shopId,user,review,fakeUserList(list(generatedUsers.keys())),fakeUserList(list(generatedUsers.keys()),5))
+                userUpvoteList = fakeUserList(list(generatedUsers.keys()))
+                ##Remove already chosen upvoters from downvote list
+                userDownvoteList = fakeUserList(list(set(generatedUsers.keys()) - set(userUpvoteList)),5)
+                addReviewToShop(reviewsCollectionMongo,generatedShop,user,review,userUpvoteList,userDownvoteList)
             ##Fake interaction stuff we do not have: Views, Appointments
 
             #Fake a random amount of views from random users. Max 1500.

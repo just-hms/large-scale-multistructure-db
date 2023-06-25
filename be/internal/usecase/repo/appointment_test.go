@@ -10,8 +10,8 @@ import (
 
 func (s *RepoSuite) TestAppointmentBook() {
 
-	user := &entity.User{Email: "giovanni"}
-	user2 := &entity.User{Email: "banana"}
+	user := &entity.User{Email: "giovanni", Username: "giovanni"}
+	user2 := &entity.User{Email: "banana", Username: "banana"}
 	shop := &entity.BarberShop{Name: "brownies"}
 
 	userRepo := repo.NewUserRepo(s.db)

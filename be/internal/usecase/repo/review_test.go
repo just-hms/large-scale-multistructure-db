@@ -13,8 +13,8 @@ func (s *RepoSuite) TestGetByBarberShopID() {
 	shopRepo := repo.NewBarberShopRepo(s.db)
 	reviewRepo := repo.NewReviewRepo(s.db)
 
-	user1 := &entity.User{Email: "giovanni"}
-	user2 := &entity.User{Email: "mario"}
+	user1 := &entity.User{Email: "giovanni", Username: "giovanni"}
+	user2 := &entity.User{Email: "mario", Username: "mario"}
 	shop := &entity.BarberShop{Name: "brownies"}
 
 	err := userRepo.Store(context.Background(), user1)
