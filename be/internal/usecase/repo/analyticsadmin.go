@@ -402,7 +402,11 @@ func (r *AdminAnalyticsRepo) GetEngagementShopRanking(ctx context.Context) ([]bs
 	}
 
 	for _, result := range mongoResults {
-		result["engagementScore"] = int(result["engagementScore"].(int32))
+		if result["engagementScore"] == nil {
+			result["engagementScore"] = 0
+		} else {
+			result["engagementScore"] = int(result["engagementScore"].(int32))
+		}
 	}
 
 	return mongoResults, err
