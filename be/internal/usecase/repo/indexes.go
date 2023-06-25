@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
@@ -10,13 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
-
-func AddTestIndexes(mongo *mongo.Mongo) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	return CreateTestIndexes(mongo, ctx)
-}
 
 func CreateTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 
@@ -41,6 +35,7 @@ func CreateTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	_, err = userIndexes.CreateOne(ctx, emailIndexModel, indexOpts)
 	if err != nil {
 		return err
@@ -48,5 +43,13 @@ func CreateTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 
 	shopIndexes := m.DB.Collection("barbershops").Indexes()
 	_, err = shopIndexes.CreateOne(ctx, pointIndexModel, indexOpts)
+
 	return err
+}
+
+func DropTestIndexes(m *mongo.Mongo, ctx context.Context) error {
+	_, err1 := m.DB.Collection("users").Indexes().DropOne(ctx, "username_1")
+	_, err2 := m.DB.Collection("users").Indexes().DropOne(ctx, "email_1")
+	_, err3 := m.DB.Collection("barbershops").Indexes().DropOne(ctx, "location_2dsphere")
+	return errors.Join(err1, err2, err3)
 }

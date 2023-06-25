@@ -29,26 +29,54 @@ func BenchmarkIndexes(b *testing.B) {
 	userRepo := repo.NewUserRepo(mongo)
 	barberShopRepo := repo.NewBarberShopRepo(mongo)
 
+	err = repo.CreateTestIndexes(mongo, ctx)
+	if err != nil {
+		b.Fail()
+	}
+	users, err := userRepo.List(ctx, "")
+	if err != nil {
+		b.Fail()
+	}
+	barbershops, err := barberShopRepo.Find(ctx, -1, -1, "", 0)
+	if err != nil {
+		b.Fail()
+	}
+
+	fmt.Println("Number of users: ", len(users))
+	fmt.Println("Number of barbershops: ", len(barbershops))
+
 	b.Run("user-GetByEmail-with-index", func(b *testing.B) {
-		userRepo.GetByEmail(ctx, "admin@admin.com")
-		users, _ := userRepo.List(ctx, "")
-		fmt.Println(len(users))
+		for i := 0; i < b.N; i++ {
+			_, err := userRepo.GetByEmail(ctx, users[len(users)-1].Email)
+			if err != nil {
+				b.Fail()
+			}
+		}
 	})
 
 	b.Run("barbershop-Find-with-index", func(b *testing.B) {
-		barberShopRepo.Find(ctx, 0.200, 0.200, "", 10000)
+		for i := 0; i < b.N; i++ {
+			_, err := barberShopRepo.Find(ctx, 41.9027835, 12.4963655, "", 10000)
+			if err != nil {
+				b.Fail()
+			}
+		}
 	})
 
-	// TODO remove the index
+	err = repo.DropTestIndexes(mongo, ctx)
+	if err != nil {
+		b.Fail()
+	}
 
 	b.Run("user-GetByEmail", func(b *testing.B) {
-		userRepo.GetByEmail(ctx, "admin@admin.com")
+		for i := 0; i < b.N; i++ {
+			_, err := userRepo.GetByEmail(ctx, users[len(users)-1].Email)
+			if err != nil {
+				b.Fail()
+			}
+		}
 	})
 
-	b.Run("barbershop-Find-with-index", func(b *testing.B) {
-		barberShopRepo.Find(ctx, 0.200, 0.200, "", 10000)
-	})
-
-	// TODO add the index back
+	b.Run("barbershop-Find", func(b *testing.B) {})
 
 }
