@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/config"
 	"github.com/just-hms/large-scale-multistructure-db/be/internal/usecase/repo"
@@ -11,6 +12,9 @@ import (
 )
 
 func BenchmarkIndexes(b *testing.B) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	defer cancel()
 
 	cfg, err := config.NewConfig()
 	if err != nil {
@@ -26,21 +30,23 @@ func BenchmarkIndexes(b *testing.B) {
 	barberShopRepo := repo.NewBarberShopRepo(mongo)
 
 	b.Run("user-GetByEmail-with-index", func(b *testing.B) {
-		userRepo.GetByEmail(context.Background(), "admin@admin.com")
+		userRepo.GetByEmail(ctx, "admin@admin.com")
+		users, _ := userRepo.List(ctx, "")
+		fmt.Println(len(users))
 	})
 
 	b.Run("barbershop-Find-with-index", func(b *testing.B) {
-		barberShopRepo.Find(context.Background(), 0.200, 0.200, "", 10000)
+		barberShopRepo.Find(ctx, 0.200, 0.200, "", 10000)
 	})
 
 	// TODO remove the index
 
 	b.Run("user-GetByEmail", func(b *testing.B) {
-		userRepo.GetByEmail(context.Background(), "admin@admin.com")
+		userRepo.GetByEmail(ctx, "admin@admin.com")
 	})
 
 	b.Run("barbershop-Find-with-index", func(b *testing.B) {
-		barberShopRepo.Find(context.Background(), 0.200, 0.200, "", 10000)
+		barberShopRepo.Find(ctx, 0.200, 0.200, "", 10000)
 	})
 
 	// TODO add the index back
