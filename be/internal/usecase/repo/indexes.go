@@ -65,5 +65,6 @@ func DropTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 	_, err1 := m.DB.Collection("users").Indexes().DropOne(ctx, "username_1")
 	_, err2 := m.DB.Collection("users").Indexes().DropOne(ctx, "email_1")
 	_, err3 := m.DB.Collection("barbershops").Indexes().DropOne(ctx, "location_2dsphere")
-	return errors.Join(err1, err2, err3)
+	_, err4 := m.DB.Collection("appointments").Indexes().DropOne(ctx, "shopId_1")
+	return errors.Join(err1, err2, err3, err4)
 }
