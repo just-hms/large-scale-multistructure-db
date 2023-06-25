@@ -281,6 +281,8 @@ def main():
     usersCollectionMongo.create_index("email",unique=True)
     #Prepare Mongo for geolocation
     barberShopsCollectionMongo.create_index([("location",GEOSPHERE)])
+    #Add index to Appointment's ShopId
+    appointmentsCollectionMongo.create_index("shopId")
 
     #Load scraped data
     scrapedData = {}
