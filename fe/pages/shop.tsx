@@ -34,10 +34,10 @@ export default function Shop() {
   });
 
   useEffect(()=>{
-    if(shopid != undefined){
-      const token = localStorage.getItem('token')
-      if(!token){
-        router.push("/")
+    const checkLogin = async () => {
+      const myself = await (await getUserInfos()).json()
+      if(myself.user == undefined){
+        router.push('/')
       }else{
         const fetchData = async (shopid:any) => {
           // get basic shop data
@@ -57,6 +57,10 @@ export default function Shop() {
         }
         fetchData(shopid)
       }
+    }
+
+    if(shopid != undefined){
+      checkLogin()
     }
   },[shopid])
 

@@ -22,19 +22,19 @@ export default function Admin() {
       // if anyone tries to access without being an admin -> unauthorized
       if(myself.user == undefined){
         router.push('/401')
-      }
-      if(myself.user.Type !== 'admin'){
-        router.push("/401")
       }else{
-        setLoaded(true)
+        if(myself.user.Type !== 'admin'){
+          router.push("/401")
+        }else{
+          setLoaded(true)
+        }
       }
     }
-    const token = localStorage.getItem('token')
-    if(!token ){
-      router.push("/home")
-    }else{
+    // if(!localStorage.getItem('token') ){
+    //   router.push("/home")
+    // }else{
       checkAdmin()
-    }
+    // }
   },[])
   // dynamic displaying content based on the menu selected output
   if(!loaded){

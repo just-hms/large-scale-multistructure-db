@@ -19,10 +19,9 @@ export default function User() {
   let displayed_element;
   // check if logged in and barber
   useEffect(()=>{
-    const token = localStorage.getItem('token')
-    if(!token){
-      router.push("/")
-    }else{
+    // if(!localStorage.getItem('token')){
+    //   router.push("/")
+    // }else{
       const fetchData = async () => {
         const retrievedData = await (await getUserInfos()).json() 
         // if anyone tries to access without being a barber -> unauthorized
@@ -38,7 +37,7 @@ export default function User() {
             setLoaded(true)
           }
         }
-      }
+      // }
       fetchData()
     }
   },[])

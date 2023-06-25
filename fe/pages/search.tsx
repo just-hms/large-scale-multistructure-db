@@ -8,6 +8,7 @@ import {findShops} from "../lib/search"
 import ShopsFound from "../components/search_components/shops_found"
 import Link from "next/link";
 import Footer from "../components/footer";
+import { getUserInfos } from "../lib/user";
 
 export default function Search() {
     const router = useRouter()
@@ -34,7 +35,6 @@ export default function Search() {
     const filteredShops = searchFilter(shops)
 
     useEffect(() => {
-      const token = localStorage.getItem('token')
       const fetchData = async () =>{
         const response = await findShops(area)
         if(response.status == 200){
@@ -43,13 +43,18 @@ export default function Search() {
         }
         setLoaded(true)
       }
-      if(!token){
-        router.push("/")
-      }else{
+
+      const checkLogin = async () => {
+        const myself = await (await getUserInfos()).json()
+        if(myself.user == undefined){
+          router.push('/')
+        }else{
         if(area){
           fetchData()
         }
+        }
       }
+      checkLogin()
     }, [area]);
 
     if(!loaded){

@@ -17,18 +17,22 @@ export default function User() {
   let displayed_element;
 
   useEffect(()=>{
-    const token = localStorage.getItem('token')
-    if(!token){
-      router.push("/")
-    }else{
-      const fetchData = async () => {
-        const userInfos = await (await getUserInfos()).json()
-        setUserData(userInfos)
-        setReservationData(userInfos.user.CurrentAppointment)
-        setLoaded(true)
+
+    const checkLogin = async () => {
+      const myself = await (await getUserInfos()).json()
+      if(myself.user == undefined){
+        router.push('/')
+      }else{
+        const fetchData = async () => {
+          const userInfos = await (await getUserInfos()).json()
+          setUserData(userInfos)
+          setReservationData(userInfos.user.CurrentAppointment)
+          setLoaded(true)
+        }
+        fetchData()
       }
-      fetchData()
     }
+    checkLogin()
   },[])
 
   if(!loaded){
