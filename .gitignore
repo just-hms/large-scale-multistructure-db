@@ -8,3 +8,5 @@ scraper/mapsApiKey.txt
 .env
 
 notes.txt
+
+scraper/.venv/
