@@ -6,6 +6,7 @@ import barber_background_vertical from '../public/barber_bg_vertical.png'
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
+import { getUserInfos } from '../lib/user'
 
 export default function Home(){
   // check if the user is logged
@@ -13,11 +14,15 @@ export default function Home(){
   const [query, setQuery] = useState('');
   const router = useRouter()
   useEffect(()=>{
-    if(!localStorage.getItem('token')){
-      router.push("/")
-    }else{
-      setLoaded(true)
+    const checkLogin = async () => {
+      const myself = await (await getUserInfos()).json()
+      if(myself.user == undefined){
+        router.push('/')
+      }else{
+        setLoaded(true)
+      }
     }
+    checkLogin()
   },[])
   if(!loaded){
     return <div></div> 

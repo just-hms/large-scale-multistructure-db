@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import barber_icon from '../public/barber-shop.png'
 import { changePassword } from '../lib/user';
+import { getUserInfos } from '../lib/user';
 
 export default function PasswordRecovery() {
     const router = useRouter()
@@ -30,11 +31,15 @@ export default function PasswordRecovery() {
         },
     });
     useEffect(()=>{
-        if(!localStorage.getItem('token')){
-          router.push("/")
-        }else{
-          setLoaded(true)
-        }
+        const checkLogin = async () => {
+            const myself = await (await getUserInfos()).json()
+            if(myself.user == undefined){
+              router.push('/')
+            }else{
+              setLoaded(true)
+            }
+          }
+          checkLogin()
       },[])
     if(!loaded){
         return <div></div> //show nothing or a loader
