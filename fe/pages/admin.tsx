@@ -30,11 +30,7 @@ export default function Admin() {
         }
       }
     }
-    // if(!localStorage.getItem('token') ){
-    //   router.push("/home")
-    // }else{
       checkAdmin()
-    // }
   },[])
   // dynamic displaying content based on the menu selected output
   if(!loaded){
