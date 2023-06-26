@@ -211,7 +211,7 @@ class find_shops all
 class view_shop all
 class view_reviews all
 class review all
-class booking all
+class booking user
 class browse_all_shops admin
 
 %% user colors
