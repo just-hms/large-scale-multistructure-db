@@ -52,7 +52,7 @@
 
 # Use-case diagram
 ```mermaid
-flowchart LR
+flowchart RL
 
 %% users
 generic_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek'><h5 style='position:absolute;bottom:0px;text-align:center;width:100%;'>generic user</h5></div>"]
@@ -66,12 +66,12 @@ admin_user["<div class='admin' style='width:200px;height:250px'><img src='stick.
 
 
 %% user definitions
-logged_user --> generic_user
-barber_user --> generic_user
+logged_user ---> generic_user
+barber_user ---> generic_user
 admin_user --> generic_user
 
 %% admin profile
-admin_user --- view_admin_profile_info
+view_admin_profile_info ---- admin_user 
 subgraph  
 	%% entities
 	find_user([find user])
@@ -100,7 +100,7 @@ end
 
 
 %% browse shops subgraph
-generic_user ---- browse_shops
+generic_user --- browse_shops
 subgraph  
 	%% entities
 	find_shops([find shops])
@@ -126,32 +126,32 @@ end
 
 %% barber profile
 
-barber_user ---- view_barber_profile_info
+view_barber_profile_info --- barber_user  
 subgraph  
-	view_barber_profile_info([view barber profile info])
-	select_shop([select shop])
-	browse_owned_shops([browse owned shops])
-	del_barber_acc([delete account])
 	delete_appointment([delete appointment])
-	browse_owned_shops -.include.-> view_appointments
-	view_shop_analytics([view owned shops analytics])
+	view_barber_profile_info([view barber profile info])
+	browse_owned_shops([browse owned shops])
 	view_appointments([view appointments])
-
-	browse_owned_shops -.extends.->view_barber_profile_info
-	delete_appointment -.extends.-> view_appointments
-	modify_shop -.extends.->browse_owned_shops
-	view_shop_analytics -.extends.->view_barber_profile_info
-	view_shop_analytics -.include.-> select_shop
-
+	del_barber_acc([delete account])
+	view_shop_analytics([view owned shops analytics])
 	modify_shop([modify shop info])
+	select_shop([select shop])
+
+	browse_owned_shops -.include.-> view_appointments
+	view_shop_analytics -.include...-> select_shop
+
+	delete_appointment -.extends.-> view_appointments
+	browse_owned_shops -.extends..->view_barber_profile_info
+	modify_shop -.extends..->browse_owned_shops
+	view_shop_analytics -.extends.->view_barber_profile_info
+	del_barber_acc-.extends..->view_barber_profile_info
 
 
-	del_barber_acc-.extends.->view_barber_profile_info
 end
 
 
 %% user profile
-logged_user ---- view_profile_info
+view_profile_info --- logged_user
 subgraph  
 	%% entities
 	view_profile_info([view user profile info])
@@ -169,7 +169,7 @@ end
 
 %% login subgraph
 generic_user ---- login
-generic_user ---- signup
+generic_user --- signup
 
 subgraph  
 	login([login])
