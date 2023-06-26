@@ -64,16 +64,22 @@ barber_user["<div style='width:200px;height:250px'><img src='stick.png' alt='kek
 admin_user["<div class='admin' style='width:200px;height:250px'><img src='stick.png' alt='kek'><h3 style='position:absolute;bottom:0px;text-align:center;width:100%;'>admin</h3></div>"]
 
 
+
+%% user definitions
+logged_user --> generic_user
+barber_user --> generic_user
+admin_user --> generic_user
+
 %% admin profile
 admin_user --- view_admin_profile_info
 subgraph  
 	%% entities
 	find_user([find user])
+	user_analytics([view app analytics])
+	browse_all_shops([browse all shops])
 	view_admin_profile_info([view admin profile info])
 	modify_perm([edit barbershop ownership])
 	delete_user([delete user])
-	user_analytics([view app analytics])
-	browse_all_shops([browse all shops])
 	view_user([view user])
 	browse_users([browse users])
 	delete_shop([delete shop])
@@ -93,25 +99,18 @@ subgraph
 end
 
 
-%% user definitions
-admin_user --> generic_user
-logged_user --> generic_user
-barber_user --> generic_user
-
-
 %% browse shops subgraph
 generic_user ---- browse_shops
 subgraph  
 	%% entities
 	find_shops([find shops])
+	booking([book appointment])
 	up_vote([up vote])
 	down_vote([down vote])
-	booking([book appointment])
 	browse_shops([browse barber shops])
 	view_shop([view shop])
 	review([review shop])
 	view_reviews([view reviews])
-	modify_shop([modify shop info])
 
 	%% relations
 	view_shop -.extends.-> find_shops
@@ -120,7 +119,6 @@ subgraph
 	view_reviews-.extends.-> view_shop
 	review -.extends.-> view_shop
 	down_vote-.extends.->view_reviews
-	modify_shop -.extends.->view_shop
 	browse_shops -.include.-> find_shops
 end
 
@@ -130,19 +128,23 @@ end
 
 barber_user ---- view_barber_profile_info
 subgraph  
-	del_barber_acc([delete account])
 	view_barber_profile_info([view barber profile info])
-	delete_appointment -.extends.-> view_appointments
 	select_shop([select shop])
+	browse_owned_shops([browse owned shops])
+	del_barber_acc([delete account])
 	delete_appointment([delete appointment])
 	browse_owned_shops -.include.-> view_appointments
-	browse_owned_shops([browse owned shops])
 	view_shop_analytics([view owned shops analytics])
 	view_appointments([view appointments])
 
 	browse_owned_shops -.extends.->view_barber_profile_info
+	delete_appointment -.extends.-> view_appointments
+	modify_shop -.extends.->browse_owned_shops
 	view_shop_analytics -.extends.->view_barber_profile_info
 	view_shop_analytics -.include.-> select_shop
+
+	modify_shop([modify shop info])
+
 
 	del_barber_acc-.extends.->view_barber_profile_info
 end
