@@ -8,10 +8,15 @@
 ## deploy
 
 ```shell
+# first time only command
+make docker-contexts
+# add ssh key to remotes
 # rename .env.template to .env
 # add secrets
 make down
 make deploy
+# when done
+make deploy-down
 ```
 
 ## dev
