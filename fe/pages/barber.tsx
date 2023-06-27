@@ -19,10 +19,7 @@ export default function User() {
   let displayed_element;
   // check if logged in and barber
   useEffect(()=>{
-    // if(!localStorage.getItem('token')){
-    //   router.push("/")
-    // }else{
-      const fetchData = async () => {
+    const fetchData = async () => {
         const retrievedData = await (await getUserInfos()).json() 
         // if anyone tries to access without being a barber -> unauthorized
         if(retrievedData.user == undefined){
@@ -37,10 +34,10 @@ export default function User() {
             setLoaded(true)
           }
         }
-      // }
+      }
       fetchData()
-    }
   },[])
+
   if (content == "account_info") {
     displayed_element = <UserInfos userdata={userData}/>;
   } else if (content == "modify_shop"){

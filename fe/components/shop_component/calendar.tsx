@@ -97,7 +97,6 @@ export const fillCalendar = (calendar:any, employees:any)=>{
 export default function Calendar({shopid,calendar, employees}:any) {
     return (
         <>
-        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.5/index.global.min.js'></script>
         <div className="w-full lg:w-5/6 h-1/3 mt-0 px-3 lg:py-3 transform -translate-y-20">
             <div className="flex justify-center items-center">
                 <div className="w-full rounded-lg bg-slate-700 shadow-md shadow-black/70 p-3 ">

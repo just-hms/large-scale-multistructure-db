@@ -101,8 +101,6 @@ export default function Shop() {
                         Leave a review!
                       </h1>
                       <div className='w-3/4 border-b border-slate-700 pt-1'></div>
-                      {/* <p className='text-sm'>Give the review a title:</p>
-                      <input name="title" id="title" onChange={formik.handleChange} value={formik.values.title} className='bg-slate-700 w-3/4 focus:outline-none resize-none rounded-md p-1.5 text-sm break-words mt-1'/> */}
                       <div className="text-sm text-justify leading-tight tracking-tight text-slate-300 break-words w-3/4 py-2 flex flex-col">
                         <div className='flex items-center justify-between'>
                           How did we do?
