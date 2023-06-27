@@ -61,6 +61,18 @@ go test ./...
 ```
 
 
+## benchmark
+
+```shell
+make infrastructure
+# run the importer
+cd be/internal/usecase/repo
+go test -run=^$ -bench=.
+```
+
+
+
+
 
 
 ## google docs

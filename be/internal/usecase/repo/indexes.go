@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/just-hms/large-scale-multistructure-db/be/pkg/mongo"
@@ -10,13 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
-
-func AddTestIndexes(mongo *mongo.Mongo) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	return CreateTestIndexes(mongo, ctx)
-}
 
 func CreateTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 
@@ -35,12 +29,18 @@ func CreateTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 	pointIndexModel := mongodriver.IndexModel{
 		Keys: bsonx.MDoc{"location": bsonx.String("2dsphere")},
 	}
+	// add index to shopId to improve performance
+	shopIDIndexModel := mongodriver.IndexModel{
+		Keys:    bson.D{{"shopId", 1}},
+		Options: options.Index(),
+	}
 
 	userIndexes := m.DB.Collection("users").Indexes()
 	_, err := userIndexes.CreateOne(ctx, usernameIndexModel, indexOpts)
 	if err != nil {
 		return err
 	}
+
 	_, err = userIndexes.CreateOne(ctx, emailIndexModel, indexOpts)
 	if err != nil {
 		return err
@@ -48,5 +48,23 @@ func CreateTestIndexes(m *mongo.Mongo, ctx context.Context) error {
 
 	shopIndexes := m.DB.Collection("barbershops").Indexes()
 	_, err = shopIndexes.CreateOne(ctx, pointIndexModel, indexOpts)
+	if err != nil {
+		return err
+	}
+
+	appointmentsIndexes := m.DB.Collection("appointments").Indexes()
+	_, err = appointmentsIndexes.CreateOne(ctx, shopIDIndexModel, indexOpts)
+	if err != nil {
+		return err
+	}
+
 	return err
+}
+
+func DropTestIndexes(m *mongo.Mongo, ctx context.Context) error {
+	_, err1 := m.DB.Collection("users").Indexes().DropOne(ctx, "username_1")
+	_, err2 := m.DB.Collection("users").Indexes().DropOne(ctx, "email_1")
+	_, err3 := m.DB.Collection("barbershops").Indexes().DropOne(ctx, "location_2dsphere")
+	_, err4 := m.DB.Collection("appointments").Indexes().DropOne(ctx, "shopId_1")
+	return errors.Join(err1, err2, err3, err4)
 }
