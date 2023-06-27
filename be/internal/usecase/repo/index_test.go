@@ -89,8 +89,6 @@ func BenchmarkIndexes(b *testing.B) {
 		}
 	})
 
-	b.Run("barbershop-Find", func(b *testing.B) {})
-
 	b.Run("shopEgagementRanking", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			_, err := adminAnalyticsRepo.GetEngagementShopRanking(ctx)
@@ -99,5 +97,4 @@ func BenchmarkIndexes(b *testing.B) {
 			}
 		}
 	})
-
 }
