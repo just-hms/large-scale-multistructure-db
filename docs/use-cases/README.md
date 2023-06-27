@@ -128,7 +128,6 @@ end
 
 view_barber_profile_info --- barber_user  
 subgraph  
-	delete_appointment([delete appointment])
 	view_barber_profile_info([view barber profile info])
 	browse_owned_shops([browse owned shops])
 	view_appointments([view appointments])
@@ -140,7 +139,6 @@ subgraph
 	browse_owned_shops -.include.-> view_appointments
 	view_shop_analytics -.include...-> select_shop
 
-	delete_appointment -.extends.-> view_appointments
 	browse_owned_shops -.extends..->view_barber_profile_info
 	modify_shop -.extends..->browse_owned_shops
 	view_shop_analytics -.extends.->view_barber_profile_info
