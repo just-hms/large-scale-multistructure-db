@@ -191,7 +191,6 @@ class barber_user barber
 class view_appointments barber
 class view_shop_analytics barber
 class select_shop barber
-class delete_appointment barber
 class delete_shop admin
 class delete_review admin
 class browse_users admin
